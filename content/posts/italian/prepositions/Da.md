@@ -44,5 +44,5 @@ Il y a plusieurs cas d'utilisation de cette preposition:
 6. **_da_** + Infinitivo = **_a_** + infinitif
 
 	Exemple:
-	- Qualcosa **_da_*** mangiaire -> Quelque chose **_a_** a manger
+	- Qualcosa **_da_** mangiaire -> Quelque chose **_a_** a manger
 	- Un libro **_da_** leggere -> Un livre **_a_** lire
