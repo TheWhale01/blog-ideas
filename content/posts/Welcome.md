@@ -15,7 +15,7 @@ Feel free to take a look around it aims to not only help me but a lot of people 
 - [Money](/content/posts/Money.md)
 - [Remote Gaming Server](/content/posts/Remote-Gaming-Server.md)
 - [Whale's Server](/content/posts/whales-server.md)
-- [Italien](/content/content/posts/Italian.md)
+- [Italien](/content/content/posts/italian/Italian.md)
 - [Deezify](/content/posts/Deezify.md)
 
 [Gemini](https://gemini.google.com/) is a great tool to brainstorm on some ideas I recommend !
