@@ -34,3 +34,15 @@ Il y a plusieurs cas d'utilisation de cette preposition:
 	 - Questo libro e stato scritto da Victor Hugo -> Ce livre a ete ecrit par Victor Hugo
 	
 	Un complement d'agent est un element de la phrase qui indique qui realise l'action dans une phrase passive. En d'autres termes, il designe l'agent qui effectue l'action subie par le sujet. Pour etre plus claire, il repond a la question **Par qui ?** ou **Par quoi ?** 
+
+5. Se traduit par **_a_** quand on se refere a un objet:
+
+	Exemple:
+	 - Un bicchiere **_da_** vino -> un verre **_a_** vin
+	 - Lo spazzolino **_da_** denti -> la brosse **_a_** dents
+
+6. **_da_** + Infinitivo = **_a_** + infinitif
+
+	Exemple:
+	- Qualcosa **_da_*** mangiaire -> Quelque chose **_a_** a manger
+	- Un libro **_da_** leggere -> Un livre **_a_** lire
