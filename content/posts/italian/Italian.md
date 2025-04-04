@@ -12,12 +12,12 @@ Ci-dessous vous retrouverez la liste des choses que j'ai apprises classee par ca
 
 ### Conjugaison
 
-- [Presente - Indicativo](/posts/italian/presente/indicativo/)
-- [Presente - Congiuntivo](/posts/italian/presente/congiuntivo/)
+- [Presente - Indicativo](Indicativo.md)
+- [Presente - Congiuntivo](Congiuntivo.md)
 
 ## Grammaire
 
-- [Prepositions - DA](/posts/italian/prepositions/da/)
+- [Prepositions - DA](Da.md)
 
 ## Autres resources
 
