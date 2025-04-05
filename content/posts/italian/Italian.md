@@ -10,7 +10,7 @@ Pour etre le plus efficace possible j'ai commence par apprendre la conjugaison d
 
 Ci-dessous vous retrouverez la liste des choses que j'ai apprises classee par categorie.
 
-### Conjugaison
+## Conjugaison
 
 - [Presente - Indicativo](/content/posts/italian/presente/Indicativo.md)
 - [Presente - Congiuntivo](/content/posts/italian/presente/Congiuntivo.md)
