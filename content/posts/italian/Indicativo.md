@@ -6,6 +6,8 @@ author: whale
 ---
 voici les terminaisons regulieres au present de l'indicatif:
 
+## Presente
+
 |                       | are  | ere  | ire  |
 | :-------------------- | :--: | :--: | :--: |
 | io (je)               |  o   |  o   |  o   |

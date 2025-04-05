@@ -12,8 +12,8 @@ Ci-dessous vous retrouverez la liste des choses que j'ai apprises classee par ca
 
 ## Conjugaison
 
-- [Presente - Indicativo](/content/posts/italian/presente/Indicativo.md)
-- [Presente - Congiuntivo](/content/posts/italian/presente/Congiuntivo.md)
+- [Presente - Indicativo](/content/posts/Italian/Indicativo.md)
+- [Presente - Congiuntivo](/content/posts/Italian/Congiuntivo.md)
 
 ## Grammaire
 
