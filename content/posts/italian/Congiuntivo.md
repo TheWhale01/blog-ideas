@@ -28,6 +28,7 @@ Voici les differents cas ou on utilise ce mode. Globalement l'utilisation est la
 
 4. Dans des propositions independantes:
 	- Pour exprimer un souhait, un doute, une exhortation
+
 ## Presente
 
 Terminaisons regulieres:
