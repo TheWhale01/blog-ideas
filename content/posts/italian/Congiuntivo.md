@@ -61,3 +61,37 @@ Verbes irreguliers:
 |                  |                                                      |
 | Essere           |          sia, sia, sia, siamo, siate, siano          |
 | Avere            |    abbia, abbia, abbia, abbiamo, abbiate, abbiano    |
+
+Exemples:
+ - Volgio che _torni_ a casa -> Je veux que tu _rentre_ a la maison
+ - E importante che tu _sia_ puntuale -> C'est important que tu _sois_ ponctuel
+## Imperfetto
+
+Terminaisons regulieres:
+
+|                           |  are   |  ere   |  ire   |
+| :------------------------ | :----: | :----: | :----: |
+| che io (je)               |  assi  |  essi  |  issi  |
+| che tu (tu)               |  assi  |  essi  |  issi  |
+| che lei / lui (elle / il) |  asse  |  esse  |  isse  |
+| che noi (nous)            | assimo | essimo | issimo |
+| che voi (vous)            |  aste  |  este  |  iste  |
+| che loro (ils)            | assero | essero | issero |
+
+Verbes irreguliers:
+
+| Verbe         |                       Conjugaison                        |
+| :------------ | :------------------------------------------------------: |
+| stare (etre)  |    stessi, stessi, stesse, stessimo, steste, stessero    |
+| fare (faire)  | facessi, facessi, facesse, facessimo, faceste, facessero |
+|               |                                                          |
+| bere (boire)  | bevessi, bevessi, bevesse, bevessimo, beveste, bevessero |
+|               |                                                          |
+| dire (dire)   | dicessi, dicessi, dicesse, dicessimo, diceste, dicessero |
+|               |                                                          |
+| Essere (etre) |       fossi, fossi, fosse, fossimo, foste, fostero       |
+| Avere (avoir) |    avessi, avessi, avesse, avessimo, aveste, avessero    |
+
+Exemples:
+- Temevo che _piovesse_ -> Je craingnais qu'il _pleuve_
+- Se solo _avessi_ avuto piu tempo -> Si seulement j'_avais_ plus de temps
