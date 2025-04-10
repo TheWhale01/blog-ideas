@@ -22,5 +22,3 @@ Ci-dessous vous retrouverez la liste des choses que j'ai apprises classee par ca
 ## Autres resources
 
 - [L'italien avec Silvia](https://www.youtube.com/@LitalienavecSilvia)
-
-asdofjasdfja;sldkjfa;sldfjsd:
