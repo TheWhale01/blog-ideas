@@ -12,8 +12,8 @@ Ci-dessous vous retrouverez la liste des choses que j'ai apprises classee par ca
 
 ## Conjugaison
 
-- [Presente - Indicativo](/content/posts/Italian/Indicativo.md)
-- [Presente - Congiuntivo](/content/posts/Italian/Congiuntivo.md)
+- [Indicativo](/content/posts/Italian/Indicativo.md)
+- [Congiuntivo](/content/posts/Italian/Congiuntivo.md)
 
 ## Grammaire
 
@@ -23,3 +23,7 @@ Ci-dessous vous retrouverez la liste des choses que j'ai apprises classee par ca
 
 - [L'italien avec Silvia](https://www.youtube.com/@LitalienavecSilvia)
 - [The Best Learning Language Apps](https://www.youtube.com/watch?v=U_SAcVGFpag)
+
+Il y a aussi une autre methode, celle de regarder des films, series et ecouter des podcasts ou de la musique dans la langue. Par contre il faut etre actif dans l'ecoute. Je ne peux pas apprendre du vocabulaire en plus si je regarde un film en italien et en francais de la meme maniere. Donc voici des liens sur des films / series que j'ai vu et dont j'ai traduit les mots / phrases / expressions que je ne connaissais pas. 
+
+- [M - Il Figlio del secolo]()
