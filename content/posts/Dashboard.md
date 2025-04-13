@@ -3,6 +3,13 @@ title: Dashboard
 date: 2025-03-19
 lastmod: 2025-03-16
 author: whale
+tags:
+  - blog
+  - server
+  - web
+  - dashboard
+  - homarr
+  - glance
 ---
 I would like to replace the [homarr](https://github.com/ajnart/homarr) server dashboard that I setup a year ago. It has great integrations for the *arr* suite but it is a pain in the ass to organize. I have to search a nice, fast, and extensible server dashboard to serve has a good entry point for new users.
 

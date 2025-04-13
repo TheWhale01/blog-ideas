@@ -3,6 +3,11 @@ title: Italian
 date: 2025-04-01
 lastmod: 2025-04-01
 author: whale
+tags:
+  - blog
+  - language_learning
+  - italian
+  - french
 ---
 Ce fichier vise a contenir tout ce que j'ai appris dans cette langue et egalement les questions / reponses que j'ai. A l'heure ou j'ai cree cette page ca fait deja 4 mois que je vis en Italie et que je bosse au [Mulligans](https://mulliganspub.it/) j'ai appris beaucoup mais je veux confronter ce savoir au fonctionnement de la langue en elle meme pour juger mon parler.
 

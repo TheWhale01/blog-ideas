@@ -3,6 +3,15 @@ title: Fedora
 date: 2025-03-19
 lastmod: 2025-03-20
 author: whale
+tags:
+  - blog
+  - linux
+  - debian
+  - fedora
+  - archlinux
+  - hyprland
+  - flatpak
+  - HyDE
 ---
 I'm looking for a simple, configuration-less, stable, up-to-date distro to daily drive. Fedora looks like the perfect choice. I went from debian which have too old packages for me to archlinux which is rolling release fairly simple to use but can be tricky to maintain. Fedora also supports flatpak and hyprland which a great bonus for me. In addition I plan to buy a macbook pro m1 / m2 to install asahi linux on it (which is based on fedora) !
 

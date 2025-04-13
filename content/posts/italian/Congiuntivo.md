@@ -3,6 +3,12 @@ title: Congiuntivo
 date: 2025-04-01
 lastmod: 2025-04-01
 author: whale
+tags:
+  - blog
+  - italian
+  - conniugazione
+  - congiuntivo
+  - language_learning
 ---
 Cette resource de Italien-Facile m'a beaucoup aide:
 [https://www.italien-facile.com/exercices/exercice-italien-2/exercice-italien-109244.php](https://www.italien-facile.com/exercices/exercice-italien-2/exercice-italien-109244.php)

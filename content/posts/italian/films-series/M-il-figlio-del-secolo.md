@@ -3,6 +3,11 @@ title: M - Il Figlio del Secolo
 date: 2025-04-13
 lastmod: 2025-04-13
 author: whale
+tags:
+  - language_learning
+  - tvshow
+  - blog
+  - italian
 ---
 M - Il Figlio del Secolo est une serie italienne sur l'arrivee au pouvoir de Mussolini. D'une part c'est tres interessant pour connaitre l'histoire de l'Italie dans cette periode la de l'histoire mais en plus je pense trouver pleins d'expressions regionnales et egalement pleins de dialectes differents d'Italie.
 

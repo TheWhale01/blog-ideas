@@ -3,6 +3,12 @@ title: Indicativo
 date: 2025-04-01
 lastmod: 2025-04-01
 author: whale
+tags:
+  - blog
+  - language_learning
+  - italian
+  - indicativo
+  - conniugazione
 ---
 ## Presente
 

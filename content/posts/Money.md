@@ -3,6 +3,12 @@ title: Money
 date: 2025-03-19
 lastmod: 2025-03-16
 author: whale
+tags:
+  - blog
+  - finances
+  - trade_republic
+  - binance
+  - crypto
 ---
 This post is not about IT as usual but about money / savings. A good thing for the future is to prepare it as much as I can. For that I would like to make a passive income from multiple investments that I could make. I've got a few questions about this.
 

@@ -3,6 +3,14 @@ title: Blog
 date: 2025-03-19
 lastmod: 2025-03-20
 author: whale
+tags:
+  - blog
+  - obsidian
+  - nextcloud
+  - python
+  - docker
+  - IT
+  - hugo
 ---
 As you probably guessed my first idea was this blog post. It is synchronized with my nextcloud instance and its content is processed by [Hugo](https://gohugo.io/) to make a beautiful site with it. I self-host it behind the traefik reverse proxy. It is also version controlled so that I can track more easily the ideas I got and maybe so that other can I submit theirs
 

@@ -3,6 +3,11 @@ title: Welcome
 date: 2025-03-19
 lastmod: 2025-03-20
 author: whale
+tags:
+  - blog
+  - creativity
+  - IT
+  - AI
 ---
 This is my personal blog. It aims to contain all the ideas I have, how I solved them and what I learned. It aims to be a little personal database for a local LLM for very specific questions I could have on my dev setup / homelab environment.
 

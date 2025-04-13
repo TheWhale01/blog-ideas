@@ -3,6 +3,11 @@ title: Whale's Server
 date: 2025-03-27
 lastmod: 2025-03-27
 author: whale
+tags:
+  - blog
+  - fedora
+  - nixos
+  - VM
 ---
 I'm very happy with how my server is running, for now its powerful enough for my use case (even missing a GPU unfortunately), but as I said in my [Fedora](/content/posts/Fedora.md) post I want a configuration-less, stable, and up-to-date distribution. Fedora is fine but if I need to change the distro or the hard disk I will need to recreate from scratch the configuration or to save every service specific configuration on a GitHub repo. So [NixOS]() seems the best distribution because it is fully declarative that makes it very easily reproducible and I think it is particularly good for a server use thank to its immutable kernel, forcing the use of virtualization / containerization / sandboxing, potentially increasing security.
 

@@ -3,6 +3,11 @@ title: Da
 date: 2025-04-01
 lastmod: 2025-04-01
 author: whale
+tags:
+  - blog
+  - language_learning
+  - italian
+  - preposizioni
 ---
 Cette proposition est, du moins dans ma tete, un peu particuliere. Puisqu'il n'y a pas d'equivalent directe en francais.
 
