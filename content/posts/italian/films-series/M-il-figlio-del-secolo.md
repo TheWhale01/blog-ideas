@@ -9,7 +9,7 @@ tags:
   - blog
   - italian
 ---
-M - Il Figlio del Secolo est une serie italienne sur l'arrivee au pouvoir de Mussolini. D'une part c'est tres interessant pour connaitre l'histoire de l'Italie dans cette periode la de l'histoire mais en plus je pense trouver pleins d'expressions regionnales et egalement pleins de dialectes differents d'Italie.
+M - Il Figlio del Secolo est une serie italienne sur l’arrivée au pouvoir de Mussolini. D'une part c'est très intéressant pour connaitre l'histoire de l'Italie dans cette période la de l'histoire mais en plus je pense trouver pleins d'expressions religionnaires et également pleins de dialectes différents d'Italie.
 
 TMDB:
 [https://www.themoviedb.org/tv/212333-m-il-figlio-del-secolo](https://www.themoviedb.org/tv/212333-m-il-figlio-del-secolo)
