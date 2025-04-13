@@ -17,4 +17,4 @@ After some research I came across [Glance](https://github.com/glanceapp/glance/)
 
 Here is the look of the new dashboard !
 
-![New Whale's dashboard look](/assets/images/dashboard.png)
+![New Whale's dashboard look](/static/images/dashboard.png)

@@ -23,7 +23,7 @@ And a bit of tweaking here and there and I have something like the original expe
 
 ## How did I make this portable ?
 
-![Hyprland on fedora](/assets/images/hyprland_desktop.png)
+![Hyprland on fedora](/static/images/hyprland_desktop.png)
 
 **ALL** the configuration is located on `~/.config/hypr` using a simple bash script that creates symlinks `~/.config/hypr/app_conf/{app_name} -> ~/.config/{app_name}` I can have every configuration needed on one location (and accessible as usual) and backed-up on one single repository. Since I do not need (at least for now) all the features from [HyDE](https://github.com/Hyde-project/hyde) I can hard code / remove a lot of things from the original repo
 ## Improving
