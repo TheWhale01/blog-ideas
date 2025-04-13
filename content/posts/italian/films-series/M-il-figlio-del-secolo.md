@@ -39,5 +39,3 @@ Episode 1:
 |     Fucilare      |       fusillier        |                                                                       |
 |  un'esercitzione  |        exercise        |                      petit execrise / avant gout                      |
 |   scarseggiare    |    etre en penurie     |                          etre rare / manquer                          |
-
-allo ?
