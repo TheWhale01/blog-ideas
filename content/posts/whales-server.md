@@ -14,3 +14,7 @@ I'm very happy with how my server is running, for now its powerful enough for my
 But I don't know well this distro it seems that developping can be a little more complicated but once configured properly the program is can be shipped to any Linux ditro. I don't know either if all the dotfiles (regardless of the application) can be managed at once. It seems like yes using [Home-Manager](https://nixos.wiki/wiki/Home_Manager).
 
 I would like to run it on my actual Debian server but with openGL support (seems impossible with virt-manager: [https://askubuntu.com/questions/1348975/how-to-use-opengl-3d-acceleration-in-virt-manager-with-ubuntu](https://askubuntu.com/questions/1348975/how-to-use-opengl-3d-acceleration-in-virt-manager-with-ubuntu))
+
+---
+
+A few days passed and I've made a lot of research on this distro so I've decided to make a separate post about this because it's a very big rabbit hole: [NixOS](/content/posts/NixOs.md)
