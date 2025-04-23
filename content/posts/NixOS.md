@@ -79,4 +79,4 @@ Learning about home-manager I came across the _flake_ way of doing things. This 
 }
 ```
 
-I could, for example, put the home `home-manager` module in the `nixosSystem` function to have something managable **ONLY** by root.
+I could, for example, put the home `home-manager` module in the `nixosSystem` function to have something manageable **ONLY** by root.
