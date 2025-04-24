@@ -21,21 +21,29 @@ Ou regarder:
 
 ### Episode 1:
 
-|     Italiano      |        Francese        |                                 Notes                                 |
-| :---------------: | :--------------------: | :-------------------------------------------------------------------: |
-|      Sibilo       |       Sifflement       |                                                                       |
-|    Smarritare     |         Perdre         |                                                                       |
-|    La sapiente    |        La sage         |                   Quelque chose qui a de la sagesse                   |
-|     Lo sfogo      |       l'exutoire       |                                                                       |
-|    Il rancore     |      la rancoeur       |                                                                       |
-|    Capovolgere    | Renverser / Boulverser | Dans le cas de cet episode on parle du renversement d'un gouvernement |
-|     Scempiato     |        Detruit         |                                                                       |
-|      attorno      |         autour         |                        regarder autour de vous                        |
-| Pluripregiudicato |    Multirecidiviste    |                                                                       |
-|      Caimano      |         Caiman         |                               Crocodile                               |
-|     disprezzo     |         mepris         |                                                                       |
-|      rabbia       |          rage          |                                                                       |
-|     spingere      |        pousser         |                         A faire quelque chose                         |
-|     Fucilare      |       fusillier        |                                                                       |
-|  un'esercitzione  |        exercise        |                      petit execrise / avant gout                      |
-|   scarseggiare    |    etre en penurie     |                          etre rare / manquer                          |
+|        Italiano        |        Francese        |                                 Notes                                 |
+| :--------------------: | :--------------------: | :-------------------------------------------------------------------: |
+|         Sibilo         |       Sifflement       |                                                                       |
+|       Smarritare       |         Perdre         |                                                                       |
+|      La sapiente       |        La sage         |                   Quelque chose qui a de la sagesse                   |
+|        Lo sfogo        |       l'exutoire       |                                                                       |
+|       Il rancore       |      la rancoeur       |                                                                       |
+|      Capovolgere       | Renverser / Boulverser | Dans le cas de cet episode on parle du renversement d'un gouvernement |
+|       Scempiato        |        Detruit         |                                                                       |
+|        attorno         |         autour         |                        regarder autour de vous                        |
+|   Pluripregiudicato    |    Multirecidiviste    |                                                                       |
+|        Caimano         |         Caiman         |                               Crocodile                               |
+|       disprezzo        |         mepris         |                                                                       |
+|         rabbia         |          rage          |                                                                       |
+|        spingere        |        pousser         |                         A faire quelque chose                         |
+|        Fucilare        |       fusillier        |                                                                       |
+|    un'esercitzione     |        exercise        |                      petit execrise / avant gout                      |
+|      scarseggiare      |    etre en penurie     |                          etre rare / manquer                          |
+|       Gli storpi       |     les estropies      |                               infirmes                                |
+|        Fieriti         |        blesses         |                                                                       |
+| Congedati su due piedi | Licencies sur le champ |                        Congedare ->  Congedier                        |
+|       una serva        |      une servante      |                                                                       |
+|        scadere         |        perimer         |                                                                       |
+|      disfattismo       |       defaitisme       |                              pessimisme                               |
+|       ammettere        |        admettre        |                                                                       |
+|       sfruttare        |       exploiter        |                                                                       |
