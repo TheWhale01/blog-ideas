@@ -21,29 +21,55 @@ Ou regarder:
 
 ### Episode 1:
 
-|        Italiano        |        Francese        |                                 Notes                                 |
-| :--------------------: | :--------------------: | :-------------------------------------------------------------------: |
-|         Sibilo         |       Sifflement       |                                                                       |
-|       Smarritare       |         Perdre         |                                                                       |
-|      La sapiente       |        La sage         |                   Quelque chose qui a de la sagesse                   |
-|        Lo sfogo        |       l'exutoire       |                                                                       |
-|       Il rancore       |      la rancoeur       |                                                                       |
-|      Capovolgere       | Renverser / Boulverser | Dans le cas de cet episode on parle du renversement d'un gouvernement |
-|       Scempiato        |        Detruit         |                                                                       |
-|        attorno         |         autour         |                        regarder autour de vous                        |
-|   Pluripregiudicato    |    Multirecidiviste    |                                                                       |
-|        Caimano         |         Caiman         |                               Crocodile                               |
-|       disprezzo        |         mepris         |                                                                       |
-|         rabbia         |          rage          |                                                                       |
-|        spingere        |        pousser         |                         A faire quelque chose                         |
-|        Fucilare        |       fusillier        |                                                                       |
-|    un'esercitzione     |        exercise        |                      petit execrise / avant gout                      |
-|      scarseggiare      |    etre en penurie     |                          etre rare / manquer                          |
-|       Gli storpi       |     les estropies      |                               infirmes                                |
-|        Fieriti         |        blesses         |                                                                       |
-| Congedati su due piedi | Licencies sur le champ |                        Congedare ->  Congedier                        |
-|       una serva        |      une servante      |                                                                       |
-|        scadere         |        perimer         |                                                                       |
-|      disfattismo       |       defaitisme       |                              pessimisme                               |
-|       ammettere        |        admettre        |                                                                       |
-|       sfruttare        |       exploiter        |                                                                       |
+|        Italiano        |                         Francese                          |                                     Notes                                     |
+| :--------------------: | :-------------------------------------------------------: | :---------------------------------------------------------------------------: |
+|         Sibilo         |                        Sifflement                         |                                                                               |
+|       Smarritare       |                          Perdre                           |                                                                               |
+|      La sapiente       |                          La sage                          |                       Quelque chose qui a de la sagesse                       |
+|        Lo sfogo        |                        l'exutoire                         |                                                                               |
+|       Il rancore       |                        la rancoeur                        |                                                                               |
+|      Capovolgere       |                  Renverser / Boulverser                   |     Dans le cas de cet episode on parle du renversement d'un gouvernement     |
+|       Scempiato        |                          Detruit                          |                                                                               |
+|        attorno         |                          autour                           |                            regarder autour de vous                            |
+|   Pluripregiudicato    |                     Multirecidiviste                      |                                                                               |
+|        Caimano         |                          Caiman                           |                                   Crocodile                                   |
+|       disprezzo        |                          mepris                           |                                                                               |
+|         rabbia         |                           rage                            |                                                                               |
+|        spingere        |                          pousser                          |                             A faire quelque chose                             |
+|        Fucilare        |                         fusillier                         |                                                                               |
+|    un'esercitzione     |                         exercise                          |                          petit execrise / avant gout                          |
+|      scarseggiare      |                      etre en penurie                      |                              etre rare / manquer                              |
+|       Gli storpi       |                       les estropies                       |                                   infirmes                                    |
+|        Fieriti         |                          blesses                          |                                                                               |
+| Congedati su due piedi |                  Licencies sur le champ                   |                            Congedare ->  Congedier                            |
+|       una serva        |                       une servante                        |                                                                               |
+|        scadere         |                          perimer                          |                                                                               |
+|      disfattismo       |                        defaitisme                         |                                  pessimisme                                   |
+|       ammettere        |                         admettre                          |                                                                               |
+|       sfruttare        |                         exploiter                         |                                                                               |
+|        gridare         |                           crier                           |                                                                               |
+|       perseguire       |                        poursuivre                         |                                                                               |
+|        flaccidi        |                         flasques                          |                                                                               |
+|        cubitali        |                    enormes, capitales                     | lettere cubitali -> lettres capitales<br>errori cubitali -> erreurs flagrates |
+|        asciuto         |                            sec                            |                                                                               |
+|       strappare        |                         arracher                          |                                                                               |
+|        impedire        |                         empecher                          |                                                                               |
+|         mentre         | pendant que /<br>tandis que /<br>alors que /<br>cependant |                                                                               |
+|        radicare        |                    enraciner / ancrer                     |                                                                               |
+|       traditore        |                          traitre                          |                                                                               |
+|       remissione       |                remission / remise / pardon                |   remission d'une maladie / remise d'un objet / pardon (divin par exemple)    |
+|       reticente        |                         reticent                          |                                                                               |
+|          vile          |                           lache                           |                                                                               |
+|          dado          |                            dé                             |                                                                               |
+|         trarre         |                           tirer                           |                                  sens propre                                  |
+|     febbricitante      |                         fievreux                          |                                                                               |
+|       differire        |                         differer                          |                                                                               |
+|          boia          |                         bourreau                          |                                                                               |
+|        ammirare        |                          admirer                          |                                                                               |
+|    un grume di casa    |                             ?                             |                           peut etre un mot milanais                           |
+|        fregare         |                    tromper / arnaquer                     |                      en avoir rien a faire / s'en moquer                      |
+|        alleato         |                           allié                           |                                                                               |
+|        srillare        |                           crier                           |                   désigne un cri strident /  aigu / perçant                   |
+|        coniare         |                     creer / inventer                      |                                de toute piece                                 |
+|        pentirsi        |                        se repentir                        |                                                                               |
+|     lo sbarramento     |                        le barrage                         |                                                                               |
