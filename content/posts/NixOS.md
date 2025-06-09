@@ -16,10 +16,13 @@ I wanted to switch to NixOS not only for its immutable kernel but for its declar
 - olympos - desktop
 
 The names come from the greek mythology:
+
 - `erebos` means `hell` in ancient greek and its user is Hades
 - `pontos` means `sea` in ancient greek and its user is Poseidon
 - `olympos` means `olympus` in ancient greek and its user is Zeus
 
+Feel free to take a look at the configuration on [Github](https://github.com/TheWhale01/nixos-config)
+> __*NOTE:*__ For now the github repo is in private since some commits contain secrets
 ## Installation
 
 So, to make a nixos configuration you need, NixOS ! So I've made a virtual machine and the installation can be done through a GUI or a command line. Nothing changes just take whatever you like. You can follow the installtion guide there: [https://nixos.wiki/wiki/NixOS_Installation_Guide](https://nixos.wiki/wiki/NixOS_Installation_Guide)
@@ -80,7 +83,9 @@ Everything is declarative appart from the [Tailscale](https://tailscale.com/) lo
 For this I'm using
 
  - [Home-Manager](https://nixos.wiki/wiki/Home_Manager) - Dotfiles configuration
- - [Disko](https://github.com/nix-community/disko) - Declarative disk partitioining
+ - [Disko](https://github.com/nix-community/disko) - Declarative disk partitioning
  - [Agenix](https://nixos.wiki/wiki/Agenix) - Secrets encryption
 
-The goal of this configuration is to have the most services accessible system wide so that I can create other users and assign them permissions on these services.
+This configuration is made so that it can only be managed by Hades / root. So home-manager is manageable only by hades / root.
+
+It is now at 90% done. I still need to package my blog stack for NixOS. Of course I could just declaratively recreate the containers but I need to know how to develop on NixOS
