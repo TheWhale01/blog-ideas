@@ -27,3 +27,5 @@ The goal would be to:
 - [ ] send it to the Gemini API
 - [ ] Write the response to a new file
  once everything has been translated, zip the files to have the translated epub
+
+A good thing would be to find the best prompt in order to have the best translation possible. Because since then I used the calibre extension to do that, but I saw that some names would be translated or not and some expression are not so good translated.
