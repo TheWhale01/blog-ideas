@@ -20,10 +20,10 @@ I began the work using [SvelteKit](https://svelte.dev/docs/kit/introduction), [S
 For now I need to understand how to send the file to the server. I already know that epub files are just zip files and they contain other files with markup language so it's very easy to parse and reproduce.
 
 The goal would be to:
-1. upload a file
-2. send it to the server
-3. extract the content of the epub
-4. for every paragraph / block of text
-5. send it to the Gemini API
-6. Write the response to a new file
-7. once everything has been translated, zip the files to have the translated epub
+[ ] - upload a file
+[ ] - send it to the server
+[ ] - extract the content of the epub
+[ ] - for every paragraph / block of text
+[ ] - send it to the Gemini API
+[ ] - Write the response to a new file
+ once everything has been translated, zip the files to have the translated epub
