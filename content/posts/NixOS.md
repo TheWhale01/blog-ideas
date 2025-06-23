@@ -78,7 +78,7 @@ nix/
 ```
 ## Software development
 
-For this I need to understand how software development works on NixOS. It is very simple ! In the `flake.nix` file you can declare different shells for different use. For example you can declare a shell with `nodejs` for web development:
+I need to understand how software development works on NixOS. It is very simple ! In the `flake.nix` file you can declare different shells for different use. For example you can declare a shell with `nodejs` for web development:
 
 ```nix
 # flake.nix
