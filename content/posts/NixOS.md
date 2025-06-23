@@ -76,21 +76,7 @@ nix/
 └── secrets/
     └── ...
 ```
-## Erebos Configuration
-
-I started by the server configuration since it's the core part of my workflow. I established a list of the services I'm using. Thanks you the incredibly large `nixpkgs` repo every services I'm currently using has a NixOS version. I dropped docker for most of the services so that the system takes up less RAM. I still enabled [Podman](https://podman.io/) for some services that wouldn't build, and maybe for development.
-
-Everything is declarative appart from the [Tailscale](https://tailscale.com/) login. I did not find anything to properly get around that.
-
-For this I'm using
-
- - [Home-Manager](https://nixos.wiki/wiki/Home_Manager) - Dotfiles configuration
- - [Disko](https://github.com/nix-community/disko) - Declarative disk partitioning
- - [Agenix](https://nixos.wiki/wiki/Agenix) - Secrets encryption
-
-This configuration is made so that it can only be managed by Hades / root. So home-manager is manageable only by hades / root.
-
-It is now at 90% done. I still need to package my blog stack for NixOS. Of course I could just declaratively recreate the containers but I need to know how to develop on NixOS
+## Software development
 
 For this I need to understand how software development works on NixOS. It is very simple ! In the `flake.nix` file you can declare different shells for different use. For example you can declare a shell with `nodejs` for web development:
 
@@ -144,3 +130,18 @@ nix develop .#node --command zsh
 ```
 
 > __*NOTE:*__ the `--command zsh` part is not mandatory. By default NixOS will log you in a bash shell, since I'm using zsh as my main shell this ensures that the new dev shell will keep using my zsh configuration
+## Erebos Configuration
+
+I started by the server configuration since it's the core part of my workflow. I established a list of the services I'm using. Thanks you the incredibly large `nixpkgs` repo every services I'm currently using has a NixOS version. I dropped docker for most of the services so that the system takes up less RAM. I still enabled [Podman](https://podman.io/) for some services that wouldn't build, and maybe for development.
+
+Everything is declarative appart from the [Tailscale](https://tailscale.com/) login. I did not find anything to properly get around that.
+
+For this I'm using
+
+ - [Home-Manager](https://nixos.wiki/wiki/Home_Manager) - Dotfiles configuration
+ - [Disko](https://github.com/nix-community/disko) - Declarative disk partitioning
+ - [Agenix](https://nixos.wiki/wiki/Agenix) - Secrets encryption
+
+This configuration is made so that it can only be managed by Hades / root. So home-manager is manageable only by hades / root.
+
+It is now at 90% done. I still need to package my blog stack for NixOS. Of course I could just declaratively recreate the containers but I think it's better to know the Nix way
