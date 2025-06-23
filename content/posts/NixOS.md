@@ -108,6 +108,7 @@ And then you can begin to declare your environment:
 # node.nix
 { pkgs, ... }:
 
+pkgs.mkShell
 {
 	# Packages in the dev shell
 	nativeBuildInputs = with pkgs; [
