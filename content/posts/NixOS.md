@@ -43,6 +43,8 @@ Here is the directory structure:
 nix/
 ├── flake.lock
 ├── flake.nix
+├── shells/
+│   └── ...
 ├── hosts/
 │   ├── erebos/
 │   │   ├── configuration.nix
@@ -89,3 +91,56 @@ For this I'm using
 This configuration is made so that it can only be managed by Hades / root. So home-manager is manageable only by hades / root.
 
 It is now at 90% done. I still need to package my blog stack for NixOS. Of course I could just declaratively recreate the containers but I need to know how to develop on NixOS
+
+For this I need to understand how software development works on NixOS. It is very simple ! In the `flake.nix` file you can declare different shells for different use. For example you can declare a shell with `nodejs` for web development:
+
+```nix
+# flake.nix
+{
+	inputs = {
+		nixpkgs.url = "github:nixos/nixpkgs/release-25.05";
+		# Other system dependencies...
+	};
+	outputs = { nixpkgs, ... }@inputs:
+	let
+		system = "x86_64-linux";
+		lib = nixpkgs.lib;
+		pkgs = import nixpkgs {
+			system = "${system}";
+		};
+	in {
+		devShells.${system} = {
+			node = (import ./shells/node.nix { inherit pkgs; });
+		};
+	};
+}
+```
+
+And then you can begin to declare your environment:
+
+```nix
+# node.nix
+{ pkgs, ... }:
+
+{
+	# Packages in the dev shell
+	nativeBuildInputs = with pkgs; [
+		nodejs
+	];
+
+	# Executed once the dev shell is started
+	shellHook = ''
+		echo 'webdev shell'
+	'';
+}
+```
+
+Here you can see that we just added nodejs you could add all the nixpkgs repo in there.
+
+Finally, to enter you new dev environment just type this command:
+
+```bash
+nix develop .#node --command zsh
+```
+
+> __*NOTE:*__ the `--command zsh` part is not mandatory. By default NixOS will log you in a bash shell, since I'm using zsh as my main shell this ensures that the new dev shell will keep using my zsh configuration
