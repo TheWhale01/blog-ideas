@@ -59,5 +59,3 @@ When changing the theme for [PaperMod](https://github.com/adityatelange/hugo-Pap
 Now the markdown files are stored on a github repository. Here it is:
 [https://github.com/TheWhale01/blog-ideas](https://github.com/TheWhale01/blog-ideas)
 
-bonsoir ceci est un test !
-
