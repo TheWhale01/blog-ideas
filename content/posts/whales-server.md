@@ -18,3 +18,5 @@ I would like to run it on my actual Debian server but with openGL support (seems
 ---
 
 A few days passed and I've made a lot of research on this distro so I've decided to make a separate post about this because it's a very big rabbit hole: [NixOS](/content/posts/NixOs.md)
+
+bonsoir je ne suis pas moi
