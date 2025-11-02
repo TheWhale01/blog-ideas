@@ -10,7 +10,6 @@ tags:
   - linux
   - VM
 ---
-
 BADASS (For Bgp At Doors of Autonomous System is Simple) is a project that is about networking. In this we will have to setup multiple networks implementing different routing protocols and viewing / debugging them using different tools.
 
 For more informations here is the Subject:

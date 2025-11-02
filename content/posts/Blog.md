@@ -58,3 +58,7 @@ When changing the theme for [PaperMod](https://github.com/adityatelange/hugo-Pap
 
 Now the markdown files are stored on a github repository. Here it is:
 [https://github.com/TheWhale01/blog-ideas](https://github.com/TheWhale01/blog-ideas)
+
+## On NixOS
+
+I created a NixOS module using flakes to have this build blog pipeline on my server (Erebos). Here is the github repo containing the flake definition: [https://github.com/TheWhale01/blog-builder](https://github.com/TheWhale01/blog-builder) With this, I just need to push the changes to my [ideas repo](https://github.com/TheWhale01/blog-ideas) and then github will send a webhook request to my server which will trigger a git pull and a site recompilation using Hugo. I improved the python program so that I can create and configure from scratch my Hugo site.

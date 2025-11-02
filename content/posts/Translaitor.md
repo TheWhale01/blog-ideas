@@ -28,4 +28,4 @@ The goal would be to:
 - [ ] Write the response to a new file
  once everything has been translated, zip the files to have the translated epub
 
-A good thing would be to find the best prompt in order to have the best translation possible. Because since then I used the calibre extension to do that, but I saw that some names would be translated or not and some expression are not so good translated. I think that a good thing also would be to retrieve the synopsis of the book to give the AI more context. I have to keep in mind also that we are translating paragraph per paragraph.
+A good thing would be to find the best prompt in order to have the best translation possible. Because since then I used the calibre extension to do that, but I saw that some names would be translated or not and some expression are not so good translated. I think that a good thing also would be to retrieve the synopsis of the book to give the AI more context. I have to keep in mind also that we are translating paragraph per paragraph. Which is maybe not the best method.
