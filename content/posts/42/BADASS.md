@@ -31,4 +31,6 @@ There are many new notions to learn which need to be understood to begin the wor
 
 **Busybox:** Is a condensed executable that includes multiple essential CLI tools. It comes in handy when working with a limited system both in terms of storage and performance.
 
-**OSPF:** Protocol to determine the shortest path that a packet sent through a network should take. This allows to have minimum response time (PING) when working with large scale networks
+**OSPF:** Protocol to determine the shortest path that a packet sent through a network should take. This allows to have minimum response time (PING) when working with enterprise scale networks
+
+__IS-IS:__ Does pretty much the same as the __OSPF__ protocol but at a larger scale and with more communication protocols (__IPv6__ for example).
