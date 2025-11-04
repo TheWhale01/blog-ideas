@@ -34,3 +34,43 @@ There are many new notions to learn which need to be understood to begin the wor
 **OSPF:** Protocol to determine the shortest path that a packet sent through a network should take. This allows to have minimum response time (PING) when working with enterprise scale networks
 
 __IS-IS:__ Does pretty much the same as the __OSPF__ protocol but at a larger scale and with more communication protocols (__IPv6__ for example).
+
+## Part 1
+
+The goal of this part is to create a Docker image using the [frrouting](https://hub.docker.com/r/frrouting/frr) image. This part is pretty simple since we just have to modify a config file in order to tell the frrouting image to start some needed services.
+
+Here how we achieved that:
+
+```dockerfile
+# frr.dockerfile
+FROM frrouting/frr:latest
+
+COPY ./conf/daemons /etc/frr
+```
+
+Then we modified these three lines in the config file
+
+```txt
+# /etc/frr/daemons
+bpgd=yes
+ospfd=yes
+isis=yes
+```
+
+This image will be used for the router but we also needed to create a host template for future use:
+
+```dockerfile
+# alpine.dockerfile
+FROM alpine:latest
+```
+
+We used this command to build the docker images:
+
+```bash
+docker build . -t router -f frr.dockerfile
+docker build . -t host -f alpine.dockerfile
+```
+
+Last step is to import the project into GNS3 and voila ! First part done !
+
+## Part 2
