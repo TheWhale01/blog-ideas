@@ -146,6 +146,3 @@ For this I'm using
 This configuration is made so that it can only be managed by Hades / root. So home-manager is manageable only by hades / root.
 
 It is now at 90% done. I still need to package my blog stack for NixOS. Of course I could just declaratively recreate the containers but I think it's better to know the Nix way
-
-
-BONSOIR CECI EST UN TEST !
