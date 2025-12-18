@@ -147,4 +147,4 @@ This configuration is made so that it can only be managed by Hades / root. So ho
 
 It is now at 90% done. I still need to package my blog stack for NixOS. Of course I could just declaratively recreate the containers but I think it's better to know the Nix way
 
-**_UPDATE:_** Now the my blog pipeline is fully ported on NixOS. You can learn more [here](/content/posts/Blog.md)
+**_UPDATE:_** Now the my blog pipeline is fully ported on NixOS. You can learn more [here](/content/posts/blog.md)
