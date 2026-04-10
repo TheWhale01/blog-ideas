@@ -17,8 +17,6 @@ Feel free to take a look around it aims to not only help me but a lot of people 
 - [Blog](Blog.md)
 - [Dashboard](Dashboard.md)
 - [Remote Gaming Server](Remote-Gaming-Server.md)
-- [Whale's Server](Erebos.md)
+- [NixOS](NixOS.md)
 - [Italien](Italian/Italian.md)
 - [Deezify](Deezify.md)
-
-[Gemini](https://gemini.google.com/) is a great tool to brainstorm on some ideas I recommend !
