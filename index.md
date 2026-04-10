@@ -15,11 +15,9 @@ Feel free to take a look around it aims to not only help me but a lot of people 
 ### Ideas
 
 - [Blog](Blog.md)
-- [Fedora Linux](Fedora.md)
-- [Replace Homarr](Dashboard.md)
-- [Money](Money.md)
+- [Dashboard](Dashboard.md)
 - [Remote Gaming Server](Remote-Gaming-Server.md)
-- [Whale's Server](whales-server.md)
+- [Whale's Server](Erebos.md)
 - [Italien](Italian/Italian.md)
 - [Deezify](Deezify.md)
 

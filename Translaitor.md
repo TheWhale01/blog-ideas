@@ -17,15 +17,17 @@ A couple of days ago I found that there are many books `pirates of the caribbean
 
 I began the work using [SvelteKit](https://svelte.dev/docs/kit/introduction), [SkeletonUI](https://www.skeleton.dev/), and [TailwindCSS](https://tailwindcss.com/). Here is the repo link: [https://github.com/TheWhale01/translaitor](https://github.com/TheWhale01/translaitor)
 
-For now I need to understand how to send the file to the server. I already know that epub files are just zip files and they contain other files with markup language so it's very easy to parse and reproduce.
+I've done something pretty usable but gemini's rate limiting is very annoying so I've decided to run an LLM locally ! Google has a very good translation model for this type of work and very lightweight ! Thanks to ollama, I can easily run it and query its API to asks for translations.
+
+[TranslateGemma](https://ollama.com/library/translategemma)
 
 The goal would be to:
-- [ ] upload a file
-- [ ] send it to the server
+
+- [ ] upload a book to the server
 - [ ] extract the content of the epub
 - [ ] for every paragraph / block of text
-- [ ] send it to the Gemini API
+- [ ] send it to the local LLM
 - [ ] Write the response to a new file
- once everything has been translated, zip the files to have the translated epub
+- [ ] Once every paragrah has been written, compress to epub and send it to the client
 
-A good thing would be to find the best prompt in order to have the best translation possible. Because since then I used the calibre extension to do that, but I saw that some names would be translated or not and some expression are not so good translated. I think that a good thing also would be to retrieve the synopsis of the book to give the AI more context. I have to keep in mind also that we are translating paragraph per paragraph. Which is maybe not the best method.
+For now it's in its early stages but I can translate entire books without being restricted by a free-tier API
