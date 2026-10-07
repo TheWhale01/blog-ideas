@@ -19,3 +19,4 @@ Feel free to take a look around it aims to not only help me but a lot of people 
 - [Remote Gaming Server](Remote-Gaming-Server.md)
 - [NixOS](NixOS.md)
 - [Deezify](Deezify.md)
+- [Erebos Documentation](docs/erebos/README.md)
