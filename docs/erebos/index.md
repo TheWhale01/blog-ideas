@@ -200,7 +200,7 @@ All public-facing services are reverse-proxied through **Traefik** under `*.thew
 | Service | Nix module | Type | Exposure |
 |---|---|---|---|
 | Traefik | `sys/services/traefik.nix` | Reverse proxy | `:80` → `:443`, `websecure` + `metrics`, Cloudflare DNS challenge + Authentik auth |
-| Blog (blog-ideas) | `sys/services/blog.nix` | Static blog via blog-builder | `blog.thewhale.fr` → `blog-builder` (webhook + nginx) |
+| Blog (blog-ideas) | `sys/services/blog.nix` | Static blog via blog-builder using Kiln | `blog.thewhale.fr` → `blog-builder` (webhook + nginx) |
 | Nextcloud | `sys/containers/nextcloud.nix` | File sync / collab | `nextcloud.thewhale.fr` (port 8881) + Collabora office (`9980`) |
 | Matrix (Synapse, MAS, Livekit) | `sys/services/matrix/` | Decentralized chat | `matrix.thewhale.fr` + `matrix-auth` + `livekit` + `lk-jwt` |
 | Authentik | `sys/containers/authentik.nix` | Identity provider | `authentik.thewhale.fr` (+ LDAP on `3389`) |

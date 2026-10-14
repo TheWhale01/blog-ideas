@@ -25,14 +25,15 @@ Traefik 2 as the ingress point.
 
 ## Media / Files
 
-### `sys/services/blog.nix`
+| ### `sys/services/blog.nix`
 
-Static blog via **blog-builder** (NixOS module).
+Static blog via **blog-builder** using [Kiln](https://kiln.talesign.com/) (NixOS module).
 
 - `services.blog-builder.sites.blog-ideas` defines the site:
   - nginx port `8883`, domain `blog.thewhale.fr`;
   - `githubRepo = https://github.com/TheWhale01/blog-ideas`;
   - theme `catppuccin`, url `https://blog.thewhale.fr`, name `Whale's Blog`.
+- Kiln converts the Obsidian vault to a static website with consistent theming across different color palettes.
 - Traefik dynamic config wires:
   - webhook server → `blog-builder` (route `/webhook/blog-builder` on `blog.thewhale.fr`);
   - nginx site → `blog` service.

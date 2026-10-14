@@ -60,10 +60,24 @@ Now the markdown files are stored on a github repository. Here it is:
 
 ## On NixOS
 
-I created a NixOS module using flakes to have this build blog pipeline on my server (Erebos). Here is the github repo containing the flake definition: [https://github.com/TheWhale01/blog-builder](https://github.com/TheWhale01/blog-builder) With this, I just need to push the changes to my [ideas repo](https://github.com/TheWhale01/blog-ideas) and then github will send a webhook request to my server which will trigger a git pull and a site recompilation using Hugo. I improved the python program so that I can create and configure from scratch my Hugo site.
+I created a NixOS module using flakes to have this build blog pipeline on my server (Erebos). Here is the github repo containing the flake definition: [https://github.com/TheWhale01/blog-builder](https://github.com/TheWhale01/blog-builder)
 
-## Updates
+With this setup, I just need to push changes to my [ideas repo](https://github.com/TheWhale01/blog-ideas), and GitHub sends a webhook request to my server which triggers a git pull and site recompilation. The blog-builder now uses [Kiln](https://kiln.talesign.com/) instead of Hugo, which is specifically designed to work with Obsidian vaults and provides consistent theming across different color palettes.
 
-Some time passed since the last update. And I've discovered new tools ! [Hugo](https://gohugo.io/) was great because I was able to chose between a lot of themes but this came at a price, the configuration was not consistent between each themes so it was pretty hard to make something reliable in NixOS. But that changed when I came across [Kiln](https://kiln.talesign.com/) which does pretty much the same thing as [Hugo]() except that it's made to work with [Obsidian](https://obsidian.md/) vaults. The configuration allows me to choose between different themes and color palettes. This is perfect for my use case so I've update the repository [https://github.com/TheWhale01/blog-builder](https://github.com/TheWhale01/blog-builder) so that it can work with [Kiln](https://kiln.talesign.com/) (which is available directly on NixOS through a flake).
+The configuration allows me to choose between different themes and color palettes directly in NixOS through a flake. This is perfect for my use case as it eliminates the theme configuration inconsistencies I previously experienced with Hugo.
 
-Now I can host multiple vaults on my server with different domain names and configurations without any trouble !
+Now I can host multiple vaults on my server with different domain names and configurations without any trouble!
+
+## Current Architecture
+
+The blog-builder repository has been updated to support Kiln, which:
+- Converts Obsidian vaults to static websites
+- Provides consistent theming across different color palettes
+- Is available directly on NixOS through a flake
+- Integrates seamlessly with the NixOS module system
+
+The workflow is now:
+1. Push changes to the blog-ideas repository
+2. GitHub sends a webhook to the blog-builder webhook server
+3. The server pulls the latest changes and rebuilds the site using Kiln
+4. The static site is served via Nginx
