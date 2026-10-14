@@ -65,7 +65,7 @@ Create `sys/containers/openGym.nix`:
 Add a service module `sys/services/opengym.nix` to register the container with Traefik:
 
 ```nix
-{ config, lib, ... }:
+{ config, pkgs, lib, ... }:
 
 {
   services.opengym = {
@@ -73,10 +73,10 @@ Add a service module `sys/services/opengym.nix` to register the container with T
     domain = "opengym.thewhale.fr";
     port = 3000;
     traefik.enable = true;
-    traefik.routers.opengym.rule = "Host(`opengym.thewhale.fr`)";
-    traefik.routers.opengym.entrypoints = [ "websecure" ];
-    traefik.routers.opengym.tls = true;
-    traefik.routers.opengym.middlewares = [ "authentik-forwardauth" ];
+    traefik.http.routers.opengym.rule = "Host(`opengym.thewhale.fr`)";
+    traefik.http.routers.opengym.entrypoints = [ "websecure" ];
+    traefik.http.routers.opengym.tls = true;
+    traefik.http.routers.opengym.middlewares = [ "authentik-forwardauth" ];
   };
 }
 ```
