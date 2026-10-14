@@ -51,7 +51,6 @@ openGym is deployed as a **Podman container** on Erebos, wired into **Traefik** 
       "${config.vars.opengym.port}:3000"
     ];
     autoStart = true;
-    dependsOn = [ "traefik" "authentik" ];
   };
 
   services.traefik.dynamicConfigOptions.http = {
