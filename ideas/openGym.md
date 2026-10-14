@@ -34,13 +34,9 @@ No account on someone else's server, no subscription, no ads, no telemetry. One 
 
 ## Erebos Integration
 
-openGym can be deployed as a Podman container on Erebos. The recommended approach is to define a container module in `sys/containers/openGym.nix` that wires it into Traefik for HTTPS and Authentik for OIDC if desired.
+openGym is deployed as a **Podman container** on Erebos, wired into **Traefik** for HTTPS and **Authentik** for OIDC. The container module lives in `sys/containers/openGym.nix`, and the service routing is declared in `sys/services/opengym.nix`.
 
-### Steps
-
-1. **Add container definition**
-
-Create `sys/containers/openGym.nix`:
+### Container Module (`sys/containers/openGym.nix`)
 
 ```nix
 { config, pkgs, lib, ... }:
@@ -49,20 +45,18 @@ Create `sys/containers/openGym.nix`:
   virtualisation.oci-containers.containers.openGym = {
     image = "ghcr.io/duartesantos8/opengym:latest";
     volumes = [
-      "/var/lib/opengym:/app/data"
+      "/data/opengym:/app/data"
     ];
     ports = [
-      "3000:3000"
+      "${config.vars.opengym.port}:3000"
     ];
     autoStart = true;
-    dependsOn = [ "traefik" ];
+    dependsOn = [ "traefik" "authentik" ];
   };
 }
 ```
 
-2. **Expose via Traefik**
-
-Add a service module `sys/services/opengym.nix` to register the container with Traefik:
+### Service Module (`sys/services/opengym.nix`)
 
 ```nix
 { config, pkgs, lib, ... }:
@@ -71,17 +65,35 @@ Add a service module `sys/services/opengym.nix` to register the container with T
   services.opengym = {
     enable = true;
     domain = "${config.vars.traefik.domain}";
-    port = 3000;
-    traefik.enable = true;
-    traefik.http.routers.opengym.rule = "Host(`${config.vars.traefik.domain}`)";
-    traefik.http.routers.opengym.entrypoints = [ "websecure" ];
-    traefik.http.routers.opengym.tls = true;
-    traefik.http.routers.opengym.middlewares = [ "authentik-forwardauth" ];
-  };;
+    port = config.vars.opengym.port;
+  };
+
+  services.traefik.dynamicConfigOptions.http = {
+    services.opengym.loadBalancer.servers = [
+      { url = "http://127.0.0.1:${config.vars.opengym.port}"; }
+    ];
+    routers.opengym = {
+      rule = "Host(`opengym.${config.vars.traefik.domain}`)";
+      tls = true;
+      service = "opengym";
+      entrypoints = [ "websecure" ];
+      middlewares = [ "authentik-forwardauth" ];
+    };
+  };
 }
 ```
 
-3. **Apply and deploy**
+### Variables (`sys/vars.nix`)
+
+Add the port mapping:
+
+```nix
+opengym = {
+  port = 3002;
+};
+```
+
+### Apply and Deploy
 
 ```bash
 # Rebuild Erebos
@@ -92,18 +104,18 @@ sudo podman pull ghcr.io/duartesantos8/opengym:latest
 sudo systemctl restart podman-auto-update.service
 ```
 
-4. **Initial setup**
+### Initial Setup
 
-- Visit https://opengym.thewhale.fr
+- Visit `https://opengym.thewhale.fr`
 - Create an admin account using a passkey
 - Import workouts from FitNotes/Strong/Hevy if desired
 - Configure routines and start logging
 
 ## Notes
 
-- Data is stored in `/var/lib/opengym` on the host (LVM volume on prod).
+- Data is stored in `/data/opengym` on the host (LVM volume on prod).
 - Ensure the container has write permissions to this directory.
-- If using Authentik OIDC, configure the application in Authentik and update the middleware in Traefik accordingly.
+- Authentik OIDC is enforced via the `authentik-forwardauth` middleware in Traefik.
 - The container image is multi-arch (amd64, arm64).
 
 ## Resources
