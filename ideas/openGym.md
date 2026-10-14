@@ -70,14 +70,14 @@ Add a service module `sys/services/opengym.nix` to register the container with T
 {
   services.opengym = {
     enable = true;
-    domain = "opengym.thewhale.fr";
+    domain = "${config.vars.traefik.domain}";
     port = 3000;
     traefik.enable = true;
-    traefik.http.routers.opengym.rule = "Host(`opengym.thewhale.fr`)";
+    traefik.http.routers.opengym.rule = "Host(`${config.vars.traefik.domain}`)";
     traefik.http.routers.opengym.entrypoints = [ "websecure" ];
     traefik.http.routers.opengym.tls = true;
     traefik.http.routers.opengym.middlewares = [ "authentik-forwardauth" ];
-  };
+  };;
 }
 ```
 
