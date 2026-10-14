@@ -41,24 +41,26 @@ openGym is deployed as a **Podman container** on Erebos, wired into **Traefik** 
 ```nix
 { config, pkgs, lib, ... }:
 
-{
+let
+  vars = config.vars;
+in
   virtualisation.oci-containers.containers.openGym = {
     image = "ghcr.io/duartesantos8/opengym:latest";
     volumes = [
       "/data/opengym:/app/data"
     ];
     ports = [
-      "${config.vars.opengym.port}:3000"
+      "${vars.opengym.port}:3000"
     ];
     autoStart = true;
   };
 
   services.traefik.dynamicConfigOptions.http = {
     services.opengym.loadBalancer.servers = [
-      { url = "http://127.0.0.1:${config.vars.opengym.port}"; }
+      { url = "http://127.0.0.1:${vars.opengym.port}"; }
     ];
     routers.opengym = {
-      rule = "Host(`opengym.${config.vars.traefik.domain}`)";
+      rule = "Host(`opengym.${vars.traefik.domain}`)";
       tls = true;
       service = "opengym";
       entrypoints = [ "websecure" ];
