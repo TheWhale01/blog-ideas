@@ -34,9 +34,9 @@ No account on someone else's server, no subscription, no ads, no telemetry. One 
 
 ## Erebos Integration
 
-openGym is deployed as a **Podman container** on Erebos, wired into **Traefik** for HTTPS and **Authentik** for OIDC. The container module lives in `sys/containers/openGym.nix`, and the service routing is declared in `sys/services/opengym.nix`.
+openGym is deployed as a **Podman container** on Erebos, wired into **Traefik** for HTTPS and **Authentik** for OIDC. The container and routing are declared in a single module: `sys/containers/openGym.nix`.
 
-### Container Module (`sys/containers/openGym.nix`)
+### Container + Service Module (`sys/containers/openGym.nix`)
 
 ```nix
 { config, pkgs, lib, ... }:
@@ -52,20 +52,6 @@ openGym is deployed as a **Podman container** on Erebos, wired into **Traefik** 
     ];
     autoStart = true;
     dependsOn = [ "traefik" "authentik" ];
-  };
-}
-```
-
-### Service Module (`sys/services/opengym.nix`)
-
-```nix
-{ config, pkgs, lib, ... }:
-
-{
-  services.opengym = {
-    enable = true;
-    domain = "${config.vars.traefik.domain}";
-    port = config.vars.opengym.port;
   };
 
   services.traefik.dynamicConfigOptions.http = {
