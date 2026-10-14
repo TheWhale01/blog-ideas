@@ -43,13 +43,13 @@ I did setup an [OpenWebUI](https://ai.thewhale.fr) page with [Ollama](https://ol
 
 When changing the theme for [PaperMod](https://github.com/adityatelange/hugo-PaperMod) I also did a complete rework of the blog server structure. Now I have three docker containers:
 
-1. Hugo -> blog-hugo
+3. Webhook edits the Markdown repo, triggers `blog-builder` webhook server, which rebuilds the site using Kiln and serves the static output via Nginx.
 
 	Generates hugo site
 
 2. Python + docker -> blog-webhook
 
-	has a fastapi http server to handle webhook requests from github (when a push occurs), modifies the Markdown files to update links, and tells the blog-hugo site to generate a new site when a webhook request is received
+3. Webhook edits the Markdown repo, triggers `blog-builder` webhook server, which rebuilds the site using Kiln and serves the static output via Nginx.
 
 3. Nginx -> blog-nginx
 

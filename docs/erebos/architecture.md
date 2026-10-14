@@ -103,7 +103,7 @@ The **Podman** containers are the "data" side of the services: each container's 
 
 1. You push to the `blog-ideas` GitHub repo.
 2. GitHub sends a webhook to the `blog-builder` webhook server (port 8883).
-3. Webhook edits the Markdown repo, triggers `blog-hugo` (Hugo build).
+3. Webhook edits the Markdown repo, triggers `blog-builder` webhook server, which rebuilds the site using Kiln and serves the static output via Nginx.
 4. Nginx serves the static site; Traefik routes `blog.thewhale.fr` there.
 5. Secrets are decrypted by agenix at build time and mounted into containers / systemd env files at runtime.
 
