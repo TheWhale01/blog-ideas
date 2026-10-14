@@ -49,14 +49,11 @@ Create `sys/containers/openGym.nix`:
   virtualisation.oci-containers.containers.openGym = {
     image = "ghcr.io/duartesantos8/opengym:latest";
     volumes = [
-      "/data/opengym/data:/app/data"
+      "/var/lib/opengym:/app/data"
     ];
     ports = [
       "3000:3000"
     ];
-    environment = {
-      DOMAIN = "opengym.thewhale.fr";
-    };
     autoStart = true;
     dependsOn = [ "traefik" ];
   };
@@ -65,7 +62,7 @@ Create `sys/containers/openGym.nix`:
 
 2. **Expose via Traefik**
 
-Add a service module `sys/services/openGym.nix` to register the container with Traefik:
+Add a service module `sys/services/opengym.nix` to register the container with Traefik:
 
 ```nix
 { config, lib, ... }:
@@ -104,7 +101,7 @@ sudo systemctl restart podman-auto-update.service
 
 ## Notes
 
-- Data is stored in `/data/opengym/data` on the host (LVM volume on prod).
+- Data is stored in `/var/lib/opengym` on the host (LVM volume on prod).
 - Ensure the container has write permissions to this directory.
 - If using Authentik OIDC, configure the application in Authentik and update the middleware in Traefik accordingly.
 - The container image is multi-arch (amd64, arm64).
