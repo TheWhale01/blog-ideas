@@ -97,10 +97,6 @@ SSH server.
 - `PasswordAuthentication = false`; `AllowUsers = ["hades"]`;
 - `PermitRootLogin = "no"`; no X11 forwarding.
 
-### `sys/services/tailscale.nix`
-
-Tailscale enabled — VPN for management (Erebos, plus management of other hosts).
-
 ## Password Vault
 
 ### `sys/services/vaultwarden.nix`

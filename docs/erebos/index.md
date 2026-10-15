@@ -214,7 +214,7 @@ All public-facing services are reverse-proxied through **Traefik** under `*.thew
 | n8n | `sys/services/n8n.nix` | Workflow automation | `n8n.thewhale.fr` |
 | Seerr | `sys/services/seerr.nix` | Media request manager | `seerr.thewhale.fr` |
 | cleanerr | `sys/services/cleanerr.nix` | Download cleanup | — |
-| Tailscale | `sys/services/tailscale.nix` | VPN | Local-only |
+| Netbird | (via nixos-modules) | VPN | Local-only |
 
 ---
 
@@ -402,7 +402,7 @@ sys/
 │   ├── cleanerr.nix
 │   ├── postgresql.nix
 │   ├── openssh.nix
-│   ├── tailscale.nix
+│   ├── netbird.nix
 │   ├── prowlarr.nix
 │   ├── radarr.nix
 │   ├── sonarr.nix

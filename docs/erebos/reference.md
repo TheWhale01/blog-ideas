@@ -87,7 +87,7 @@ traefik = {
 |---|---|
 | `config.services.trangers` | disabled (use Authentik OIDC) |
 | `networking.firewall.allowedTCPPorts` | `[80 443]` (public) |
-| `networking.firewall.trustedInterfaces` | `[podman0 tailscale0]` |
+| `networking.firewall.trustedInterfaces` | `[podman0 wt0]` |
 | `system.autoUpgrade` | enable + allowReboot + daily at `Sun 04:00` |
 | `programs.zsh.enable` | true (default shell is zsh) |
 | `virtualisation.libvirtd.enable` | true (QEMU + swtpm) |

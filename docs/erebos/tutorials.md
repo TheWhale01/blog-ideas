@@ -109,5 +109,5 @@ services.traefik.dynamicConfigOptions.http = {
 - The root user is the only privileged user; home-manager is managed by `hades` via `home-manager.users.hades`.
 - The `hades` user is in groups: `wheel`, `libvirtd`, `video`, `input`, `uinput`, `render`, `audio`, `keys`.
 - SSH: only `hades` can log in; password auth is disabled.
-- The firewall allows only TCP 80 and 443; trusted interfaces are `podman0` and `tailscale0`.
+- The firewall allows only TCP 80 and 443; trusted interfaces are `podman0` and `wt0`.
 - Auto-upgrade is enabled (`enable = true`, `allowReboot = true`, daily at `Sun 04:00`).

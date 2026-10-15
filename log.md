@@ -13,6 +13,12 @@ tags: [meta, log]
 > Actions: ingest, update, query, lint, create, archive, delete
 > When this file exceeds 500 entries, rotate: rename to log-YYYY.md, start fresh.
 
+## [2026-10-15] update | Replace Tailscale with Netbird references
+- Updated all wiki pages to replace Tailscale with Netbird (interface: `wt0`)
+- Removed `sys/services/tailscale.nix` section from `docs/erebos/services.md` (Netbird now in nixos-modules)
+- Updated `docs/erebos/index.md` table and file tree to reflect Netbird via nixos-modules
+- Updated `docs/erebos/tutorials.md`, `reference.md`, and `monitoring.md`
+
 ## [2026-10-15] update | Remove stale/deprecated references
 - Removed duplicate `slskd` reference in `docs/erebos/services.md`
 - Updated `docs/erebos/index.md` to link to [[ideas/Erebos-Server-TODO]] instead of outdated Roadmap section

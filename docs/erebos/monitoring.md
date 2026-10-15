@@ -36,7 +36,7 @@ For current status and tasks, see [[ideas/Erebos-Server-TODO#1-implement-proper-
 
 Because Erebos is a server, it also relies on:
 
-- **Tailscale** (`sys/services/tailscale.nix`) — VPN for safe remote management;
+- **Netbird** (via nixos-modules) — VPN for safe remote management;
 - **Traefik's** own `metrics.prometheus` endpoint (exposed on `127.0.0.1:8200`).
 
 These are all part of the overall monitoring and observability picture.
