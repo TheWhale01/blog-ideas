@@ -10,7 +10,7 @@ tags: [meta, index]
 
 > Content catalog. Every wiki page listed under its type with a one-line summary.
 > Read this first to find relevant pages for any query.
-> Last updated: 2026-10-15 | Total pages: 15
+> Last updated: 2026-10-15 | Total pages: 16
 
 ## Entities
 
@@ -23,6 +23,7 @@ tags: [meta, index]
 - [[ideas/Remote-Gaming-Server]] – Self-hosted cloud gaming with Sunshine/Apollo on Linux
 - [[ideas/Translaitor]] – AI-powered book translator using Gemini API or local LLM (TranslateGemma)
 - [[ideas/openGym]] – Self-hosted gym & workout tracker with passkey auth and data ownership
+- [[ideas/Erebos-Server-TODO]] – Priority improvement list for the Erebos NixOS server
 
 ## Queries
 

@@ -13,6 +13,14 @@ tags: [meta, log]
 > Actions: ingest, update, query, lint, create, archive, delete
 > When this file exceeds 500 entries, rotate: rename to log-YYYY.md, start fresh.
 
+## [2026-10-15] create | Erebos Server TODO List
+- Added [[ideas/Erebos-Server-TODO]] with 5 priority improvements:
+  1. Implement proper monitoring & alerting
+  2. Add robust backups
+  3. Automate Podman image updates
+  4. Centralize and secure secrets management
+  5. Improve Terraform/OpenTofu workflow
+
 ## [2026-10-15] update | Wiki frontmatter standardization
 - Updated frontmatter for all `ideas/*.md` and `docs/erebos/*.md` to match SCHEMA.md conventions
 - Added `type`, `created`, `updated`, and `sources` fields to all pages
