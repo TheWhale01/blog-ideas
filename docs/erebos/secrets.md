@@ -1,11 +1,10 @@
 ---
 title: Secrets
-tags:
-  - nixos
-  - erebos
-  - secrets
-  - agenix
-  - age
+type: reference
+created: 2026-10-15
+updated: 2026-10-15
+tags: [nixos, erebos, secrets, agenix, age]
+sources: []
 ---
 
 # Erebos — Secrets

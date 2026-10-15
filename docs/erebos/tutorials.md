@@ -1,10 +1,10 @@
 ---
 title: Tutorials
-tags:
-  - nixos
-  - erebos
-  - tutorial
-  - homelab
+type: tutorial
+created: 2026-10-15
+updated: 2026-10-15
+tags: [nixos, erebos, tutorial, homelab]
+sources: []
 ---
 
 # Erebos — Tutorials

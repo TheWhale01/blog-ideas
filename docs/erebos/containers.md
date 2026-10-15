@@ -1,10 +1,10 @@
 ---
 title: Containers
-tags:
-  - nixos
-  - erebos
-  - containers
-  - podman
+type: reference
+created: 2026-10-15
+updated: 2026-10-15
+tags: [nixos, erebos, containers, podman]
+sources: []
 ---
 
 # Erebos — Containers

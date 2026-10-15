@@ -1,11 +1,10 @@
 ---
 title: Reference
-tags:
-  - nixos
-  - erebos
-  - reference
-  - flake
-  - outputs
+type: reference
+created: 2026-10-15
+updated: 2026-10-15
+tags: [nixos, erebos, reference, flake, outputs]
+sources: []
 ---
 
 # Erebos — Reference

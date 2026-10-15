@@ -1,11 +1,10 @@
 ---
 title: Erebos
-tags:
-  - nixos
-  - server
-  - homelab
-  - documentation
-  - erebos
+type: reference
+created: 2026-10-15
+updated: 2026-10-15
+tags: [nixos, server, homelab, documentation, erebos]
+sources: []
 ---
 
 # Erebos — Server Configuration Documentation

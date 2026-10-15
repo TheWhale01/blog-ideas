@@ -13,7 +13,14 @@ tags: [meta, log]
 > Actions: ingest, update, query, lint, create, archive, delete
 > When this file exceeds 500 entries, rotate: rename to log-YYYY.md, start fresh.
 
+## [2026-10-15] update | Wiki frontmatter standardization
+- Updated frontmatter for all `ideas/*.md` and `docs/erebos/*.md` to match SCHEMA.md conventions
+- Added `type`, `created`, `updated`, and `sources` fields to all pages
+- Converted YAML list tags to inline array format
+
+## [2026-10-15] update | Wiki index
+- Updated `index.md` to list all 15 existing pages (4 ideas + 8 Erebos docs + 3 meta files)
+- Fixed total page count from 0 to 15
+- Added summaries for each page
+
 ## [2026-10-15] create | Wiki initialized
-- Domain: Personal blog and knowledge base (development, homelab, IT, AI, creativity)
-- Structure created with SCHEMA.md, index.md, log.md
-- Existing vault structure preserved under ideas/

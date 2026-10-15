@@ -1,9 +1,10 @@
 ---
 title: Services
-tags:
-  - nixos
-  - erebos
-  - services
+type: reference
+created: 2026-10-15
+updated: 2026-10-15
+tags: [nixos, erebos, services]
+sources: []
 ---
 
 # Erebos — Services

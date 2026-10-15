@@ -10,7 +10,7 @@ tags: [meta, index]
 
 > Content catalog. Every wiki page listed under its type with a one-line summary.
 > Read this first to find relevant pages for any query.
-> Last updated: 2026-10-15 | Total pages: 0
+> Last updated: 2026-10-15 | Total pages: 15
 
 ## Entities
 
@@ -19,13 +19,27 @@ tags: [meta, index]
 ## Comparisons
 
 ## Ideas
-- [[ideas/Deezify]] – Unimplemented project idea
-- [[ideas/Remote-Gaming-Server]] – Unimplemented project idea
-- [[ideas/Translaitor]] – Unimplemented project idea
+- [[ideas/Deezify]] – Spotify/Deezer Jam-like feature for cross-platform music sharing
+- [[ideas/Remote-Gaming-Server]] – Self-hosted cloud gaming with Sunshine/Apollo on Linux
+- [[ideas/Translaitor]] – AI-powered book translator using Gemini API or local LLM (TranslateGemma)
+- [[ideas/openGym]] – Self-hosted gym & workout tracker with passkey auth and data ownership
 
 ## Queries
 
 ## Summaries
+
+## Documentation
+
+### Erebos (NixOS Server)
+- [[docs/erebos/index]] – Overview, repository layout, environments, and core concepts for the Erebos NixOS configuration
+- [[docs/erebos/architecture]] – Big picture, layers, runtime, data flow, and security model
+- [[docs/erebos/containers]] – Podman container declarations, global settings, and per-container details
+- [[docs/erebos/services]] – Systemd services: Traefik, blog, Nextcloud, Matrix, Authentik, Vaultwarden, Immich, and more
+- [[docs/erebos/monitoring]] – Prometheus, Grafana, Loki, and Promtail stack with Traefik integration
+- [[docs/erebos/reference]] – Flake outputs, inputs, key files, Traefik routing, and NixOS options
+- [[docs/erebos/secrets]] – age-encrypted secrets layout, mapping, and usage patterns
+- [[docs/erebos/terraform]] – Terranix/OpenTofu workflow, providers, modules, and relationship with NixOS
+- [[docs/erebos/tutorials]] – Step-by-step guides for adding services, Terraform resources, and managing Erebos
 
 ---
 

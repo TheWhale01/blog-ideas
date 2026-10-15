@@ -1,12 +1,10 @@
 ---
 title: Terraform
-tags:
-  - nixos
-  - erebos
-  - terraform
-  - terranix
-  - opentofu
-  - IaC
+type: reference
+created: 2026-10-15
+updated: 2026-10-15
+tags: [nixos, erebos, terraform, terranix, opentofu, IaC]
+sources: []
 ---
 
 # Erebos — Terraform / OpenTofu

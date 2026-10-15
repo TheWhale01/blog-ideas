@@ -1,12 +1,10 @@
 ---
 title: openGym
-lastmod: 2025-10-14 21:55:00
-tags:
-  - fitness
-  - self-hosted
-  - gym
-  - workout-tracker
-  - erebos
+created: 2025-10-14
+updated: 2026-10-15
+type: idea
+tags: [fitness, self-hosted, gym, workout-tracker, erebos]
+sources: []
 ---
 
 # openGym

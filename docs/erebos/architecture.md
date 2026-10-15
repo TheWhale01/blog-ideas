@@ -1,10 +1,10 @@
 ---
 title: Architecture
-tags:
-  - nixos
-  - erebos
-  - architecture
-  - homelab
+type: reference
+created: 2026-10-15
+updated: 2026-10-15
+tags: [nixos, erebos, architecture, homelab]
+sources: []
 ---
 
 # Erebos — Architecture
