@@ -140,10 +140,6 @@ Download cleanup daemon.
 - `transmissionUrl = http://127.0.0.1:9091`;
 - secret: `transmission.age`.
 
-### `sys/services/slskd.nix`
-
-See the "Media" section above.
-
 ### `sys/services/transmission` (container)
 
 See `sys/containers/transmission.nix` — one of the more complex containers.

@@ -30,7 +30,7 @@ The monitoring stack is wired into the NixOS config through:
 
 ## TODO
 
-From the original `Erebos` note: Grafana + Prometheus are deployed, but **no alerting is running** and a proper log analyzer is missing. The TODO list includes properly configuring alerting (e.g. Grafana Alerting / Alertmanager) and a solid log-analysis pipeline.
+For current status and tasks, see [[ideas/Erebos-Server-TODO#1-implement-proper-monitoring--alerting]].
 
 ## External Monitoring
 

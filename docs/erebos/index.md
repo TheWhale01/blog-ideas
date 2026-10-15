@@ -252,7 +252,7 @@ Note: `sys/services/slskd.nix` is the systemd service (slskd daemon), while `sys
 | `loki.nix` | Loki | Log aggregation |
 | `promtail.nix` | Promtail | Log shipping |
 
-These are aggregated in `sys/services/monitoring/default.nix` and wired into the Traefik dynamic config. The monitoring stack is one of the **major TODOs** in the Erebos configuration (see [Roadmap](#roadmap--todos)).
+These are aggregated in `sys/services/monitoring/default.nix` and wired into the Traefik dynamic config. For current status and tasks, see [[ideas/Erebos-Server-TODO#1-implement-proper-monitoring--alerting]].
 
 ---
 
@@ -336,12 +336,12 @@ sudo podman pull $(sudo podman images --format "{{.Repository}}:{{.Tag}}")
 
 ## Roadmap / TODOs
 
-From `Erebos.md` in the vault:
+For the most up-to-date task list, see [[ideas/Erebos-Server-TODO]].
 
+Historical notes (from `Erebos.md` in the vault):
 - **Monitoring** — Grafana + Prometheus deployed, but no alerting running and a poor log analyzer. Proper alerting (Grafana Alert / or similar) needs configuring.
 - **Backups** — no robust backup solution in place yet.
 - **Auto Podman image updates** — `update-containers` service exists but could be more robust (image signatures, panic-less restart, policy).
-- Container/layout cleanup — there are a few legacy/empty files (e.g. `sys/services/jellyfin/default.nix`, `get_m3u.py` auxiliary) that may be deprecated later.
 
 ---
 
