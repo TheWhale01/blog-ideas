@@ -18,7 +18,7 @@ This page explains how the pieces of the `erebos` NixOS configuration fit togeth
                          |   Client / Phone  |
                          `--------+----------`
                                   |
-                          Tailscale / WireGuard
+                          Netbird / WireGuard
                                   |
                          .--------v----------.
                          |   Erebos (server) |
