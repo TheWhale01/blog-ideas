@@ -36,7 +36,7 @@ tags: [meta, log]
 ## [2026-10-15] update | Remove stale/deprecated references
 - Removed duplicate `slskd` reference in `docs/erebos/services.md`
 - Updated `docs/erebos/index.md` to link to [[ideas/Erebos-Server-TODO]] instead of outdated Roadmap section
-- Updated `docs/erebos/monitoring.md` to link to [[ideas/Erebos-Server-TODO#1-implement-proper-monitoring--alerting]]
+- Updated `docs/erebos/index.md` to link to [[ideas/Erebos-Server-TODO]] (see "Implement Proper Monitoring & Alerting" section)
 - Removed legacy file note (jellyfin/default.nix, get_m3u.py) from `docs/erebos/index.md` Roadmap
 - Added `reference` and `tutorial` to tag taxonomy in `SCHEMA.md`
 

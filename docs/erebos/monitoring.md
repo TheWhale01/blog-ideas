@@ -30,7 +30,7 @@ The monitoring stack is wired into the NixOS config through:
 
 ## TODO
 
-For current status and tasks, see [[ideas/Erebos-Server-TODO#1-implement-proper-monitoring--alerting]].
+For current status and tasks, see [[ideas/Erebos-Server-TODO]] (see "Implement Proper Monitoring & Alerting" section).
 
 ## External Monitoring
 

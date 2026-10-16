@@ -252,7 +252,7 @@ Note: `sys/services/slskd.nix` is the systemd service (slskd daemon), while `sys
 | `loki.nix` | Loki | Log aggregation |
 | `promtail.nix` | Promtail | Log shipping |
 
-These are aggregated in `sys/services/monitoring/default.nix` and wired into the Traefik dynamic config. For current status and tasks, see [[ideas/Erebos-Server-TODO#1-implement-proper-monitoring--alerting]].
+These are aggregated in `sys/services/monitoring/default.nix` and wired into the Traefik dynamic config. For current status and tasks, see [[ideas/Erebos-Server-TODO]] (see "Implement Proper Monitoring & Alerting" section).
 
 ---
 
