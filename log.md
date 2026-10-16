@@ -13,6 +13,13 @@ tags: [meta, log]
 > Actions: ingest, update, query, lint, create, archive, delete
 > When this file exceeds 500 entries, rotate: rename to log-YYYY.md, start fresh.
 
+## [2026-10-15] create | Gluetun and AirVPN idea
+- Created [[ideas/Gluetun-AirVPN]] with VPN considerations for slskd:
+  - Option 1: Second Gluetun container for Cloudflare Tunnel
+  - Option 2: Switch to AirVPN to bypass ProtonVPN constraints
+- Updated [[ideas/Cloudflare-Tunnel-SSH]] to remove Gluetun-specific content
+- Updated index.md (total: 18 pages)
+
 ## [2026-10-15] create | Cloudflare Tunnel for SSH idea
 - Added [[ideas/Cloudflare-Tunnel-SSH]] with implementation plan for exposing SSH via Cloudflare Tunnel
 - Includes NixOS module, firewall rules, DNS setup, and Erebos integration steps

@@ -10,7 +10,7 @@ tags: [meta, index]
 
 > Content catalog. Every wiki page listed under its type with a one-line summary.
 > Read this first to find relevant pages for any query.
-> Last updated: 2026-10-15 | Total pages: 17
+> Last updated: 2026-10-15 | Total pages: 18
 
 ## Entities
 
@@ -25,6 +25,7 @@ tags: [meta, index]
 - [[ideas/openGym]] – Self-hosted gym & workout tracker with passkey auth and data ownership
 - [[ideas/Erebos-Server-TODO]] – Priority improvement list for the Erebos NixOS server
 - [[ideas/Cloudflare-Tunnel-SSH]] – Secure SSH access via Cloudflare Tunnel without opening port 22
+- [[ideas/Gluetun-AirVPN]] – VPN considerations for slskd with Gluetun and AirVPN options
 
 ## Queries
 
