@@ -13,6 +13,10 @@ tags: [meta, log]
 > Actions: ingest, update, query, lint, create, archive, delete
 > When this file exceeds 500 entries, rotate: rename to log-YYYY.md, start fresh.
 
+## [2026-10-15] create | Cloudflare Tunnel for SSH idea
+- Added [[ideas/Cloudflare-Tunnel-SSH]] with implementation plan for exposing SSH via Cloudflare Tunnel
+- Includes NixOS module, firewall rules, DNS setup, and Erebos integration steps
+
 ## [2026-10-15] update | Replace Tailscale with Netbird in architecture.md
 - Updated `docs/erebos/architecture.md` to replace Tailscale with Netbird in the Big Picture diagram
 
