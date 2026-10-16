@@ -186,8 +186,54 @@ For additional security, set up Cloudflare Access:
 - **Monitoring**: Add a health check for the tunnel (e.g., `systemd` watchdog or a simple HTTP endpoint via `cloudflared` metrics).
 - **Fallback**: If you remove SSH from public ports entirely, ensure you have console access (e.g., via a KVM or serial console) in case of tunnel issues.
 
-## Resources
+## Gluetun Considerations for slskd
 
-- [Cloudflare Tunnel Documentation](https://developers.cloudflare.com/cloudflare-one/connections/connect-apps/)
-- [Cloudflare IP Ranges](https://www.cloudflare.com/ips/)
-- [NixOS cloudflared package](https://search.nixos.org/packages?channel=23.11&show=cloudflared)
+Since **slskd** requires a VPN connection (currently using ProtonVPN via Gluetun), and you plan to add a second Gluetun container for Cloudflare Tunnel, consider the following:
+
+### Option 1: Second Gluetun Container
+- **Pros**: Isolates slskd traffic from Cloudflare Tunnel traffic.
+- **Cons**: Higher resource usage, complexity in managing two VPN containers.
+- **Implementation**:
+  - Create a new Gluetun container (e.g., `gluetun-cloudflared`) with the same ProtonVPN configuration.
+  - Configure `cloudflared` to use the new container's network namespace.
+
+### Option 2: Use AirVPN (Recommended)
+AirVPN ([https://airvpn.org/](https://airvpn.org/)) is a privacy-focused VPN provider that may offer more flexibility for your use case:
+- **Pros**:
+  - Strong privacy focus and no logging policy.
+  - Supports OpenVPN and WireGuard.
+  - Allows multiple devices/connections, which could simplify your setup.
+  - May avoid ProtonVPN's constraints (e.g., port forwarding limitations).
+- **Cons**:
+  - Requires switching VPN providers for slskd.
+  - Configuration changes needed for Gluetun.
+
+#### AirVPN Setup with Gluetun
+1. Update your Gluetun configuration to use AirVPN:
+   ```nix
+   # In sys/containers/gluetun.nix
+   environment = {
+     VPN_SERVICE_PROVIDER = "airvpn";
+     VPN_TYPE = "openvpn";
+     # AirVPN-specific settings
+     OPENVPN_USER = "your_airvpn_username";
+     OPENVPN_PASSWORD = "your_airvpn_password";
+     SERVER_COUNTRIES = "France";  # Or your preferred country
+   };
+   ```
+2. Ensure your Gluetun container has the necessary capabilities:
+   ```nix
+   extraContainerConfig = {
+     CapAdd = [ "NET_ADMIN" "NET_RAW" ];
+     Devices = [ "/dev/net/tun" ];
+   };
+   ```
+
+#### Why AirVPN?
+- **Port Forwarding**: AirVPN supports port forwarding, which is essential for slskd.
+- **Flexibility**: Easier to configure for multiple services (e.g., slskd + Cloudflare Tunnel).
+- **Privacy**: Strong no-logging policy, which aligns with self-hosting principles.
+
+For more details, see [AirVPN's official site](https://airvpn.org/).
+
+
