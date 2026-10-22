@@ -2,7 +2,7 @@
 title: Containers
 type: reference
 created: 2026-10-15
-updated: 2026-10-15
+updated: 2026-10-22
 tags: [nixos, erebos, containers, podman]
 sources: []
 ---
@@ -100,6 +100,17 @@ Traefik route: `transmission.thewhale.fr` → `transmission` service (auth middl
 | Container | Image | Ports | Notes |
 |---|---|---|---|
 | `aurral` | `ghcr.io/lklynet/aurral:latest` | `{aurral.port}:3001` | `PUID=1000`, `PGID=100`; OIDC (Authentik Immich provider); volumes `/var/lib/aurral:/config`, `/data:/data`; secret `aurral.age` |
+
+### `sys/containers/opengym.nix`
+
+openGym runs as two containers sharing a network namespace (full details: [[docs/erebos/services/opengym]]):
+
+| Container | Image | Ports | Notes |
+|---|---|---|---|
+| `opengym-api` | `ghcr.io/duartesantos8/opengym-api:latest` | `{opengym.web.port}:8080` → `3006` | API on `3000` internal; volume `/var/lib/opengym/api:/data`; passkey/WebAuthn env (`RP_ID`, `ORIGIN`, `RP_NAME`); `TRUST_PROXY=1` |
+| `opengym-web` | `ghcr.io/duartesantos8/opengym-web:latest` | — | nginx on `8080`, proxies to `127.0.0.1:3000`; `dependsOn=opengym-api`; `--network=container:opengym-api` |
+
+Traefik route: `opengym.thewhale.fr` → `opengym` service. Authentik forwardAuth middleware declared but **commented out** (service uses its own passkey auth).
 
 ### `sys/containers/default.nix` (bundled)
 

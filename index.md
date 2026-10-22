@@ -10,7 +10,7 @@ tags: [meta, index]
 
 > Content catalog. Every wiki page listed under its type with a one-line summary.
 > Read this first to find relevant pages for any query.
-> Last updated: 2026-10-15 | Total pages: 18
+> Last updated: 2026-10-22 | Total pages: 18
 
 ## Entities
 
@@ -22,7 +22,6 @@ tags: [meta, index]
 - [[ideas/Deezify]] – Spotify/Deezer Jam-like feature for cross-platform music sharing
 - [[ideas/Remote-Gaming-Server]] – Self-hosted cloud gaming with Sunshine/Apollo on Linux
 - [[ideas/Translaitor]] – AI-powered book translator using Gemini API or local LLM (TranslateGemma)
-- [[ideas/openGym]] – Self-hosted gym & workout tracker with passkey auth and data ownership
 - [[ideas/Erebos-Server-TODO]] – Priority improvement list for the Erebos NixOS server
 - [[ideas/Cloudflare-Tunnel-SSH]] – Secure SSH access via Cloudflare Tunnel without opening port 22
 - [[ideas/Gluetun-AirVPN]] – VPN considerations for slskd with Gluetun and AirVPN options
@@ -43,6 +42,9 @@ tags: [meta, index]
 - [[docs/erebos/secrets]] – age-encrypted secrets layout, mapping, and usage patterns
 - [[docs/erebos/terraform]] – Terranix/OpenTofu workflow, providers, modules, and relationship with NixOS
 - [[docs/erebos/tutorials]] – Step-by-step guides for adding services, Terraform resources, and managing Erebos
+
+### Erebos Services (per-service docs)
+- [[docs/erebos/services/opengym]] – Deployed self-hosted gym tracker: two-container Podman setup, passkey auth, Traefik routing on port 3006
 
 ---
 

@@ -2,7 +2,7 @@
 title: Erebos
 type: reference
 created: 2026-10-15
-updated: 2026-10-15
+updated: 2026-10-22
 tags: [nixos, server, homelab, documentation, erebos]
 sources: []
 ---
@@ -212,6 +212,7 @@ All public-facing services are reverse-proxied through **Traefik** under `*.thew
 | nginx (anaisbuche PDF) | `sys/services/nginx.nix` | Static PDF host | `anaisbuche.thewhale.fr` |
 | Homepage-dashboard | `sys/services/homepage.nix` | Server dashboard (homepage.dev) | `thewhale.fr` (root) |
 | n8n | `sys/services/n8n.nix` | Workflow automation | `n8n.thewhale.fr` |
+| openGym | `sys/containers/opengym.nix` | Gym & workout tracker (Podman, passkey auth) | `opengym.thewhale.fr` |
 | Seerr | `sys/services/seerr.nix` | Media request manager | `seerr.thewhale.fr` |
 | cleanerr | `sys/services/cleanerr.nix` | Download cleanup | — |
 | Netbird | (via nixos-modules) | VPN | Local-only |
@@ -372,6 +373,7 @@ sys/
 │   ├── openbooks.nix
 │   ├── actualbudget.nix
 │   ├── aurral.nix
+│   ├── opengym.nix
 │   └── (slskd.nix absent; slskd service lives in sys/services/slskd.nix)
 ├── services/
 │   ├── default.nix

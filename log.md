@@ -13,6 +13,17 @@ tags: [meta, log]
 > Actions: ingest, update, query, lint, create, archive, delete
 > When this file exceeds 500 entries, rotate: rename to log-YYYY.md, start fresh.
 
+## [2026-10-22] update | openGym implemented: idea promoted to service doc
+- openGym is now deployed on Erebos as `sys/containers/opengym.nix`
+- Moved [[ideas/openGym]] → [[docs/erebos/services/opengym]] (new `docs/erebos/services/` folder)
+- Rewrote documentation to match the real Nix config:
+  - Two containers: `opengym-api` (backend, port 3000) + `opengym-web` (nginx, shares network namespace)
+  - Published port 3006 (vars.opengym.web.port), not 3002
+  - Data dir `/var/lib/opengym/api:/data` (host), not `/data/opengym`
+  - Passkey/WebAuthn auth (RP_ID/ORIGIN); Authentik forwardAuth middleware is commented out (not enforced)
+  - Added env var reference table and accurate deployment commands
+- Deleted ideas/openGym.md; updated index.md (Ideas minus one, new "Erebos Services" section)
+
 ## [2026-10-15] create | Gluetun and AirVPN idea
 - Created [[ideas/Gluetun-AirVPN]] with VPN considerations for slskd:
   - Option 1: Second Gluetun container for Cloudflare Tunnel
