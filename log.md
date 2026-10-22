@@ -13,6 +13,10 @@ tags: [meta, log]
 > Actions: ingest, update, query, lint, create, archive, delete
 > When this file exceeds 500 entries, rotate: rename to log-YYYY.md, start fresh.
 
+## [2026-10-22] update | Renamed SCHEMA.md to HERMES.md
+- `git mv SCHEMA.md HERMES.md` — the schema file now identifies as the Hermes agent configuration for this wiki
+- No content changes; historical log entries referencing SCHEMA.md left intact
+
 ## [2026-10-22] update | openGym implemented: idea promoted to service doc
 - openGym is now deployed on Erebos as `sys/containers/opengym.nix`
 - Moved [[ideas/openGym]] → [[docs/erebos/services/opengym]] (new `docs/erebos/services/` folder)
