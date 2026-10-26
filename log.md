@@ -13,6 +13,11 @@ tags: [meta, log]
 > Actions: ingest, update, query, lint, create, archive, delete
 > When this file exceeds 500 entries, rotate: rename to log-YYYY.md, start fresh.
 
+## [2026-10-22] update | Added WIKI_PATH housekeeping item to TODO list
+- Appended item 6 to [[ideas/Erebos-Server-TODO]]: `WIKI_PATH` still points to the
+  inaccessible `/home/hades/code/blog-ideas`; should be set to
+  `/var/lib/hermes/workspace/blog-ideas` in `~/.hermes/.env`
+
 ## [2026-10-22] create | Hermes Web Dashboard idea
 - Added [[ideas/Hermes-Web-Dashboard]]: browser management UI for the Hermes agent on Erebos
 - Covers three access models (SSH tunnel, systemd + Authentik-gated public bind, Hermes Desktop remote backend)

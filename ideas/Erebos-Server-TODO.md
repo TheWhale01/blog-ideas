@@ -1,7 +1,7 @@
 ---
 title: Erebos Server TODO List
 created: 2026-10-15
-updated: 2026-10-15
+updated: 2026-10-22
 type: idea
 tags: [nixos, erebos, homelab, todo, improvement]
 sources: []
@@ -66,6 +66,15 @@ High-priority improvements for the Erebos NixOS server, ordered by impact.
   - [ ] Document state locking and recovery procedures
 - **Related**: [[docs/erebos/terraform]]
 
+## 6. Housekeeping: fix `WIKI_PATH` for the blog-ideas wiki
+- **Status**: Not started
+- **Priority**: Low
+- **Description**: The `WIKI_PATH` environment variable still points to `/home/hades/code/blog-ideas`, which the `hermes` user cannot access. The working copy of the wiki (Obsidian vault + git repo) is `/var/lib/hermes/workspace/blog-ideas/`. Until this is fixed, any tooling that resolves `$WIKI_PATH` (llm-wiki skill defaults, cron jobs) would target the inaccessible path.
+- **Tasks**:
+  - [ ] Set `WIKI_PATH=/var/lib/hermes/workspace/blog-ideas` in `/var/lib/hermes/.hermes/.env` (read by the llm-wiki skill)
+  - [ ] Clear/override the stale export found in shell session environments
+  - [ ] Verify with a new session that `echo $WIKI_PATH` resolves the workspace copy
+
 ---
 
-*Last updated: 2026-10-15*
+*Last updated: 2026-10-22*
