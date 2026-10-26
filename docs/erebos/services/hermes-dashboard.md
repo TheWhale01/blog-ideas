@@ -12,7 +12,7 @@ sources: [erebos:sys/services/hermes.nix, erebos:sys/terraform/hermes.nix, erebo
 The **web dashboard of the Hermes Agent** (the browser management UI for "Odin"): status, embedded chat (full TUI over WebSocket/PTY), sessions, config, skills, cron — served by Erebos itself.
 
 - **Live URL**: `https://hermes-dashboard.thewhale.fr`
-- **Implemented**: 2026-10-26 (commit `27c42d9`), promoted from [[index]]'s former `ideas/Hermes-Web-Dashboard.md`
+- **Implemented**: 2026-10-26 (commit `27c42d9`), promoted from the former `ideas/Hermes-Web-Dashboard.md`
 - **Docs**: [Hermes web dashboard](https://hermes-agent.nousresearch.com/docs/user-guide/features/web-dashboard)
 
 ## Architecture
