@@ -33,7 +33,7 @@ tags: [meta, index]
 - [[todo/podman-image-updates]] – High · digest-based auto-update with notifications
 - [[todo/secrets-management]] – High · rotation policy, per-service recipients, offline key backup
 - [[todo/terraform-workflow]] – Medium · remote state + locking, CI drift-check
-- [[todo/wiki-path]] – ✅ Done 2026-10-26 · WIKI_PATH scoped to hermes-agent unit env; vault source-of-truth follow-up open
+- [[todo/vault-source-of-truth]] – Medium · pick the authoritative wiki checkout (agent workspace vs Obsidian copy)
 
 ## Queries
 

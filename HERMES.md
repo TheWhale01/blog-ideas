@@ -104,14 +104,16 @@ at it and log the deletion. Git history preserves the original draft.
 
 ## Todo Pages
 One file per improvement/fix item under `todo/` (kebab-case, lowercase). Include:
-- Status (Not started / In progress / Done — Done items move to `_archive/` after verification)
+- Status (Not started / In progress / Done)
 - Priority (Critical / High / Medium / Low)
 - Description of the current state and the gap
 - Task checklist
 - Detailed notes (implementation guidance, caveats, acceptance test)
 - Related wiki pages
 `todo/index.md` is the hub: one line per item with status + priority + link. When an item is
-completed, tick the checklist, bump `updated`, and link the resulting docs/ or service page.
+completed: verify it, fold any durable knowledge into `docs/`, **delete the todo file** (log the
+completion in `log.md`; split off any still-open sub-questions into a new todo file first), and
+repoint references. Git history preserves the full trail.
 
 ## Update Policy
 When new information conflicts with existing content:

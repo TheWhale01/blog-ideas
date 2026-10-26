@@ -13,6 +13,13 @@ tags: [meta, log]
 > Actions: ingest, update, query, lint, create, archive, delete
 > When this file exceeds 500 entries, rotate: rename to log-YYYY.md, start fresh.
 
+## [2026-10-26] update | Todo lifecycle: delete completed items; wiki-path closed & deleted
+- HERMES.md rule changed: completed todos are DELETED (log.md + git history preserve them), no `_archive/` copies
+- Verified `WIKI_PATH` fix live (gateway env = workspace path; dashboard unit active, :9119 → 200)
+- Deleted todo/wiki-path.md (Done); split its still-open sub-question into new [[todo/vault-source-of-truth]] (Medium)
+- Repointed refs in docs/erebos/services/hermes-dashboard, todo/index, root index.md; page count 25 (−1 +1)
+- Session tracker: item 6 completed, 6b (vault source-of-truth) added
+
 ## [2026-10-26] update | Synced wiki with erebos 2de8521 (dashboard auth simplified; WIKI_PATH fixed)
 - docs/erebos/services/hermes-dashboard: OIDC→Basic bridge replaced by edge-only Authentik auth
   (no dashboard-side provider; terraform module no longer parseEnv's hermes.age; group attrs removed);
