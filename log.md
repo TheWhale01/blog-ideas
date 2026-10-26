@@ -13,6 +13,16 @@ tags: [meta, log]
 > Actions: ingest, update, query, lint, create, archive, delete
 > When this file exceeds 500 entries, rotate: rename to log-YYYY.md, start fresh.
 
+## [2026-10-26] update | Synced wiki with erebos 2de8521 (dashboard auth simplified; WIKI_PATH fixed)
+- docs/erebos/services/hermes-dashboard: OIDC→Basic bridge replaced by edge-only Authentik auth
+  (no dashboard-side provider; terraform module no longer parseEnv's hermes.age; group attrs removed);
+  added security caveat (any local process can reach :9119), decision-history v1→v2 entry, WIKI_PATH section
+- docs/erebos/services + terraform.md: matching wording updates
+- todo/wiki-path: ✅ Done — WIKI_PATH removed from global sessionVariables, scoped to
+  systemd.services.hermes-agent.environment (commit 2de8521); verified live in gateway env (200 on :9119,
+  unit active). Follow-up kept open: decide vault source-of-truth
+- todo/index + root index.md: status refreshed
+
 ## [2026-10-26] update | Hermes Dashboard implemented — idea promoted to service doc
 - erebos commit `27c42d9` "added hermes dashboard": systemd unit (loopback :9119) + Traefik router
   `hermes-dashboard.thewhale.fr` + Authentik forwardAuth + new `sys/terraform/hermes.nix`

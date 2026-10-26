@@ -26,13 +26,11 @@ Three layers, each handling one concern:
 2. **Traefik ingress** — router `hermes-dashboard.thewhale.fr` (TLS, `websecure`),
    upstream `http://127.0.0.1:9119`, `passHostHeader = false`, protected by the
    `hermes-dashboard-auth` forwardAuth middleware (`/outpost.goauthentik.io/` → `authentik-proxy`).
-3. **Authentik (OIDC → Basic bridge)** — the dashboard requires its own auth provider for any
-   non-loopback-facing exposure. Instead of a second OIDC gate, `sys/terraform/hermes.nix` defines a
-   proxy provider in `forward_single` mode with `basic_auth_enabled = true`, and the group
-   `hermes_dashboard-users` carries `username`/`password` attributes parsed from
-   `HERMES_DASHBOARD_BASIC_AUTH_USERNAME` / `..._PASSWORD` in the hermes age secret. The outpost
-   authenticates the user via Authentik, then injects Basic auth transparently — **one SSO login,
-   both gates satisfied**.
+3. **Authentik (edge auth)** — `sys/terraform/hermes.nix` defines a proxy provider in `forward_single`
+   mode; the outpost session gate + Traefik forwardAuth middleware means a visitor must authenticate
+   via Authentik (policy-bound group `hermes_dashboard-users`, **members: `whale` only**) before any
+   request reaches the loopback dashboard. The dashboard runs with **no auth provider of its own** —
+   deliberately simplified on 2026-10-26 (commit `2de8521`); see Decision history.
 
 ## Nix Configuration
 
@@ -72,15 +70,13 @@ hermes = {
 
 ### Terraform module (`sys/terraform/hermes.nix`)
 
-Authentik resources applied via `nix run .#apply`:
-- `authentik_provider_proxy.hermes_dashboard_provider` (`forward_single`, Basic auth from user attributes)
+Authentik resources applied via `nix run .#apply` (simplified 2026-10-26, commit `2de8521`):
+- `authentik_provider_proxy.hermes_dashboard_provider` (`forward_single`, **no** Basic-auth injection)
 - `authentik_application.hermes_dashboard` (slug `hermes-dashboard`, launch URL + icon for the homepage dashboard)
-- `authentik_group.hermes_dashboard_users` — **members: `whale` only**; attributes hold the Basic auth pair
+- `authentik_group.hermes_dashboard_users` — **members: `whale` only**
 - `authentik_policy_binding` + `authentik_outpost_provider_attachment`
-- The Basic auth values are pulled from the decrypted age env file via `vars.terraform.parseEnv`
-  (locals), so they never appear in the Nix store in cleartext.
 
-Secrets note: `age.secrets.hermes` is now `hermes:users` mode `0440` (shared by the agent + dashboard units).
+Secrets note: `age.secrets.hermes` is `hermes:users` mode `0440` (shared by the agent + dashboard units); the previously required `HERMES_DASHBOARD_BASIC_AUTH_*` entries were removed from the secret. The module also no longer reads/decrypts the age file via `parseEnv` — the terraform module needs no `erebos` config input anymore.
 
 ## Decision history (from the original idea)
 
@@ -88,8 +84,20 @@ Secrets note: `age.secrets.hermes` is now `hermes:users` mode `0440` (shared by 
   Hermes-Desktop-remote options; the tunnel model was rejected as too clunky for daily use).
 - The dashboard is an **admin-equivalent surface** (config editor, API keys, real PTY chat), so it
   is scoped to a single user via the Authentik policy binding; never remove the forwardAuth middleware.
-- Dashboard auth gate: used the outpost Basic-auth bridge rather than the dashboard's own OIDC
-  provider config — one IdP (Authentik), no duplicate session stores.
+- v1 (commit `27c42d9`) used an OIDC→Basic bridge: the outpost injected Basic credentials (parsed
+  from `hermes.age` group attributes) to satisfy the dashboard's own auth gate. Same day it was
+  **simplified to edge-only auth** (commit `2de8521`): the bridge was redundant since the dashboard
+  binds to loopback and is firewalled — Authentik at the edge is the single gate.
+- **Security caveat**: with no dashboard-level auth, *any* local process (or anything that gains
+  loopback access on Erebos) can reach the admin UI at `:9119` directly. Accepted trade-off given
+  the single-tenant host; revisit if untrusted workloads ever run on the box.
+
+## WIKI_PATH scoping (same commit)
+
+`2de8521` also removed the stale global `WIKI_PATH` session variable from `sys/configuration.nix`
+and scoped it correctly: `systemd.services.hermes-agent.environment.WIKI_PATH =
+"/var/lib/hermes/workspace/blog-ideas"`. Verified live in the gateway process environment
+(2026-10-26). This closed [[todo/wiki-path]] → archived.
 
 ## Operational notes
 

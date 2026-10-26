@@ -51,7 +51,7 @@ nix run .#apply-stage    # stage
 | `sys/terraform/prowlarr.nix` | Prowlarr resources |
 | `sys/terraform/radarr.nix` | Radarr resources |
 | `sys/terraform/slskd.nix` | Slskd resources |
-| `sys/terraform/hermes.nix` | Hermes Dashboard — Authentik proxy provider (forward_single + Basic-auth from group attrs), application, group, policy binding, outpost attachment |
+| `sys/terraform/hermes.nix` | Hermes Dashboard — Authentik proxy provider (`forward_single`, edge-auth only), application, group, policy binding, outpost attachment |
 | `sys/terraform/sonarr.nix` | Sonarr resources |
 | `sys/terraform/traefik.nix` | Traefik resources |
 | `sys/terraform/transmission.nix` | Transmission resources |

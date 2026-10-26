@@ -176,7 +176,7 @@ The **Hermes Agent** (this assistant — "Odin") runs as a systemd service via t
 - Secrets: `environmentFiles = [ config.age.secrets.hermes.path ]` (`secrets/shared/hermes.age`).
 - The `hades` user is member of the `hermes` group (added in `configuration.nix`, 2026-10-15) to manage the agent's state.
 - Alertmanager Matrix room updated to the dedicated ops room in the same commit.
-- **Web dashboard** (since 2026-10-26, commit `27c42d9`): `systemd.services.hermes-dashboard` on loopback `:9119`, exposed as `hermes-dashboard.thewhale.fr` via Traefik + Authentik forwardAuth with a Basic-auth bridge from group attributes. Full details: [[docs/erebos/services/hermes-dashboard]].
+- **Web dashboard** (since 2026-10-26, commits `27c42d9` + `2de8521`): `systemd.services.hermes-dashboard` on loopback `:9119`, exposed as `hermes-dashboard.thewhale.fr` via Traefik + Authentik edge auth (forward_single outpost, whale-only group; no dashboard-side auth provider after the `2de8521` simplification). The agent unit also exports `WIKI_PATH=/var/lib/hermes/workspace/blog-ideas` in its service environment. Full details: [[docs/erebos/services/hermes-dashboard]].
 - The blog pipeline renders this vault; the agent maintains it (see [[index]]).
 
 ## Dashboard
