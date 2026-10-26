@@ -13,6 +13,12 @@ tags: [meta, log]
 > Actions: ingest, update, query, lint, create, archive, delete
 > When this file exceeds 500 entries, rotate: rename to log-YYYY.md, start fresh.
 
+## [2026-10-22] update | Expanded Erebos-Server-TODO with detailed notes
+- Added a "Detailed notes" block to each of the 6 sections of [[ideas/Erebos-Server-TODO]]
+  (implementation guidance: alert routing to Matrix, backup scope incl. /var/lib/opengym/api + pg_dumpall,
+  podman auto-update labels, age recipient grouping, tofu state migration, WIKI_PATH provenance)
+- Mirrors the session todo list; the wiki page is the durable source of truth
+
 ## [2026-10-22] update | Added WIKI_PATH housekeeping item to TODO list
 - Appended item 6 to [[ideas/Erebos-Server-TODO]]: `WIKI_PATH` still points to the
   inaccessible `/home/hades/code/blog-ideas`; should be set to
