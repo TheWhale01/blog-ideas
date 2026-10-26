@@ -13,6 +13,13 @@ tags: [meta, log]
 > Actions: ingest, update, query, lint, create, archive, delete
 > When this file exceeds 500 entries, rotate: rename to log-YYYY.md, start fresh.
 
+## [2026-10-22] create | Fail2ban idea
+- Added [[ideas/Fail2ban]]: brute-force log scanning + IP bans for Erebos
+- Includes NixOS specifics: journald backend (no /var/log/auth.log), nftables vs iptables actions,
+  ignoreIP for podman/gluetun/wt0 ranges, X-Forwarded-For caveat for Cloudflare-fronted jails
+- Cross-linked with [[ideas/Cloudflare-Tunnel-SSH]] and [[docs/erebos/services]]
+- Updated index.md (total: 19 pages)
+
 ## [2026-10-22] update | Renamed SCHEMA.md to HERMES.md
 - `git mv SCHEMA.md HERMES.md` — the schema file now identifies as the Hermes agent configuration for this wiki
 - No content changes; historical log entries referencing SCHEMA.md left intact
