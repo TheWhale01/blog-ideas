@@ -1,13 +1,22 @@
 ---
 title: Gluetun and AirVPN for slskd
 created: 2026-10-15
-updated: 2026-10-15
+updated: 2026-10-26
 type: idea
 tags: [nixos, erebos, gluetun, vpn, slskd, airvpn, protonvpn, networking]
 sources: []
 ---
 
 # Gluetun and AirVPN for slskd
+
+**Status: ✅ Implemented (2026-10-26) via Option 1** — two dedicated Gluetun containers, staying on ProtonVPN. AirVPN was not needed. Details: [[docs/erebos/containers]] (VPN tunnels section). Key lessons from the implementation:
+
+- Each tunnel has its **own Proton WireGuard device config** (one WG key = one tunnel) and its own agenix secret (`gluetun/transmission.age`, `gluetun/slskd.age`).
+- slskd was converted to a container (`sys/containers/slskd.nix`) sharing the `gluetun-slskd` netns; its **native gluetun integration** (`SLSKD_VPN=true`, `SLSKD_VPN_GLUETUN_URL=http://127.0.0.1:8000`, `SLSKD_VPN_PORT_FORWARDING=true`) auto-syncs the listening port — no port-sync sidecar needed.
+- The initial `PCP gateway i/o timeout` on the slskd tunnel was fixed by `PORT_FORWARD_ONLY=on` + choosing a PF-reliable country (Netherlands) instead of a random one.
+- slskd's web UI is now behind **Authentik forwardAuth** (it previously relied on `web.authentication disabled`).
+
+The rest of this page is kept as the original decision context.
 
 Since **slskd** requires a VPN connection (currently using ProtonVPN via Gluetun), and you may need to add additional services that also require VPN connectivity, this document outlines options for managing VPN containers and providers.
 

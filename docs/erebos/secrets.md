@@ -2,7 +2,7 @@
 title: Secrets
 type: reference
 created: 2026-10-15
-updated: 2026-10-15
+updated: 2026-10-26
 tags: [nixos, erebos, secrets, agenix, age]
 sources: []
 ---
@@ -19,8 +19,9 @@ secrets/
 ├── shared/                # shared between prod and stage
 │   ├── authentik/smtp.age
 │   ├── grafana-secret.age
-│   ├── gluetun.age
+│   ├── gluetun/ (transmission.age, slskd.age)
 │   ├── hades.age
+│   ├── hermes.age
 │   ├── slskd.age
 │   ├── transmission.age
 │   └── traefik.age
@@ -48,7 +49,9 @@ The authoritative map lives in `sys/secrets.nix`. Key entries:
 | `age.secrets.slskd` | `secrets/shared/slskd.age` | hades:users | 0400 |
 | `age.secrets.hades` | `secrets/shared/hades.age` | hades:users | 0400 |
 | `age.secrets.traefik` | `secrets/shared/traefik.age` | traefik:{traefik.group} | 0440 |
-| `age.secrets.gluetun` | `secrets/shared/gluetun.age` | hades:users | 0400 |
+| `age.secrets.gluetun-transmission` | `secrets/shared/gluetun/transmission.age` | hades:users | 0400 |
+| `age.secrets.gluetun-slskd` | `secrets/shared/gluetun/slskd.age` | hades:users | 0400 |
+| `age.secrets.hermes` | `secrets/shared/hermes.age` | default | default |
 | `age.secrets.grafana-secret` | `secrets/shared/grafana-secret.age` | grafana: | 0400 |
 | `age.secrets.transmission` | `secrets/shared/transmission.age` | hades:users | 0400 |
 | `age.secrets.matrix-alertmanager-webhook` | `secrets/shared/matrix/alertmanager-webhook.age` | hades:users | 0400 |

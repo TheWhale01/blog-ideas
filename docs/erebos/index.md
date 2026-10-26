@@ -2,7 +2,7 @@
 title: Erebos
 type: reference
 created: 2026-10-15
-updated: 2026-10-22
+updated: 2026-10-26
 tags: [nixos, server, homelab, documentation, erebos]
 sources: []
 ---
@@ -207,8 +207,9 @@ All public-facing services are reverse-proxied through **Traefik** under `*.thew
 | Jellyfin | `sys/services/jellyfin/jellyfin.nix` | Media server | `jellyfin.thewhale.fr` |
 | Vaultwarden | `sys/services/vaultwarden.nix` | Bitwarden-compatible vault | `vaultwarden.thewhale.fr` (PostgreSQL backend, Authentik SSO) |
 | Ollama | `sys/services/ollama.nix` | Local LLM runtime | Local-only |
+| Hermes Agent | `sys/services/hermes.nix` | AI assistant ("Odin"), Matrix gateway, OpenRouter model | Local-only (Matrix) |
 | Immich | `sys/services/immich.nix` | Photo management | `immich.thewhale.fr` |
-| Slskd | `sys/services/slskd.nix` | Music streaming | `slskd.thewhale.fr` |
+| Slskd | `sys/containers/slskd.nix` | Music streaming (Podman, own VPN tunnel) | `slskd.thewhale.fr` (Authentik) |
 | nginx (anaisbuche PDF) | `sys/services/nginx.nix` | Static PDF host | `anaisbuche.thewhale.fr` |
 | Homepage-dashboard | `sys/services/homepage.nix` | Server dashboard (homepage.dev) | `thewhale.fr` (root) |
 | n8n | `sys/services/n8n.nix` | Workflow automation | `n8n.thewhale.fr` |
@@ -228,17 +229,17 @@ Containers are declared with the NixOS `virtualisation.oci-containers` module (P
 | `default.nix` | *(imports the rest)* | Global Podman settings: overlay storage, `dockerCompat`, auto-prune, `DOCKER_HOST` env wrapper, an upgrader "update-containers" service |
 | `nextcloud.nix` | `nextcloud`, `nextcloud-office` | Nextcloud on `8881`, Collabora code on `9980` (no TLS; Traefik terminates) |
 | `authentik.nix` | `authentik`, `authentik-worker`, `authentik-ldap`, `authentik-proxy` | Multi-process Authentik; LDAP port `3389`; SMTP via `authentik-smtp.age` |
-| `transmission.nix` | `transmission`, `flood`, `transmission-port-sync` | Transmission via `gluetun` network (`--network=container:gluetun`); flood dashboard; auto port-sync on VPN port change |
-| `gluetun.nix` | `gluetun` | WireGuard (ProtonVPN, Switzerland); forward ports to Transmission; `--cap-add NET_ADMIN/RAW`, tun device |
+| `transmission.nix` | `transmission`, `flood`, `transmission-port-sync`, `gluetun-transmission` | Transmission stack incl. its own ProtonVPN WireGuard tunnel (Switzerland, port-forwarded) |
+| `slskd.nix` | `slskd`, `gluetun-slskd` | slskd container on its own ProtonVPN tunnel (Netherlands, PF-only); converted from systemd service 2026-10-22 |
 | `lidarr.nix` | `lidarr` | Audio metadata/handling, Authentik auth |
 | `maintainerr.nix` | `maintainerr` | "The Perfect Media Janitor" |
 | `openbooks.nix` | `openbooks` | Ebook search/download |
 | `actualbudget.nix` | `actualbudget`, `enableactual` | Budget app + enableactual UI, Authentik proxy |
 | `aurral.nix` | `aurral` | RSS podcast manager |
-| `slskd.nix` | `slskd` | *(defined in `sys/services/slskd.nix`)* |
+| `opengym.nix` | `opengym-api`, `opengym-web` | Gym tracker, passkey auth, shared network namespace — see [[docs/erebos/services/opengym]] |
 | `homepage.nix` | *(dashboard)* | *(defined in `sys/services/homepage.nix`)* |
 
-Note: `sys/services/slskd.nix` is the systemd service (slskd daemon), while `sys/containers/slskd.nix` does **not** exist (the file name matches a container name in the list but was not found).
+Note: there is no standalone `gluetun.nix` anymore — each VPN-dependent stack declares its own tunnel (`gluetun-transmission`, `gluetun-slskd`) with a separate ProtonVPN WireGuard device config and agenix secret.
 
 ---
 
@@ -366,15 +367,14 @@ sys/
 │   ├── default.nix
 │   ├── nextcloud.nix
 │   ├── authentik.nix
-│   ├── transmission.nix
-│   ├── gluetun.nix
+│   ├── transmission.nix   # incl. gluetun-transmission tunnel
 │   ├── lidarr.nix
 │   ├── maintainerr.nix
 │   ├── openbooks.nix
 │   ├── actualbudget.nix
 │   ├── aurral.nix
 │   ├── opengym.nix
-│   └── (slskd.nix absent; slskd service lives in sys/services/slskd.nix)
+│   └── slskd.nix          # incl. gluetun-slskd tunnel
 ├── services/
 │   ├── default.nix
 │   ├── traefik.nix
@@ -396,7 +396,7 @@ sys/
 │   ├── homepage.nix
 │   ├── ollama.nix
 │   ├── immich.nix
-│   ├── slskd.nix
+│   ├── hermes.nix
 │   ├── nginx.nix
 │   ├── vaultwarden.nix
 │   ├── seerr.nix

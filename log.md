@@ -13,6 +13,15 @@ tags: [meta, log]
 > Actions: ingest, update, query, lint, create, archive, delete
 > When this file exceeds 500 entries, rotate: rename to log-YYYY.md, start fresh.
 
+## [2026-10-26] update | Synced wiki with erebos commits Oct 15–26
+- Read erebos repo commits: 84c3833 (hermes/Odin), 62e1e1e (opengym), ce8fb26 (slskd→podman, hermes→openrouter), c92ad7c (second gluetun)
+- [[docs/erebos/containers]]: single gluetun → two tunnels (gluetun-transmission CH / gluetun-slskd NL, PF-only, per-tunnel WG key + agenix secret); new slskd-as-container section (native gluetun PF integration, Authentik fronting); transmission stack netns/secret names updated
+- [[docs/erebos/services]]: slskd systemd section → pointer; gluetun section → split note; new Hermes Agent section (services.hermes-agent, OpenRouter qwen/qwen3.8-flash, Matrix allowlist, hermes.age, hades in hermes group)
+- [[docs/erebos/index]]: services + containers tables, file tree (hermes.nix, slskd.nix container, no gluetun.nix), updated 2026-10-26
+- [[docs/erebos/reference]] + [[docs/erebos/secrets]]: gluetun.age → gluetun/transmission.age + gluetun/slskd.age; hermes.age added
+- [[ideas/Gluetun-AirVPN]]: marked Implemented via Option 1 with lessons (WG key per tunnel, PCP timeout fix, native slskd integration)
+- [[todo/wiki-path]]: provenance corrected — declared in sys/configuration.nix sessionVariables (84c3833); tasks rewritten
+
 ## [2026-10-22] update | Introduced todo/ layer; split Erebos-Server-TODO
 - New scope rule (recorded in [[HERMES]]): `ideas/` = new services to add; `todo/` = improvements/fixes to what's already implemented
 - Created `todo/` with 7 pages: index (hub), monitoring-alerting, backups, podman-image-updates, secrets-management, terraform-workflow, wiki-path

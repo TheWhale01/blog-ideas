@@ -2,7 +2,7 @@
 title: Reference
 type: reference
 created: 2026-10-15
-updated: 2026-10-15
+updated: 2026-10-26
 tags: [nixos, erebos, reference, flake, outputs]
 sources: []
 ---
@@ -110,7 +110,9 @@ For the full table, see `sys/secrets.nix`. Quick map:
 | `hades` | `secrets/shared/hades.age` | hades:users | 0400 |
 | `slskd` | `secrets/shared/slskd.age` | hades:users | 0400 |
 | `transmission` | `secrets/shared/transmission.age` | hades:users | 0400 |
-| `gluetun` | `secrets/shared/gluetun.age` | hades:users | 0400 |
+| `gluetun-transmission` | `secrets/shared/gluetun/transmission.age` | hades:users | 0400 |
+| `gluetun-slskd` | `secrets/shared/gluetun/slskd.age` | hades:users | 0400 |
+| `hermes` | `secrets/shared/hermes.age` | default | default |
 | `grafana-secret` | `secrets/shared/grafana-secret.age` | grafana: | 0400 |
 | `matrix` | `secrets/{env}/matrix/matrix.age` | matrix-synapse:matrix-synapse | 0400 |
 | `mas` | `secrets/{env}/matrix/mas.age` | mas:mas | 0400 |

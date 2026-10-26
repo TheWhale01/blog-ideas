@@ -2,7 +2,7 @@
 title: Services
 type: reference
 created: 2026-10-15
-updated: 2026-10-15
+updated: 2026-10-26
 tags: [nixos, erebos, services]
 sources: []
 ---
@@ -55,17 +55,9 @@ Jellyfin media server (via `pkgs-unstable.jellyfin`).
 - `systemd.services.get_xmltv` (daily) downloads `xmltv.zip` from `xmltvfr.fr` into `jellyfin.dataDir`.
 - `systemd.services.get_m3u_file` (oneshot) converts a M3U playlist (default `mafreebox freebox.tv playlist`) into proxied RTSP URLs for Jellyfin.
 
-### `sys/services/slskd.nix`
+### `sys/services/slskd.nix` → moved
 
-slskd daemon (music streaming).
-
-- `services.slskd.enable = true`, user `hades`, group `users`.
-- Directories:
-  - downloads: `/data/downloads/music/slskd/complete`
-  - incomplete: `/data/downloads/music/slskd/incomplete`
-  - shares: `/data/Music`
-- Web UI authentication **disabled**.
-- Secret: `slskd.age`.
+slskd is no longer a systemd service: it was converted to a **Podman container** on 2026-10-22 and now runs behind its own VPN tunnel. See `sys/containers/slskd.nix` in [[docs/erebos/containers]] and [[ideas/Gluetun-AirVPN]].
 
 ## Identity & Access
 
@@ -140,18 +132,13 @@ Download cleanup daemon.
 
 See `sys/containers/transmission.nix` — one of the more complex containers.
 
-- `transmission` container (linuxserver/transmission) with `--network=container:gluetun`;
+- `transmission` container (linuxserver/transmission) with `--network=container:gluetun-transmission`;
 - `flood` container (jesec/flood) exposing a web UI, wired to `transmission`'s RPC;
 - `transmission-port-sync` (alpine) polls `/tmp/gluetun/forwarded_port` and updates Transmission's port on VPN port change.
 
-### `sys/services/gluetun`
+### `sys/services/gluetun` → split into two tunnels
 
-Gluetun VPN container:
-
-- `qmcgaw/gluetun:latest`;
-- `--cap-add=NET_ADMIN`, `--cap-add=NET_RAW`, `--device=/dev/net/tun`;
-- `VPN_SERVICE_PROVIDER=protonvpn`, `VPN_TYPE=wireguard`, `SERVER_COUNTRIES=Switzerland`;
-- `VPN_PORT_FORWARDING=on` — forwards ProtonVPN ports to the Transmission container.
+The single shared Gluetun container no longer exists. Since 2026-10-26 there are two ProtonVPN WireGuard tunnels, defined next to their workloads: `gluetun-transmission` (in `sys/containers/transmission.nix`, Switzerland) and `gluetun-slskd` (in `sys/containers/slskd.nix`, Netherlands, `PORT_FORWARD_ONLY=on`). Details: [[docs/erebos/containers]] (VPN tunnels section).
 
 ## Streaming / Metadata
 
@@ -176,6 +163,20 @@ Each is enabled in Nix and reverse-proxied through Traefik on its own subdomain.
 | n8n | Workflow automation UI (`n8n.thewhale.fr`) |
 | Ollama | Local LLM runtime |
 | monitoring/ | Prometheus + Grafana + Loki + Promtail |
+
+## AI Agents
+
+### `sys/services/hermes.nix`
+
+The **Hermes Agent** (this assistant — "Odin") runs as a systemd service via the `services.hermes-agent` NixOS module, provided by the `hermes-agent` flake input:
+
+- `enable = true`, `addToSystemPackages = true`.
+- Model: OpenRouter (`qwen/qwen3.8-flash`) — switched from previous provider on 2026-10-22 (`secrets/shared/hermes.age` updated with keys).
+- Matrix gateway: `require_mention = true`, `allowed_users = ["@whale:matrix.thewhale.fr"]` — the agent DM room.
+- Secrets: `environmentFiles = [ config.age.secrets.hermes.path ]` (`secrets/shared/hermes.age`).
+- The `hades` user is member of the `hermes` group (added in `configuration.nix`, 2026-10-15) to manage the agent's state.
+- Alertmanager Matrix room updated to the dedicated ops room in the same commit.
+- The blog pipeline renders this vault; the agent maintains it (see [[index]]).
 
 ## Dashboard
 

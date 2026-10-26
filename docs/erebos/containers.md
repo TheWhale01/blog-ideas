@@ -2,7 +2,7 @@
 title: Containers
 type: reference
 created: 2026-10-15
-updated: 2026-10-22
+updated: 2026-10-26
 tags: [nixos, erebos, containers, podman]
 sources: []
 ---
@@ -52,23 +52,43 @@ Route: `authentik.thewhale.fr` → `authentik` service.
 
 ### `sys/containers/transmission.nix`
 
-**Transmission** via `gluetun`:
+**Transmission** via its own VPN tunnel `gluetun-transmission`:
 
 | Container | Image | Ports | Notes |
 |---|---|---|---|
-| `transmission` | `lscr.io/linuxserver/transmission:latest` | `9091` | `--network=container:gluetun`; volumes `/var/lib/transmission:/config`, `/data:/data`; secret `transmission.age`; `PUID=1000`, `PGID=100`, `TZ=Europe/Paris`, `LOG_LEVEL=debug` |
-| `flood` | `docker.io/jesec/flood:latest` | `{transmission.flood.port}:3001` | `--network=container:gluetun`; `FLOOD_OPTION_auth=none`; `FLOOD_OPTION_trurl` points to `transmission:9091`; `dependsOn=transmission` |
-| `transmission-port-sync` | `alpine:latest` | — | `dependsOn=transmission`; watches `/tmp/gluetun/forwarded_port` and re-registers Transmission when the VPN port changes |
+| `transmission` | `lscr.io/linuxserver/transmission:latest` | `9091` | `--network=container:gluetun-transmission`; volumes `/var/lib/transmission:/config`, `/data:/data`; secret `transmission.age`; `PUID=1000`, `PGID=100`, `TZ=Europe/Paris`, `LOG_LEVEL=debug` |
+| `flood` | `docker.io/jesec/flood:latest` | `3001` (published via `gluetun-transmission` as `{transmission.flood.port}:3001`) | `--network=container:gluetun-transmission`; `FLOOD_OPTION_auth=none`; `FLOOD_OPTION_trurl` points to `transmission:9091`; `dependsOn=transmission` |
+| `transmission-port-sync` | `alpine:latest` | — | `dependsOn=transmission`; watches `/tmp/gluetun/forwarded_port` (from `gluetun-transmission` volume `/tmp/gluetun-transmission`) and re-registers Transmission when the VPN port changes |
+| `gluetun-transmission` | `qmcgaw/gluetun:latest` | `{transmission.flood.port}:3001`, `{transmission.port}:9091` | ProtonVPN WireGuard, `SERVER_COUNTRIES=Switzerland`, `VPN_PORT_FORWARDING=on` (provider `protonvpn`), UP command runs `transmission-remote` with `{{PORT}}`; secrets `gluetun/transmission.age` + `transmission.age`; volumes `gluetun-transmission:/gluetun`, `/tmp/gluetun-transmission:/tmp/gluetun` |
 
-Dependencies (systemd): `podman-transmission` after/requires/partOf `podman-gluetun`; `podman-flood` after/requires/partOf `podman-transmission`.
+Dependencies (systemd): `podman-transmission` after/requires/bindsTo/partOf `podman-gluetun-transmission`; `podman-flood` after/requires/bindsTo/partOf `podman-transmission`.
 
-Traefik route: `transmission.thewhale.fr` → `transmission` service (auth middleware).
+Traefik route: `transmission.thewhale.fr` → `transmission` service (Authentik `transmission-auth` forwardAuth middleware; `/outpost.goauthentik.io/` routed to `authentik-proxy`).
 
-### `sys/containers/gluetun.nix`
+### VPN tunnels (`gluetun-transmission` + `gluetun-slskd`)
+
+Since 2026-10-26 there are **two independent Gluetun tunnels**, each with its own ProtonVPN WireGuard device config (one WG key can only carry one tunnel) and its own agenix secret. The old single `sys/containers/gluetun.nix` module was removed; each tunnel now lives next to the workload it serves:
+
+| Tunnel | Defined in | Country | Published ports | Secret |
+|---|---|---|---|---|
+| `gluetun-transmission` | `sys/containers/transmission.nix` | Switzerland | `3002:3001` (flood), `9091:9091` | `gluetun/transmission.age` |
+| `gluetun-slskd` | `sys/containers/slskd.nix` | Netherlands | `{slskd.port}:5030` (slskd web UI) | `gluetun/slskd.age` |
+
+Both: `VPN_SERVICE_PROVIDER=protonvpn`, `VPN_TYPE=wireguard`, `VPN_PORT_FORWARDING=on` with `VPN_PORT_FORWARDING_PROVIDER=protonvpn`, `--cap-add NET_ADMIN/NET_RAW`, `/dev/net/tun`, volume `/tmp/gluetun-<name>:/tmp/gluetun` for forwarded-port discovery.
+
+`gluetun-slskd` additionally sets `PORT_FORWARD_ONLY=on` (connect only to PF-capable gateways) and exposes gluetun's HTTP control server (`127.0.0.1:8000`) so slskd can query its forwarded port natively — see below. This solved the "PCP gateway i/o timeout" that occurred when the tunnel landed on a non-PF server.
+
+Decision context: [[ideas/Gluetun-AirVPN]] (Option 1 implemented, staying on ProtonVPN).
+
+### `sys/containers/slskd.nix`
+
+slskd is now a **Podman container** (was a systemd service until 2026-10-22) sharing the `gluetun-slskd` network namespace, with **native gluetun port-forwarding integration**:
 
 | Container | Image | Notes |
 |---|---|---|
-| `gluetun` | `qmcgaw/gluetun:latest` | `--cap-add=NET_ADMIN`, `--cap-add=NET_RAW`, `--device=/dev/net/tun`; ports `{transmission.flood.port}:3001` (flood) + `{transmission.port}:9091` (transmission); `VPN_SERVICE_PROVIDER=protonvpn`, `VPN_TYPE=wireguard`, `SERVER_COUNTRIES=Switzerland`; `VPN_PORT_FORWARDING=on` with UP command to update transmission-remote; secrets `gluetun.age`, `transmission.age` |
+| `slskd` | `slskd/slskd:latest` | `--network=container:gluetun-slskd`; `dependsOn=gluetun-slskd`; `user 1000:100`; volumes `/data:/data`, `/var/lib/slskd:/app`; env `SLSKD_VPN=true`, `SLSKD_VPN_PORT_FORWARDING=true`, `SLSKD_VPN_GLUETUN_URL=http://127.0.0.1:8000` (auto-syncs listening port from gluetun), `SLSKD_REMOTE_FILE_MANAGEMENT=true`, dirs `/data/downloads/music/slskd/{complete,incomplete}`, shares `/data/Music`, `SLSKD_NO_AUTH=true`; secret `slskd.age` |
+
+Traefik route: `slskd.thewhale.fr` → host port `5030` → slskd web UI, now protected by **Authentik forwardAuth** (`slskd-auth` middleware; `/outpost.goauthentik.io/` → `authentik-proxy`). `NO_AUTH` is safe because auth is enforced at the edge.
 
 ### `sys/containers/lidarr.nix`
 
@@ -114,20 +134,4 @@ Traefik route: `opengym.thewhale.fr` → `opengym` service. Authentik forwardAut
 
 ### `sys/containers/default.nix` (bundled)
 
-The `containers/` directory itself does not contain a slskd file; slskd is a **systemd service** defined in `sys/services/slskd.nix`.
-
-## Service Containers (systemd)
-
-Not in `sys/containers/` — note that slskd is a systemd service, not a container:
-
-### `sys/services/slskd.nix`
-
-| Option | Value |
-|---|---|
-| `services.slskd.enable` | true |
-| `user / group` | `hades` / `users` |
-| `downloads` | `/data/downloads/music/slskd/complete` |
-| `incomplete` | `/data/downloads/music/slskd/incomplete` |
-| `shares` | `/data/Music` |
-| `web.authentication` | disabled |
-| secret | `slskd.age` |
+Imports all container modules. slskd moved here from `sys/services/` on 2026-10-22 (Podman conversion, commit `ce8fb26`).
