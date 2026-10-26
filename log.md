@@ -13,6 +13,16 @@ tags: [meta, log]
 > Actions: ingest, update, query, lint, create, archive, delete
 > When this file exceeds 500 entries, rotate: rename to log-YYYY.md, start fresh.
 
+## [2026-10-26] update | Hermes Dashboard implemented — idea promoted to service doc
+- erebos commit `27c42d9` "added hermes dashboard": systemd unit (loopback :9119) + Traefik router
+  `hermes-dashboard.thewhale.fr` + Authentik forwardAuth + new `sys/terraform/hermes.nix`
+  (proxy provider with OIDC→Basic bridge via group attributes; group: whale only)
+- Created [[docs/erebos/services/hermes-dashboard]] (architecture, config, decision history, ops notes)
+- Deleted the implemented idea `ideas/Hermes-Web-Dashboard.md` per lifecycle rule; refs updated
+- services.md (Hermes Agent section + terraform module list), docs/erebos/index services table,
+  terraform.md module table, reference.md + secrets.md (hermes.age now hermes:users 0440)
+- Net page count unchanged (25): −1 idea, +1 service doc
+
 ## [2026-10-26] delete | Gluetun-AirVPN idea (implemented) — lifecycle rule added
 - Implemented ideas are now deleted from `ideas/` once their knowledge lives in `docs/` (rule recorded in [[HERMES]])
 - [[ideas/Gluetun-AirVPN]] decision history + lessons folded into [[docs/erebos/containers]] (VPN tunnels section)

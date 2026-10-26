@@ -176,6 +176,7 @@ The **Hermes Agent** (this assistant — "Odin") runs as a systemd service via t
 - Secrets: `environmentFiles = [ config.age.secrets.hermes.path ]` (`secrets/shared/hermes.age`).
 - The `hades` user is member of the `hermes` group (added in `configuration.nix`, 2026-10-15) to manage the agent's state.
 - Alertmanager Matrix room updated to the dedicated ops room in the same commit.
+- **Web dashboard** (since 2026-10-26, commit `27c42d9`): `systemd.services.hermes-dashboard` on loopback `:9119`, exposed as `hermes-dashboard.thewhale.fr` via Traefik + Authentik forwardAuth with a Basic-auth bridge from group attributes. Full details: [[docs/erebos/services/hermes-dashboard]].
 - The blog pipeline renders this vault; the agent maintains it (see [[index]]).
 
 ## Dashboard
@@ -222,7 +223,7 @@ Authentik resources: identity provider, applications, users, policies, outpost a
 
 - `authentik_group.grafana_admins` (admins) + policy bindings.
 
-### `sys/terraform/actualbudget.nix`, `enableactual.nix`, `immich.nix`, `matrix.nix`, `nextcloud.nix`, `openbooks.nix`, `prowlarr.nix`, `radarr.nix`, `sonarr.nix`, `transmission.nix`, `vaultwarden.nix`, `lidarr.nix`, `slskd.nix`, `aurral.nix`, `maintainerr.nix`, `jellyfin.nix`
+### `sys/terraform/actualbudget.nix`, `enableactual.nix`, `immich.nix`, `matrix.nix`, `nextcloud.nix`, `openbooks.nix`, `prowlarr.nix`, `radarr.nix`, `sonarr.nix`, `transmission.nix`, `vaultwarden.nix`, `lidarr.nix`, `slskd.nix`, `aurral.nix`, `maintainerr.nix`, `jellyfin.nix`, `hermes.nix`
 
 Each module creates the application-level Terraform resources needed to manage the service through Authentik/Grafana/http providers.
 

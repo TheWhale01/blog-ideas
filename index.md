@@ -24,7 +24,6 @@ tags: [meta, index]
 - [[ideas/Translaitor]] – AI-powered book translator using Gemini API or local LLM (TranslateGemma)
 - [[ideas/Cloudflare-Tunnel-SSH]] – Secure SSH access via Cloudflare Tunnel without opening port 22
 - [[ideas/Fail2ban]] – Log-based IP banning for SSH and web services, journald/nftables integration on NixOS
-- [[ideas/Hermes-Web-Dashboard]] – Browser UI to manage the Hermes agent on Erebos (access models + Authentik OIDC gating)
 
 ## Todo
 > Improvements/fixes for things already implemented on Erebos (new services go in Ideas).
@@ -55,6 +54,7 @@ tags: [meta, index]
 
 ### Erebos Services (per-service docs)
 - [[docs/erebos/services/opengym]] – Deployed self-hosted gym tracker: two-container Podman setup, passkey auth, Traefik routing on port 3006
+- [[docs/erebos/services/hermes-dashboard]] – Agent web dashboard: loopback :9119 + Traefik + Authentik OIDC→Basic bridge
 
 ---
 

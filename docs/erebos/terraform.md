@@ -2,7 +2,7 @@
 title: Terraform
 type: reference
 created: 2026-10-15
-updated: 2026-10-15
+updated: 2026-10-26
 tags: [nixos, erebos, terraform, terranix, opentofu, IaC]
 sources: []
 ---
@@ -51,6 +51,7 @@ nix run .#apply-stage    # stage
 | `sys/terraform/prowlarr.nix` | Prowlarr resources |
 | `sys/terraform/radarr.nix` | Radarr resources |
 | `sys/terraform/slskd.nix` | Slskd resources |
+| `sys/terraform/hermes.nix` | Hermes Dashboard — Authentik proxy provider (forward_single + Basic-auth from group attrs), application, group, policy binding, outpost attachment |
 | `sys/terraform/sonarr.nix` | Sonarr resources |
 | `sys/terraform/traefik.nix` | Traefik resources |
 | `sys/terraform/transmission.nix` | Transmission resources |

@@ -51,7 +51,7 @@ The authoritative map lives in `sys/secrets.nix`. Key entries:
 | `age.secrets.traefik` | `secrets/shared/traefik.age` | traefik:{traefik.group} | 0440 |
 | `age.secrets.gluetun-transmission` | `secrets/shared/gluetun/transmission.age` | hades:users | 0400 |
 | `age.secrets.gluetun-slskd` | `secrets/shared/gluetun/slskd.age` | hades:users | 0400 |
-| `age.secrets.hermes` | `secrets/shared/hermes.age` | default | default |
+| `age.secrets.hermes` | `secrets/shared/hermes.age` | hermes:users | 0440 |
 | `age.secrets.grafana-secret` | `secrets/shared/grafana-secret.age` | grafana: | 0400 |
 | `age.secrets.transmission` | `secrets/shared/transmission.age` | hades:users | 0400 |
 | `age.secrets.matrix-alertmanager-webhook` | `secrets/shared/matrix/alertmanager-webhook.age` | hades:users | 0400 |

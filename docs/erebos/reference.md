@@ -112,7 +112,7 @@ For the full table, see `sys/secrets.nix`. Quick map:
 | `transmission` | `secrets/shared/transmission.age` | hades:users | 0400 |
 | `gluetun-transmission` | `secrets/shared/gluetun/transmission.age` | hades:users | 0400 |
 | `gluetun-slskd` | `secrets/shared/gluetun/slskd.age` | hades:users | 0400 |
-| `hermes` | `secrets/shared/hermes.age` | default | default |
+| `hermes` | `secrets/shared/hermes.age` | hermes:users | 0440 |
 | `grafana-secret` | `secrets/shared/grafana-secret.age` | grafana: | 0400 |
 | `matrix` | `secrets/{env}/matrix/matrix.age` | matrix-synapse:matrix-synapse | 0400 |
 | `mas` | `secrets/{env}/matrix/mas.age` | mas:mas | 0400 |

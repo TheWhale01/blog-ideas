@@ -208,6 +208,7 @@ All public-facing services are reverse-proxied through **Traefik** under `*.thew
 | Vaultwarden | `sys/services/vaultwarden.nix` | Bitwarden-compatible vault | `vaultwarden.thewhale.fr` (PostgreSQL backend, Authentik SSO) |
 | Ollama | `sys/services/ollama.nix` | Local LLM runtime | Local-only |
 | Hermes Agent | `sys/services/hermes.nix` | AI assistant ("Odin"), Matrix gateway, OpenRouter model | Local-only (Matrix) |
+| Hermes Dashboard | `sys/services/hermes.nix` | Agent web dashboard (systemd unit in same module) | `hermes-dashboard.thewhale.fr` (Authentik) — [[docs/erebos/services/hermes-dashboard]] |
 | Immich | `sys/services/immich.nix` | Photo management | `immich.thewhale.fr` |
 | Slskd | `sys/containers/slskd.nix` | Music streaming (Podman, own VPN tunnel) | `slskd.thewhale.fr` (Authentik) |
 | nginx (anaisbuche PDF) | `sys/services/nginx.nix` | Static PDF host | `anaisbuche.thewhale.fr` |
