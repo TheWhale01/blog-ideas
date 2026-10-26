@@ -97,6 +97,11 @@ For project ideas and drafts. Include:
 **Scope rule:** `ideas/` is for **new services/projects that don't exist on the server yet**.
 Improvements, fixes and housekeeping for things **already implemented** go in `todo/` instead.
 
+**Lifecycle:** when an idea is implemented on the server, its knowledge moves to `docs/`
+(per-service page or the relevant reference page, incl. a short "Decision history" paragraph
+if there was a real trade-off) and the idea file is **deleted**. Update any wikilinks pointing
+at it and log the deletion. Git history preserves the original draft.
+
 ## Todo Pages
 One file per improvement/fix item under `todo/` (kebab-case, lowercase). Include:
 - Status (Not started / In progress / Done — Done items move to `_archive/` after verification)

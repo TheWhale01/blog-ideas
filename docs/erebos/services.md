@@ -57,7 +57,7 @@ Jellyfin media server (via `pkgs-unstable.jellyfin`).
 
 ### `sys/services/slskd.nix` → moved
 
-slskd is no longer a systemd service: it was converted to a **Podman container** on 2026-10-22 and now runs behind its own VPN tunnel. See `sys/containers/slskd.nix` in [[docs/erebos/containers]] and [[ideas/Gluetun-AirVPN]].
+slskd is no longer a systemd service: it was converted to a **Podman container** on 2026-10-22 and now runs behind its own VPN tunnel. See `sys/containers/slskd.nix` in [[docs/erebos/containers]] (VPN tunnels + slskd sections, incl. decision history).
 
 ## Identity & Access
 

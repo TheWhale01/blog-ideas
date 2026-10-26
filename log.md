@@ -13,6 +13,12 @@ tags: [meta, log]
 > Actions: ingest, update, query, lint, create, archive, delete
 > When this file exceeds 500 entries, rotate: rename to log-YYYY.md, start fresh.
 
+## [2026-10-26] delete | Gluetun-AirVPN idea (implemented) — lifecycle rule added
+- Implemented ideas are now deleted from `ideas/` once their knowledge lives in `docs/` (rule recorded in [[HERMES]])
+- [[ideas/Gluetun-AirVPN]] decision history + lessons folded into [[docs/erebos/containers]] (VPN tunnels section)
+- Repointed references in [[docs/erebos/services]] and index.md; total pages: 25
+- Checked remaining ideas (Deezify, Remote-Gaming-Server, Translaitor, Cloudflare-Tunnel-SSH, Fail2ban, Hermes-Web-Dashboard): all still unimplemented, they stay
+
 ## [2026-10-26] update | Synced wiki with erebos commits Oct 15–26
 - Read erebos repo commits: 84c3833 (hermes/Odin), 62e1e1e (opengym), ce8fb26 (slskd→podman, hermes→openrouter), c92ad7c (second gluetun)
 - [[docs/erebos/containers]]: single gluetun → two tunnels (gluetun-transmission CH / gluetun-slskd NL, PF-only, per-tunnel WG key + agenix secret); new slskd-as-container section (native gluetun PF integration, Authentik fronting); transmission stack netns/secret names updated

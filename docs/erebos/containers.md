@@ -78,7 +78,7 @@ Both: `VPN_SERVICE_PROVIDER=protonvpn`, `VPN_TYPE=wireguard`, `VPN_PORT_FORWARDI
 
 `gluetun-slskd` additionally sets `PORT_FORWARD_ONLY=on` (connect only to PF-capable gateways) and exposes gluetun's HTTP control server (`127.0.0.1:8000`) so slskd can query its forwarded port natively — see below. This solved the "PCP gateway i/o timeout" that occurred when the tunnel landed on a non-PF server.
 
-Decision context: [[ideas/Gluetun-AirVPN]] (Option 1 implemented, staying on ProtonVPN).
+**Decision history** (2026-10-15 → 2026-10-26, formerly `ideas/Gluetun-AirVPN.md`): the goal was to escape ProtonVPN's constraints for slskd. Two options were weighed — a second Gluetun container (kept ProtonVPN) vs switching the provider to [AirVPN](https://airvpn.org/) (single credentials can drive several concurrent tunnels). Option 1 was implemented. Lessons captured on the way: one Proton WireGuard key carries exactly one tunnel (two device configs required); the initial `PCP gateway i/o timeout` on the slskd tunnel was fixed with `PORT_FORWARD_ONLY=on` + a PF-reliable country (Netherlands); slskd's native gluetun integration (`SLSKD_VPN_GLUETUN_URL`) replaced the need for a port-sync sidecar. AirVPN remains the fallback if Proton's per-device configs or PF throttling become a pain again.
 
 ### `sys/containers/slskd.nix`
 
