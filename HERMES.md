@@ -11,6 +11,11 @@ tags: [meta, schema]
 ## Domain
 Personal blog and knowledge base: development, homelab, IT, AI, creativity, and project ideas. This wiki serves as a persistent, compounding knowledge store for technical notes, project documentation, and research.
 
+**Vault location:** the source of truth is the checkout at `$WIKI_PATH`
+(`/var/lib/hermes/workspace/blog-ideas` on Erebos — decided 2026-10-26).
+The former `/home/hades/code/blog-ideas` copy is not authoritative; the two converge via the
+GitHub remote. Obsidian should point at the `$WIKI_PATH` checkout.
+
 ## Conventions
 - File names: lowercase, hyphens, no spaces (e.g., `nixos-configuration.md`)
 - Every wiki page starts with YAML frontmatter (see below)

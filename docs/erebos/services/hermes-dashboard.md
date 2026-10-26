@@ -98,7 +98,7 @@ Secrets note: `age.secrets.hermes` is `hermes:users` mode `0440` (shared by the 
 and scoped it correctly: `systemd.services.hermes-agent.environment.WIKI_PATH =
 "/var/lib/hermes/workspace/blog-ideas"`. Verified live in the gateway process environment
 (2026-10-26). This closed the `todo/wiki-path` item — deleted per the todo lifecycle; the remaining
-vault question carries on as [[todo/vault-source-of-truth]].
+vault question was decided the same day: **the source of truth is the `$WIKI_PATH` checkout** (see [[HERMES]]).
 
 ## Operational notes
 

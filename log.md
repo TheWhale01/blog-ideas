@@ -13,6 +13,13 @@ tags: [meta, log]
 > Actions: ingest, update, query, lint, create, archive, delete
 > When this file exceeds 500 entries, rotate: rename to log-YYYY.md, start fresh.
 
+## [2026-10-26] update | Vault source-of-truth decided; todo deleted
+- User decision: the authoritative wiki checkout is wherever `WIKI_PATH` points
+  (= /var/lib/hermes/workspace/blog-ideas); the /home/hades copy is not authoritative
+- Recorded permanently in [[HERMES]] Domain (incl. note to point Obsidian at the $WIKI_PATH checkout)
+- Deleted todo/vault-source-of-truth.md per lifecycle (last todo split from wiki-path); refs repointed
+  in docs/erebos/services/hermes-dashboard, todo/index, root index.md (24 pages)
+
 ## [2026-10-26] update | Todo lifecycle: delete completed items; wiki-path closed & deleted
 - HERMES.md rule changed: completed todos are DELETED (log.md + git history preserve them), no `_archive/` copies
 - Verified `WIKI_PATH` fix live (gateway env = workspace path; dashboard unit active, :9119 → 200)

@@ -10,7 +10,7 @@ tags: [meta, index]
 
 > Content catalog. Every wiki page listed under its type with a one-line summary.
 > Read this first to find relevant pages for any query.
-> Last updated: 2026-10-26 | Total pages: 25
+> Last updated: 2026-10-26 | Total pages: 24
 
 ## Entities
 
@@ -33,7 +33,6 @@ tags: [meta, index]
 - [[todo/podman-image-updates]] – High · digest-based auto-update with notifications
 - [[todo/secrets-management]] – High · rotation policy, per-service recipients, offline key backup
 - [[todo/terraform-workflow]] – Medium · remote state + locking, CI drift-check
-- [[todo/vault-source-of-truth]] – Medium · pick the authoritative wiki checkout (agent workspace vs Obsidian copy)
 
 ## Queries
 
