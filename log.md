@@ -13,6 +13,13 @@ tags: [meta, log]
 > Actions: ingest, update, query, lint, create, archive, delete
 > When this file exceeds 500 entries, rotate: rename to log-YYYY.md, start fresh.
 
+## [2026-10-22] create | Hermes Web Dashboard idea
+- Added [[ideas/Hermes-Web-Dashboard]]: browser management UI for the Hermes agent on Erebos
+- Covers three access models (SSH tunnel, systemd + Authentik-gated public bind, Hermes Desktop remote backend)
+- Security notes: dashboard is admin-equivalent (config, API keys, PTY chat); auth gate mandatory for non-loopback binds
+- Updated index.md (total: 20 pages)
+- Note: briefly launched `hermes dashboard` on loopback during research; killed and verified stopped afterwards
+
 ## [2026-10-22] create | Fail2ban idea
 - Added [[ideas/Fail2ban]]: brute-force log scanning + IP bans for Erebos
 - Includes NixOS specifics: journald backend (no /var/log/auth.log), nftables vs iptables actions,

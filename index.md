@@ -10,7 +10,7 @@ tags: [meta, index]
 
 > Content catalog. Every wiki page listed under its type with a one-line summary.
 > Read this first to find relevant pages for any query.
-> Last updated: 2026-10-22 | Total pages: 19
+> Last updated: 2026-10-22 | Total pages: 20
 
 ## Entities
 
@@ -26,6 +26,7 @@ tags: [meta, index]
 - [[ideas/Cloudflare-Tunnel-SSH]] – Secure SSH access via Cloudflare Tunnel without opening port 22
 - [[ideas/Gluetun-AirVPN]] – VPN considerations for slskd with Gluetun and AirVPN options
 - [[ideas/Fail2ban]] – Log-based IP banning for SSH and web services, journald/nftables integration on NixOS
+- [[ideas/Hermes-Web-Dashboard]] – Browser UI to manage the Hermes agent on Erebos (access models + Authentik OIDC gating)
 
 ## Queries
 
