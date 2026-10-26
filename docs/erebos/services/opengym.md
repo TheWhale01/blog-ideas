@@ -152,4 +152,4 @@ sudo systemctl restart podman-opengym-api.service podman-opengym-web.service
 - [[docs/erebos/index]] — Erebos overview
 - [[docs/erebos/containers]] — global Podman settings and other containers
 - [[docs/erebos/services]] — systemd services and Traefik wiring
-- [[ideas/Erebos-Server-TODO]] — backups TODO covers `/var/lib/opengym`
+- [[todo/backups]] — backup scope covers `/var/lib/opengym`

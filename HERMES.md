@@ -29,7 +29,7 @@ All wiki pages must include:
 title: Page Title
 created: YYYY-MM-DD
 updated: YYYY-MM-DD
-type: entity | concept | comparison | query | summary | idea
+type: entity | concept | comparison | query | summary | idea | todo
 tags: [from taxonomy below]
 sources: [raw/articles/source-name.md]
 # Optional quality signals:
@@ -54,6 +54,7 @@ sha256: <hex digest of the raw content below the frontmatter>
 - **Categories:** blog, creativity, IT, AI, development, homelab, nixos, infrastructure, networking, security, automation, documentation
 - **Content Types:** idea, project, tutorial, guide, reference, comparison, analysis, notes, draft
 - **Status:** active, stalled, completed, archived, experimental
+- **Work:** todo, improvement, fix, housekeeping
 - **Meta:** meta, schema, index, log
 
 Rule: every tag on a page must appear in this taxonomy. Add new tags here first.
@@ -92,6 +93,20 @@ For project ideas and drafts. Include:
 - Proposed solution
 - Status (active, stalled, completed)
 - Related ideas and dependencies
+
+**Scope rule:** `ideas/` is for **new services/projects that don't exist on the server yet**.
+Improvements, fixes and housekeeping for things **already implemented** go in `todo/` instead.
+
+## Todo Pages
+One file per improvement/fix item under `todo/` (kebab-case, lowercase). Include:
+- Status (Not started / In progress / Done — Done items move to `_archive/` after verification)
+- Priority (Critical / High / Medium / Low)
+- Description of the current state and the gap
+- Task checklist
+- Detailed notes (implementation guidance, caveats, acceptance test)
+- Related wiki pages
+`todo/index.md` is the hub: one line per item with status + priority + link. When an item is
+completed, tick the checklist, bump `updated`, and link the resulting docs/ or service page.
 
 ## Update Policy
 When new information conflicts with existing content:

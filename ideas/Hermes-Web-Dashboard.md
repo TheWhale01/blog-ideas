@@ -50,5 +50,5 @@ The [Hermes Web Dashboard](https://hermes-agent.nousresearch.com/docs/user-guide
 ## Related
 
 - [[docs/erebos/services]] — Traefik/Authentik patterns this should follow
-- [[ideas/Erebos-Server-TODO]] — add to backlog when implemented
+- [[todo/index]] — add to backlog when implemented
 - [[ideas/Cloudflare-Tunnel-SSH]] — related remote-access strategy

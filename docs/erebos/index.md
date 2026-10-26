@@ -253,7 +253,7 @@ Note: `sys/services/slskd.nix` is the systemd service (slskd daemon), while `sys
 | `loki.nix` | Loki | Log aggregation |
 | `promtail.nix` | Promtail | Log shipping |
 
-These are aggregated in `sys/services/monitoring/default.nix` and wired into the Traefik dynamic config. For current status and tasks, see [[ideas/Erebos-Server-TODO]] (see "Implement Proper Monitoring & Alerting" section).
+These are aggregated in `sys/services/monitoring/default.nix` and wired into the Traefik dynamic config. For current status and tasks, see [[todo/monitoring-alerting]].
 
 ---
 
@@ -337,7 +337,7 @@ sudo podman pull $(sudo podman images --format "{{.Repository}}:{{.Tag}}")
 
 ## Roadmap / TODOs
 
-For the most up-to-date task list, see [[ideas/Erebos-Server-TODO]].
+For the most up-to-date task list, see [[todo/index]].
 
 Historical notes (from `Erebos.md` in the vault):
 - **Monitoring** — Grafana + Prometheus deployed, but no alerting running and a poor log analyzer. Proper alerting (Grafana Alert / or similar) needs configuring.

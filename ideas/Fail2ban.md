@@ -83,4 +83,4 @@ Notes:
 
 - [[docs/erebos/services]] — current SSH/firewall posture
 - [[ideas/Cloudflare-Tunnel-SSH]] — complementary network-hiding strategy
-- [[ideas/Erebos-Server-TODO]] — security hardening backlog
+- [[todo/index]] — security hardening backlog

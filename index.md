@@ -10,7 +10,7 @@ tags: [meta, index]
 
 > Content catalog. Every wiki page listed under its type with a one-line summary.
 > Read this first to find relevant pages for any query.
-> Last updated: 2026-10-22 | Total pages: 20
+> Last updated: 2026-10-22 | Total pages: 26
 
 ## Entities
 
@@ -22,11 +22,20 @@ tags: [meta, index]
 - [[ideas/Deezify]] – Spotify/Deezer Jam-like feature for cross-platform music sharing
 - [[ideas/Remote-Gaming-Server]] – Self-hosted cloud gaming with Sunshine/Apollo on Linux
 - [[ideas/Translaitor]] – AI-powered book translator using Gemini API or local LLM (TranslateGemma)
-- [[ideas/Erebos-Server-TODO]] – Priority improvement list for the Erebos NixOS server
 - [[ideas/Cloudflare-Tunnel-SSH]] – Secure SSH access via Cloudflare Tunnel without opening port 22
 - [[ideas/Gluetun-AirVPN]] – VPN considerations for slskd with Gluetun and AirVPN options
 - [[ideas/Fail2ban]] – Log-based IP banning for SSH and web services, journald/nftables integration on NixOS
 - [[ideas/Hermes-Web-Dashboard]] – Browser UI to manage the Hermes agent on Erebos (access models + Authentik OIDC gating)
+
+## Todo
+> Improvements/fixes for things already implemented on Erebos (new services go in Ideas).
+- [[todo/index]] – Hub: all backlog items by priority
+- [[todo/monitoring-alerting]] – Critical · Alertmanager, Prometheus rules, Loki queries, Grafana→Matrix
+- [[todo/backups]] – Critical · Borg/Restic incl. out-of-/data dirs, pg dumps, restore drills
+- [[todo/podman-image-updates]] – High · digest-based auto-update with notifications
+- [[todo/secrets-management]] – High · rotation policy, per-service recipients, offline key backup
+- [[todo/terraform-workflow]] – Medium · remote state + locking, CI drift-check
+- [[todo/wiki-path]] – Low · fix WIKI_PATH to the agent-accessible vault copy
 
 ## Queries
 

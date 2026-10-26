@@ -13,6 +13,14 @@ tags: [meta, log]
 > Actions: ingest, update, query, lint, create, archive, delete
 > When this file exceeds 500 entries, rotate: rename to log-YYYY.md, start fresh.
 
+## [2026-10-22] update | Introduced todo/ layer; split Erebos-Server-TODO
+- New scope rule (recorded in [[HERMES]]): `ideas/` = new services to add; `todo/` = improvements/fixes to what's already implemented
+- Created `todo/` with 7 pages: index (hub), monitoring-alerting, backups, podman-image-updates, secrets-management, terraform-workflow, wiki-path
+- Each section of the former `ideas/Erebos-Server-TODO.md` became its own file (status, priority, tasks, detailed notes); hub file deleted
+- Updated live references in docs/erebos/index, docs/erebos/monitoring, docs/erebos/services/opengym, ideas/Fail2ban, ideas/Hermes-Web-Dashboard, root index.md
+- Tag taxonomy extended with Work: todo/improvement/fix/housekeeping; page type `todo` added
+- Total pages: 26
+
 ## [2026-10-22] update | Expanded Erebos-Server-TODO with detailed notes
 - Added a "Detailed notes" block to each of the 6 sections of [[ideas/Erebos-Server-TODO]]
   (implementation guidance: alert routing to Matrix, backup scope incl. /var/lib/opengym/api + pg_dumpall,
