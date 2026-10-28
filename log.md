@@ -13,6 +13,15 @@ tags: [meta, log]
 > Actions: ingest, update, query, lint, create, archive, delete
 > When this file exceeds 500 entries, rotate: rename to log-YYYY.md, start fresh.
 
+## [2026-10-26] create | Chezmoi-Pontos idea
+- Added [[ideas/Chezmoi-Pontos]]: dotfile management for the laptop (pontos), which moved
+  NixOS → Fedora to ease small-project development
+- Covers: why chezmoi (git-native, templating, age secrets), home-manager-on-Fedora alternative
+  (and why it was declined), repo structure sketch, Fedora-specific scripts (dnf/flatpak/dconf),
+  wipe-and-recover drill as the acceptance test
+- First idea scoped to a machine other than Erebos — noted in page
+- Updated index.md (total: 25 pages)
+
 ## [2026-10-26] update | Vault source-of-truth decided; todo deleted
 - User decision: the authoritative wiki checkout is wherever `WIKI_PATH` points
   (= /var/lib/hermes/workspace/blog-ideas); the /home/hades copy is not authoritative

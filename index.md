@@ -10,7 +10,7 @@ tags: [meta, index]
 
 > Content catalog. Every wiki page listed under its type with a one-line summary.
 > Read this first to find relevant pages for any query.
-> Last updated: 2026-10-26 | Total pages: 24
+> Last updated: 2026-10-26 | Total pages: 25
 
 ## Entities
 
@@ -24,6 +24,7 @@ tags: [meta, index]
 - [[ideas/Translaitor]] – AI-powered book translator using Gemini API or local LLM (TranslateGemma)
 - [[ideas/Cloudflare-Tunnel-SSH]] – Secure SSH access via Cloudflare Tunnel without opening port 22
 - [[ideas/Fail2ban]] – Log-based IP banning for SSH and web services, journald/nftables integration on NixOS
+- [[ideas/Chezmoi-Pontos]] – Declarative dotfiles for the pontos laptop (Fedora) with chezmoi + age, wipe-and-recover story
 
 ## Todo
 > Improvements/fixes for things already implemented on Erebos (new services go in Ideas).
