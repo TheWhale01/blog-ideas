@@ -23,12 +23,16 @@ sources: []
 - **Age encryption**: encrypted files (`chezmoi age encrypt`) fit the household's existing agenix/age habits (see [[docs/erebos/secrets]]) — same key format, familiar workflow.
 - Safe by design: `chezmoi diff`/`status`, managed files only, ignores by default vs allow-list `.chezmoiignore`.
 
+Official: [chezmoi docs](https://www.chezmoi.io) · [GitHub repo](https://github.com/twpayne/chezmoi) · [age](https://github.com/FiloSottile/age) / [age.dev](https://age.dev) · [chezmoi age encryption guide](https://www.chezmoi.io/user-guide/encryption/age/)
+
 ## Alternative worth noting: home-manager *is* portable
 
 home-manager runs on any Linux with Nix installed — including Fedora. Keeping Nix just for hm/home configs (not system-level, like NixOS) recovers most of the old workflow, and the existing Erebos/nixos-modules configs could partly be reused. **Trade-off vs chezmoi:**
 - home-manager: stronger (manages packages & services config, one language), but reintroduces the Nix toolchain that made pontos painful — and its `flake.lock` staleness is real work.
 - chezmoi: dotfiles only, zero extra runtime, trivially portable. If the goal is specifically "survive a wipe", chezmoi is the right weight class.
 Decision: go with chezmoi; revisit hm only if config sprawl demands it.
+
+See: [home-manager](https://github.com/nix-community/home-manager) / [official docs](https://nix-community.github.io/home-manager/).
 
 ## Implementation sketch
 
@@ -64,3 +68,11 @@ Decision: go with chezmoi; revisit hm only if config sprawl demands it.
 
 - [[docs/erebos/secrets]] — household age-key habits to reuse
 - [[index]] — the vault itself: same "wipe-proof via git" philosophy
+
+## External references
+
+- **chezmoi** — docs: https://www.chezmoi.io · repo: https://github.com/twpayne/chezmoi · install: https://www.chezmoi.io/install/ · new-machine flow: https://www.chezmoi.io/user-guide/setup/
+- **age** — repo: https://github.com/FiloSottile/age · chezmoi integration: https://www.chezmoi.io/user-guide/encryption/age/
+- **agenix** (habits on Erebos) — repo: https://github.com/ryantm/agenix
+- **home-manager** (alternative) — repo: https://github.com/nix-community/home-manager · docs: https://nix-community.github.io/home-manager/
+- **Fedora packaging** — chezmoi in Fedora: https://packages.fedoraproject.org/pkgs/chezmoi/chezmoi/ · Flatpak: https://flatpak.org · dconf: https://gitlab.gnome.org/GNOME/dconf

@@ -13,6 +13,14 @@ tags: [meta, log]
 > Actions: ingest, update, query, lint, create, archive, delete
 > When this file exceeds 500 entries, rotate: rename to log-YYYY.md, start fresh.
 
+## [2026-10-26] update | External-references rule added; chezmoi page linked
+- New standing rule in [[HERMES]] Idea Pages: every idea links official docs and/or GitHub repos
+  of mentioned tools (inline for primary tool + "External references" section; URLs verified)
+- [[ideas/Chezmoi-Pontos]]: added inline links + External references section (chezmoi, age, agenix,
+  home-manager, Fedora packaging, flatpak, dconf) — all 13 URLs checked live with curl
+- Caught during verification: chezmoi install URL is /install/ (not /user-guide/installation/);
+  home-manager.org unreachable → use nix-community.github.io/home-manager
+
 ## [2026-10-26] create | Chezmoi-Pontos idea
 - Added [[ideas/Chezmoi-Pontos]]: dotfile management for the laptop (pontos), which moved
   NixOS → Fedora to ease small-project development

@@ -102,6 +102,10 @@ For project ideas and drafts. Include:
 **Scope rule:** `ideas/` is for **new services/projects that don't exist on the server yet**.
 Improvements, fixes and housekeeping for things **already implemented** go in `todo/` instead.
 
+**External references rule:** every idea page must link the **official documentation and/or
+GitHub repository** of each tool it mentions — inline on first mention for the primary tool and
+collected in an "External references" section at the bottom. Verify URLs when adding them.
+
 **Lifecycle:** when an idea is implemented on the server, its knowledge moves to `docs/`
 (per-service page or the relevant reference page, incl. a short "Decision history" paragraph
 if there was a real trade-off) and the idea file is **deleted**. Update any wikilinks pointing
