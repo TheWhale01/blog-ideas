@@ -10,7 +10,7 @@ tags: [meta, index]
 
 > Content catalog. Every wiki page listed under its type with a one-line summary.
 > Read this first to find relevant pages for any query.
-> Last updated: 2026-10-26 | Total pages: 25
+> Last updated: 2026-10-26 | Total pages: 26
 
 ## Entities
 
@@ -25,6 +25,7 @@ tags: [meta, index]
 - [[ideas/Cloudflare-Tunnel-SSH]] – Secure SSH access via Cloudflare Tunnel without opening port 22
 - [[ideas/Fail2ban]] – Log-based IP banning for SSH and web services, journald/nftables integration on NixOS
 - [[ideas/Chezmoi-Pontos]] – Declarative dotfiles for the pontos laptop (Fedora) with chezmoi + age, wipe-and-recover story
+- [[ideas/Quickshell-Notification-Client]] – Catppuccin notification daemon as a quickconf module, built on quickshell's Quickshell.Services.Notifications
 
 ## Todo
 > Improvements/fixes for things already implemented on Erebos (new services go in Ideas).

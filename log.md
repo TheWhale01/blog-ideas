@@ -13,6 +13,18 @@ tags: [meta, log]
 > Actions: ingest, update, query, lint, create, archive, delete
 > When this file exceeds 500 entries, rotate: rename to log-YYYY.md, start fresh.
 
+## [2026-10-26] create | Quickshell Notification Client idea
+- Added [[ideas/Quickshell-Notification-Client]]: custom notification daemon inside the quickconf
+  bar repo on pontos (Hyprland/Fedora), styled with Global.qml Catppuccin Mocha
+- Upstream verification against quickshell source (mirror + forge): repo moved outfoxxed/quickshell →
+  quickshell-mirror/quickshell; site is quickshell.outfoxxed.me (quickshell.dev NXDOMAIN);
+  module `Quickshell.Services.Notifications` already implements the whole freedesktop protocol —
+  API confirmed from notification.hpp/server.hpp (NotificationServer.trackedNotifications(),
+  Notification props incl. actions/hasInlineReply/dismiss()/sendInlineReply())
+- Design reduced to a QML UI exercise: Repeater-bound popup window + DND gate on Global.qml;
+  mako bus-name ownership check is task 1; all external URLs curl-verified per the new rule
+- Updated index.md (total: 26 pages)
+
 ## [2026-10-26] update | External-references rule added; chezmoi page linked
 - New standing rule in [[HERMES]] Idea Pages: every idea links official docs and/or GitHub repos
   of mentioned tools (inline for primary tool + "External references" section; URLs verified)
