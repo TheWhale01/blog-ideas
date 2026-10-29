@@ -13,6 +13,15 @@ tags: [meta, log]
 > Actions: ingest, update, query, lint, create, archive, delete
 > When this file exceeds 500 entries, rotate: rename to log-YYYY.md, start fresh.
 
+## [2026-10-26] create | Authentik policy-revalidation todo (researched)
+- Added [[todo/authentik-policy-revalidation]]: intercept logins when existing creds violate changed policies
+- Verdict: username leg fully feasible (Expression Policy + Prompt/Write stage bindings, official
+  force-reset-on-login pattern); password leg fundamentally limited — hashed passwords can't be
+  retroactively policy-checked, so it's force-rotation-on-change instead
+- Native "required actions" (issue #25310 / PR #24846) is enterprise + 2026.11.0 — not for 2026.8.1 CE
+- All implementation is terraform-declarable in sys/terraform/authentik.nix; 8 URLs curl-verified
+- todo/index + root index.md updated (total: 27 pages)
+
 ## [2026-10-26] create | Quickshell Notification Client idea
 - Added [[ideas/Quickshell-Notification-Client]]: custom notification daemon inside the quickconf
   bar repo on pontos (Hyprland/Fedora), styled with Global.qml Catppuccin Mocha
