@@ -10,7 +10,7 @@ tags: [meta, index]
 
 > Content catalog. Every wiki page listed under its type with a one-line summary.
 > Read this first to find relevant pages for any query.
-> Last updated: 2026-10-26 | Total pages: 27
+> Last updated: 2026-10-26 | Total pages: 28
 
 ## Entities
 
@@ -38,6 +38,7 @@ tags: [meta, index]
 - [[todo/authentik-policy-revalidation]] – Medium · username re-check at login (feasible) + forced password rotation on policy change (retroactive check impossible — hashes)
 
 ## Queries
+- [[queries/erebos-cve-exposure-2026-10]] – Live CVE exposure audit of Erebos (2026-10-26): P1 = Authentik 2026.8.1 batch, Immich 2.7.5 (incl. unauthenticated ML RCE), n8n exposed without SSO
 
 ## Summaries
 

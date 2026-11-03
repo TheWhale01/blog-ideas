@@ -59,7 +59,7 @@ Key design choices:
 - **disko** for declarative disk partitioning and filesystems.
 - **terranix + OpenTofu** to keep the infrastructure-as-code layer (Authentik, Grafana, Nextcloud, etc.) in sync with the NixOS config.
 - **Podman** for containers (OCI, not Docker), with the `podman` overlay backend.
-- **Traefik 2** as the single reverse proxy / entry point, with automatic Let's Encrypt certificates via Cloudflare DNS challenge.
+- **Traefik 3.7.13** as the single reverse proxy / entry point, with automatic Let's Encrypt certificates via Cloudflare DNS challenge.
 - **Authentik** as the central OIDC/SAML identity provider, protecting most ingress services.
 - **Monitoring**: Prometheus + Grafana + Loki + Promtail.
 

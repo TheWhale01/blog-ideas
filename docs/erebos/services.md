@@ -15,7 +15,7 @@ Each file in `sys/services/` defines one or more systemd services. Everything is
 
 ### `sys/services/traefik.nix`
 
-Traefik 2 as the ingress point.
+Traefik 3.7.13 as the ingress point.
 
 - Static config: 2 entrypoints (`web` :80 → redirect to `websecure`; `websecure` :443 with timeouts 0).
 - Let's Encrypt via **Cloudflare DNS challenge** (`acme.email`, `storage: acme.json`, `dnsChallenge.provider = "cloudflare"`).

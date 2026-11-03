@@ -13,6 +13,20 @@ tags: [meta, log]
 > Actions: ingest, update, query, lint, create, archive, delete
 > When this file exceeds 500 entries, rotate: rename to log-YYYY.md, start fresh.
 
+## [2026-10-26] query | Erebos CVE exposure audit (filed)
+- Live inventory via systemd/Nix-store paths/service APIs (Traefik 3.7.13, Authentik 2026.8.1,
+  Immich 2.7.5, n8n 2.39.6, Nextcloud 35.0.2, Jellyfin 12.2.0, Synapse 1.163.2, Ollama 0.40.3,
+  Grafana 13.0.11, Vaultwarden 1.37.4, Podman 5.8.9, PG 16.15, kernel 7.3.0, pin 2026-10-27)
+- Filed [[queries/erebos-cve-exposure-2026-10]] with P1/P2/P3 findings + action list:
+  P1 Authentik Sep-2026 advisory batch (≤2026.8.1, fix in 2026.8.2 — MFA bypass 8.9);
+  P1 Immich 2.7.5 (CVE-2026-119328 unauth ML path-injection <3.3.0, +2 more);
+  P1-config n8n internet-exposed without Authentik since 5e6c83b; P2 Jellyfin ≤12.4 set;
+  P2 verify richdocumentscode absent (CVE-2026-110447 CISA KEV, actively exploited);
+  P2 unauthenticated monitoring ports on 0.0.0.0 (podman0 lateral surface); systemic:
+  autoUpgrade doesn't advance flake pin → patch cadence gap
+- Corrected stale version notes: "Traefik 2" → 3.7.13 in docs/erebos index.md + services.md
+- index.md updated (total: 28 pages)
+
 ## [2026-10-26] create | Authentik policy-revalidation todo (researched)
 - Added [[todo/authentik-policy-revalidation]]: intercept logins when existing creds violate changed policies
 - Verdict: username leg fully feasible (Expression Policy + Prompt/Write stage bindings, official
