@@ -13,6 +13,15 @@ tags: [meta, log]
 > Actions: ingest, update, query, lint, create, archive, delete
 > When this file exceeds 500 entries, rotate: rename to log-YYYY.md, start fresh.
 
+## [2026-10-26] update | Audit page renamed + Scheduled-Security-Audit idea
+- Renamed [[queries/erebos-cve-exposure-2026-10]] → [[queries/security-audit]] (git mv); reframed as
+  a living document: header banner + dated Audit log section + "current snapshot" marker
+- Added [[ideas/Scheduled-Security-Audit]]: weekly Hermes cron job that re-inventories versions
+  (systemd/Nix-store/API probes), diffs against the stored snapshot, cross-checks vendor GHSA +
+  CISA KEV, updates the audit page, pushes, and reports to Matrix — read-only by design
+- External refs verified (hermes cron docs, trivy, KEV, GHSA db; vulnix links 404'd and were dropped)
+- index.md: Ideas + Queries lines updated; total pages: 29
+
 ## [2026-10-26] query | Erebos CVE exposure audit (filed)
 - Live inventory via systemd/Nix-store paths/service APIs (Traefik 3.7.13, Authentik 2026.8.1,
   Immich 2.7.5, n8n 2.39.6, Nextcloud 35.0.2, Jellyfin 12.2.0, Synapse 1.163.2, Ollama 0.40.3,

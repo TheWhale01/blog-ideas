@@ -1,5 +1,5 @@
 ---
-title: Erebos CVE Exposure Audit — 2026-10
+title: Erebos Security Audit
 created: 2026-10-26
 updated: 2026-10-26
 type: query
@@ -8,7 +8,11 @@ sources: [live service inventory (2026-10-26), vendor advisories — see Referen
 confidence: high
 ---
 
-# Erebos CVE Exposure Audit — 2026-10
+# Erebos Security Audit
+
+> Living document, refreshed by the scheduled audit job ([[ideas/Scheduled-Security-Audit]]).
+> Newest findings first; per-run history in the Audit log at the bottom.
+> Current snapshot: **2026-10-26**.
 
 Point-in-time security audit of Erebos: live version inventory (systemd units, Nix store paths, running service APIs) cross-checked against published advisories as of **2026-10-26**.
 
@@ -97,6 +101,11 @@ All require an authenticated (non-admin) account → single-user instance = low 
 
 ## Related
 
+- [[ideas/Scheduled-Security-Audit]] — the job that keeps this page current
 - [[todo/secrets-management]] — credential blast radius if P1 items are exploited
 - [[todo/monitoring-alerting]] — silencing risk from unauthenticated Alertmanager
 - [[docs/erebos/index]] — the stack audited
+
+## Audit log
+
+- **2026-10-26** — Initial snapshot (manual). P1: Authentik 2026.8.1 advisory batch (fix 2026.8.2), Immich 2.7.5 incl. CVE-2026-119328, n8n internet-exposed without SSO. P2: Jellyfin ≤12.4 set; verify `richdocumentscode` (KEV); monitoring ports on 0.0.0.0. Systemic: flake-pin patch cadence. Open follow-ups: P1 items not yet confirmed remediated.
