@@ -23,7 +23,7 @@ Point-in-time security audit of Erebos: live version inventory (systemd units, N
 | Traefik | 3.7.13 | public :80/:443 |
 | Authentik | 2026.8.1 (container) | public (IdP for everything) |
 | Immich | 2.7.5 (server + machine-learning units) | public via Traefik |
-| n8n | 2.39.6 | **public, no Authentik** (SSO removed commit `5e6c83b`) |
+| n8n | 2.39.6 | LAN/VPN only (owner-confirmed 2026-10-26 — router does not forward it; **not** public); built-in owner auth by design — Authentik SSO is paid-only in n8n |
 | Nextcloud | 35.0.2 + Collabora `collabora/code` container | public |
 | Jellyfin | 12.2.0 | public (LDAP auth) |
 | Matrix | Synapse 1.163.2 + MAS | public (federation) |
@@ -53,9 +53,12 @@ Advisories published 2026-09-09 list affected `<= 2026.8.1`, patched in **2026.8
 Note: nixpkgs itself flags `immich-2.7.5` via `permittedInsecurePackages` in `flake.nix` — the repo is *declaring* it knowingly vulnerable.
 **Fix**: update to **≥ 3.3.0** (check current in nixpkgs 26.05 after `nix flake update`; if the NixOS module lags, move Immich to the official container like the rest of the fleet) and **remove the `permittedInsecurePackages` entry**.
 
-### P1 (configuration) — n8n exposed to the internet without Authentik
-Commit `5e6c83b` (2026-10-06) removed the SSO middleware; `sys/services/n8n.nix`'s router now has no `middlewares`. Running n8n 2.39.6 (patched for this year's RCE chain: GHSA-v364-rw7m-3263 CVSS 9.9, CVE-2026-42232, GHSA-c8xv-5998-g76h, GHSA-mxrg-77hm-89hv — all fixed well before 2.39.x). **But**: n8n is, by design, "authenticated user = arbitrary code execution + stored credentials theft." Every future n8n 0-day is internet-reachable on this host with the keys to Authentik tokens, SMTP, VPN configs.
-**Fix** (pick one): re-bind the `authentik-forwardauth`/`n8n-auth` middleware on the router; or bind n8n to loopback + access via Netbird; or Cloudflare Access. This is a one-line config regression — arguably the highest-value fix in this audit despite no unpatched CVE today.
+### P3 (corrected 2026-10-26) — n8n: not publicly exposed; built-in auth is a deliberate choice
+Original finding said "internet-exposed without Authentik" — **wrong**, per owner: the router/firewall in front of Erebos does not make n8n reachable from the internet (initial test hit NAT hairpinning, which returns 200 from inside the network and is misleading — note this method caveat for future audits). Commit `5e6c83b` removed the Authentik middleware because n8n's SSO feature is **paid-only** — so the built-in owner login is the intended gate, not an oversight.
+Residual risk to manage deliberately, since "authenticated user = arbitrary code execution + stored credentials" is n8n's design:
+- Keep n8n current with the same urgency as an exposed service — 2026's advisories were all an *authenticated*-to-RCE chain (GHSA-v364-rw7m-3263 CVSS 9.9 et al.).
+- Enable MFA/2FA on the n8n owner account (supported in self-hosted/community builds) — single password is the only gate now.
+- Confirm the LAN boundary itself is where you want the wall (any device on the Netbird/LAN mesh can reach :5678).
 
 ### P2 — Jellyfin 12.2.0 inside "through 12.4" advisory set (2026-10-30)
 - **CVE-2026-119549** (7.1 High): SSRF via gzip-SVG profile images (authenticated upload → server fetches internal URLs — on this host that means podman-net pivot to unauthenticated monitoring endpoints, see below).
@@ -81,7 +84,8 @@ All require an authenticated (non-admin) account → single-user instance = low 
 
 - [ ] P1: Authentik container → ≥ 2026.8.2 (`sys/containers/authentik.nix`, pull + restart stack)
 - [ ] P1: Immich → ≥ 3.3.0 and **delete** `permittedInsecurePackages = [ "immich-2.7.5" ]` from `flake.nix`
-- [ ] P1: restore Authentik middleware (or Netbird-only bind) on the n8n router in `sys/services/n8n.nix`
+- [x] ~~P1: restore Authentik middleware (or Netbird-only bind) on the n8n router~~ — **corrected**: n8n is not internet-forwarded (owner), built-in auth chosen because SSO is paid; residual actions:
+- [ ] Enable MFA on the n8n owner account; treat n8n updates like an exposed service; confirm LAN/VPN boundary is acceptable
 - [ ] P2: verify `richdocumentscode` app absent in Nextcloud (KEV-listed, actively exploited)
 - [ ] P2: track Jellyfin fix (>12.4) via `nix flake update`
 - [ ] P2: re-bind Prometheus/Loki/Alertmanager (+ Jellyfin) to loopback; re-check `ss -ltn` after
@@ -108,4 +112,5 @@ All require an authenticated (non-admin) account → single-user instance = low 
 
 ## Audit log
 
-- **2026-10-26** — Initial snapshot (manual). P1: Authentik 2026.8.1 advisory batch (fix 2026.8.2), Immich 2.7.5 incl. CVE-2026-119328, n8n internet-exposed without SSO. P2: Jellyfin ≤12.4 set; verify `richdocumentscode` (KEV); monitoring ports on 0.0.0.0. Systemic: flake-pin patch cadence. Open follow-ups: P1 items not yet confirmed remediated.
+- **2026-10-26** — Initial snapshot (manual). P1: Authentik 2026.8.1 advisory batch (fix 2026.8.2), Immich 2.7.5 incl. CVE-2026-119328, ~~n8n internet-exposed without SSO~~. P2: Jellyfin ≤12.4 set; verify `richdocumentscode` (KEV); monitoring ports on 0.0.0.0. Systemic: flake-pin patch cadence. Open follow-ups: P1 items not yet confirmed remediated.
+- **2026-10-26 (same day, corrected)** — n8n finding downgraded P1→P3: **not internet-forwarded** (owner-confirmed); original in-host test misled by NAT hairpinning (200 from inside ≠ public reachability). Built-in owner auth is deliberate (n8n SSO is paid). Residual: enable MFA on owner, keep update cadence high, LAN/VPN boundary is the wall.

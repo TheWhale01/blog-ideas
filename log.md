@@ -13,6 +13,14 @@ tags: [meta, log]
 > Actions: ingest, update, query, lint, create, archive, delete
 > When this file exceeds 500 entries, rotate: rename to log-YYYY.md, start fresh.
 
+## [2026-10-26] update | n8n audit finding corrected (P1→P3)
+- Owner clarification: n8n is not internet-forwarded; built-in auth chosen deliberately (n8n SSO is paid-only)
+- Root cause of my misread: NAT hairpinning — curling the WAN IP from inside the network returns 200; recorded as methodology caveat
+- [[queries/security-audit]]: inventory row, findings section rewritten as P3 with residual recommendations
+  (owner MFA, aggressive update cadence, LAN/VPN boundary is the wall), action list + Audit log updated
+- [[ideas/Scheduled-Security-Audit]]: added "exposure checks must come from outside" design rule
+- root index.md Queries line refreshed
+
 ## [2026-10-26] update | Audit page renamed + Scheduled-Security-Audit idea
 - Renamed [[queries/erebos-cve-exposure-2026-10]] → [[queries/security-audit]] (git mv); reframed as
   a living document: header banner + dated Audit log section + "current snapshot" marker
