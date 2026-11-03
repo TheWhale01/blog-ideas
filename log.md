@@ -13,6 +13,13 @@ tags: [meta, log]
 > Actions: ingest, update, query, lint, create, archive, delete
 > When this file exceeds 500 entries, rotate: rename to log-YYYY.md, start fresh.
 
+## [2026-10-26] update | Moved Scheduled-Security-Audit: ideas/ → todo/
+- `git mv ideas/Scheduled-Security-Audit.md todo/scheduled-security-audit.md`; frontmatter now `type: todo`
+  with Status: Not started / Priority: Medium / parent hub
+- Repointed refs in queries/security-audit.md, root index.md, todo/index.md (added to Medium section)
+- HERMES.md scope rule refined per user usage: todo/ = actionable backlog (improvements, fixes,
+  operational/automation tasks); ideas/ = new services/projects. Page count unchanged (29)
+
 ## [2026-10-26] update | n8n audit finding corrected (P1→P3)
 - Owner clarification: n8n is not internet-forwarded; built-in auth chosen deliberately (n8n SSO is paid-only)
 - Root cause of my misread: NAT hairpinning — curling the WAN IP from inside the network returns 200; recorded as methodology caveat

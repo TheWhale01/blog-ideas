@@ -10,7 +10,7 @@ confidence: high
 
 # Erebos Security Audit
 
-> Living document, refreshed by the scheduled audit job ([[ideas/Scheduled-Security-Audit]]).
+> Living document, refreshed by the scheduled audit job ([[todo/scheduled-security-audit]]).
 > Newest findings first; per-run history in the Audit log at the bottom.
 > Current snapshot: **2026-10-26**.
 
@@ -105,7 +105,7 @@ All require an authenticated (non-admin) account → single-user instance = low 
 
 ## Related
 
-- [[ideas/Scheduled-Security-Audit]] — the job that keeps this page current
+- [[todo/scheduled-security-audit]] — the job that keeps this page current
 - [[todo/secrets-management]] — credential blast radius if P1 items are exploited
 - [[todo/monitoring-alerting]] — silencing risk from unauthenticated Alertmanager
 - [[docs/erebos/index]] — the stack audited

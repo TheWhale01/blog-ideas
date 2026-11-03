@@ -99,8 +99,11 @@ For project ideas and drafts. Include:
 - Status (active, stalled, completed)
 - Related ideas and dependencies
 
-**Scope rule:** `ideas/` is for **new services/projects that don't exist on the server yet**.
-Improvements, fixes and housekeeping for things **already implemented** go in `todo/` instead.
+**Scope rule:** `ideas/` is for **new services/projects that don't exist yet** (what to build).
+`todo/` is the actionable backlog for things already in motion: improvements, fixes and
+housekeeping on implemented systems **and operational/automation tasks decided for execution**
+(what to do). When the user files something as a todo, it lives in `todo/` regardless of whether
+the underlying tooling is "new".
 
 **External references rule:** every idea page must link the **official documentation and/or
 GitHub repository** of each tool it mentions — inline on first mention for the primary tool and

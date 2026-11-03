@@ -2,14 +2,16 @@
 title: Scheduled Security Audit
 created: 2026-10-26
 updated: 2026-10-26
-type: idea
-tags: [erebos, automation, security, homelab, AI]
+type: todo
+tags: [erebos, todo, improvement, automation, security]
 sources: []
 ---
 
 # Scheduled Security Audit (Hermes cron job)
 
-**Status**: unimplemented
+- **Status**: Not started
+- **Priority**: Medium
+- **Parent**: [[todo/index]]
 
 ## Problem
 
@@ -47,7 +49,7 @@ A **Hermes Agent cron job** running on Erebos (the agent already has terminal + 
 
 - [[queries/security-audit]] — the page this job maintains
 - [[todo/monitoring-alerting]] — overlaps; alert pipeline could later notify on top of this
-- [[index]] — push discipline the job inherits
+- [[todo/index]] — backlog hub
 
 ## External references
 

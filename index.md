@@ -25,7 +25,6 @@ tags: [meta, index]
 - [[ideas/Cloudflare-Tunnel-SSH]] – Secure SSH access via Cloudflare Tunnel without opening port 22
 - [[ideas/Fail2ban]] – Log-based IP banning for SSH and web services, journald/nftables integration on NixOS
 - [[ideas/Chezmoi-Pontos]] – Declarative dotfiles for the pontos laptop (Fedora) with chezmoi + age, wipe-and-recover story
-- [[ideas/Scheduled-Security-Audit]] – Weekly Hermes cron job that re-audits Erebos and keeps the security audit page current
 - [[ideas/Quickshell-Notification-Client]] – Catppuccin notification daemon as a quickconf module, built on quickshell's Quickshell.Services.Notifications
 
 ## Todo
@@ -37,9 +36,10 @@ tags: [meta, index]
 - [[todo/secrets-management]] – High · rotation policy, per-service recipients, offline key backup
 - [[todo/terraform-workflow]] – Medium · remote state + locking, CI drift-check
 - [[todo/authentik-policy-revalidation]] – Medium · username re-check at login (feasible) + forced password rotation on policy change (retroactive check impossible — hashes)
+- [[todo/scheduled-security-audit]] – Medium · weekly Hermes cron job re-auditing Erebos and updating [[queries/security-audit]]
 
 ## Queries
-- [[queries/security-audit]] – Living security audit of Erebos (current snapshot 2026-10-26): P1 = Authentik 2026.8.1 batch, Immich 2.7.5 (unauth ML RCE); maintained by [[ideas/Scheduled-Security-Audit]]
+- [[queries/security-audit]] – Living security audit of Erebos (current snapshot 2026-10-26): P1 = Authentik 2026.8.1 batch, Immich 2.7.5 (unauth ML RCE); maintained by [[todo/scheduled-security-audit]]
 
 ## Summaries
 
