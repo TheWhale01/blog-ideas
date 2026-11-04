@@ -2,9 +2,9 @@
 title: Tutorials
 type: tutorial
 created: 2026-10-15
-updated: 2026-10-15
+updated: 2026-11-04
 tags: [nixos, erebos, tutorial, homelab]
-sources: []
+sources: ["https://docs.goauthentik.io/installation/upgrade/"]
 ---
 
 # Erebos — Tutorials
@@ -86,6 +86,84 @@ services.traefik.dynamicConfigOptions.http = {
 
 ---
 
+## 7. Upgrade Authentik (and downgrade/rollback)
+
+Authentik is pinned by the single `authentikVersion` variable in `sys/containers/authentik.nix`,
+shared by all four images (`server`, `worker` share `server`, `ldap`, `proxy`) — the bump is always
+one edit. Because the tag is pinned (not `latest`), the daily `update-containers` service never
+touches Authentik. The Postgres database runs **on the host** (not in a container).
+Expected SSO downtime: ~3–5 minutes — existing sessions survive briefly, new logins fail — do it
+off-hours. Reference: [official upgrade docs](https://docs.goauthentik.io/installation/upgrade/).
+
+### Upgrade
+
+1. **Read the release notes** between the current and target version
+   ([releases](https://github.com/goauthentik/authentik/releases)) — breaking changes are announced there.
+2. **Back up first** (this is also your downgrade key):
+   ```bash
+   sudo -u postgres pg_dump authentik | gzip > /backup/authentik-pre-<oldver>.sql.gz
+   sudo tar czf /backup/authentik-dirs-pre-<oldver>.tar.gz /var/lib/authentik/certs /var/lib/authentik/templates
+   ```
+   `media/` is large and only additive across patch releases — safe to skip.
+3. **Pull the new images while the old stack still runs** (minimises downtime):
+   ```bash
+   sudo podman pull ghcr.io/goauthentik/server:2026.8.5 \
+     ghcr.io/goauthentik/ldap:2026.8.5 ghcr.io/goauthentik/proxy:2026.8.5
+   ```
+4. **Stop the stack, dependents first:**
+   ```bash
+   sudo systemctl stop podman-authentik-ldap podman-authentik-proxy \
+     podman-authentik-worker podman-authentik
+   ```
+5. **Run the schema migration as a one-shot** — the server container does **not** auto-migrate:
+   ```bash
+   sudo podman run --rm --network=podman \
+     --env-file /run/secrets/authentik --env-file /run/secrets/authentik-smtp \
+     -e AUTHENTIK_POSTGRESQL__HOST=host.containers.internal \
+     -e AUTHENTIK_POSTGRESQL__PORT=5432 -e AUTHENTIK_POSTGRESQL__USER=authentik \
+     -e AUTHENTIK_POSTGRESQL__NAME=authentik \
+     ghcr.io/goauthentik/server:2026.8.5 migrate
+   ```
+   (If the agenix secret paths differ from `/run/secrets/…`, check `config.age.secrets.authentik.path`;
+   `--network=podman` gives both container-name DNS and `host.containers.internal`.)
+6. **Declare + apply the bump:** set `authentikVersion = "2026.8.5"` in `sys/containers/authentik.nix`,
+   commit, `nix run .#apply`.
+7. **Start and verify:**
+   ```bash
+   sudo systemctl start podman-authentik
+   sudo systemctl start podman-authentik-worker podman-authentik-proxy podman-authentik-ldap
+   ```
+   Checklist: `curl -s http://localhost:9000/-/health/live/` · version shown in the admin interface ·
+   one forwardAuth app sign-in works (e.g. vaultwarden) · a Jellyfin LDAP login works ·
+   `journalctl -u podman-authentik-worker -b | tail` shows no silent errors.
+   LDAP/proxy **outposts must match the server version** — the shared `authentikVersion` guarantees it.
+
+If further behind than one minor: upgrade **one minor version at a time**, running step 5 between each
+(`.8.5 → .9.x → …`), reading each release's notes.
+
+### Downgrade / rollback
+
+Authentik **does not support or document a downgrade path** — Django schema migrations are forward-only
+in practice (some are reversible, some data transforms are not). The supported recovery is:
+
+1. Stop the four `podman-authentik*` units (dependents first, as above).
+2. Restore the pre-upgrade dump:
+   ```bash
+   gunzip -c /backup/authentik-pre-<oldver>.sql.gz | sudo -u postgres psql authentik
+   ```
+   (fresh DB role/schema assumed intact; if the new schema is in the way,
+   `sudo -u postgres dropdb authentik && createdb -O authentik authentik` first.)
+3. Restore `certs/` + `templates/` from the tarball if anything looks off (usually unnecessary).
+4. Revert `authentikVersion` to the previous tag in `sys/containers/authentik.nix`, `nix run .#apply`.
+   The old image is still in the local store from before the upgrade, so no pull is needed.
+5. Start the stack (server first) and rerun the verification checklist above.
+
+Last resort, **unsupported** and only for patch-level rollbacks when no backup exists: run the old
+image with `migrate <app> <previous-revision>` to unwind the newest few migrations. Fragile —
+prefer the restore path; treat this as a warning sign to fix backups ([[todo/backups]]).
+
+---
+
 ## Useful NixOS commands
 
 | Task | Command |
@@ -110,4 +188,4 @@ services.traefik.dynamicConfigOptions.http = {
 - The `hades` user is in groups: `wheel`, `libvirtd`, `video`, `input`, `uinput`, `render`, `audio`, `keys`.
 - SSH: only `hades` can log in; password auth is disabled.
 - The firewall allows only TCP 80 and 443; trusted interfaces are `podman0` and `wt0`.
-- Auto-upgrade is enabled (`enable = true`, `allowReboot = true`, daily at `Sun 04:00`).
+- ~~Auto-upgrade is enabled~~ — `system.autoUpgrade` was **removed** (commit `6ef7e41`, 2026-11-04): updates are applied manually via `nix flake update` + `nix run .#apply`.

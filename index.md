@@ -50,7 +50,7 @@ tags: [meta, index]
 - [[docs/erebos/reference]] – Flake outputs, inputs, key files, Traefik routing, and NixOS options
 - [[docs/erebos/secrets]] – age-encrypted secrets layout, mapping, and usage patterns
 - [[docs/erebos/terraform]] – Terranix/OpenTofu workflow, providers, modules, and relationship with NixOS
-- [[docs/erebos/tutorials]] – Step-by-step guides for adding services, Terraform resources, and managing Erebos
+- [[docs/erebos/tutorials]] – Step-by-step guides: adding services, Terraform resources, secret rotation, and the Authentik upgrade + rollback runbook (§7)
 
 ### Erebos Services (per-service docs)
 - [[docs/erebos/services/opengym]] – Deployed self-hosted gym tracker: two-container Podman setup, passkey auth, Traefik routing on port 3006

@@ -13,6 +13,19 @@ tags: [meta, log]
 > Actions: ingest, update, query, lint, create, archive, delete
 > When this file exceeds 500 entries, rotate: rename to log-YYYY.md, start fresh.
 
+## [2026-11-04] create | Authentik upgrade + rollback runbook (tutorials §7)
+- Added [[docs/erebos/tutorials]] **§7**: full procedure for the user's stack — one-variable version
+  pin (`authentikVersion` → all 4 images), host-Postgres pg_dump backup, pull-before-stop, explicit
+  one-shot `migrate` (server does not auto-migrate), declarative bump + `nix run .#apply`,
+  verification checklist (health endpoint, forwardAuth sign-in, LDAP login, worker journal)
+- **Downgrade section**: Authentik has no supported downgrade path (migrations are forward-only in
+  practice) → restore = pre-upgrade pg_dump + tag revert; unsupported reverse-migration last resort
+  flagged as a [[todo/backups]] argument; multi-minor drift rule (one minor at a time)
+- Verified 2026-11-04: ghcr tags through **2026.8.5** exist (server+ldap+proxy), matching GitHub
+  Releases latest community version; official docs URL curl-verified
+- [[queries/security-audit]] P1 row links the runbook + target version; fixed stale
+  auto-upgrade bullet in tutorials "Notes on the environment"; index line refreshed
+
 ## [2026-11-04] update | Erebos sync: commit d5340e3 "fallback to local inference"
 - Provider roles inverted: **OpenRouter qwen3.8-flash = primary**, local LFM3/llama.cpp = fallback
   (safety net when cloud is down); docs/erebos/services.md Hermes section rewritten accordingly

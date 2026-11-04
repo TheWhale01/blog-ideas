@@ -89,7 +89,7 @@ Remaining pre-conditions for whenever the (purposely stopped) unit is re-enabled
 
 ## Action list
 
-- [ ] P1: Authentik container → ≥ 2026.8.2 (`sys/containers/authentik.nix`, pull + restart stack)
+- [ ] P1: Authentik container → ≥ 2026.8.2 (`sys/containers/authentik.nix`, pull + restart stack) — **full upgrade + rollback runbook: [[docs/erebos/tutorials]] §7** (target 2026.8.5, latest community release verified 2026-11-04)
 - [ ] P1: Immich → ≥ 3.3.0 and **delete** `permittedInsecurePackages = [ "immich-2.7.5" ]` from `flake.nix`
 - [x] ~~P1: restore Authentik middleware (or Netbird-only bind) on the n8n router~~ — **corrected**: n8n is not internet-forwarded (owner), built-in auth chosen because SSO is paid; residual actions:
 - [ ] Enable MFA on the n8n owner account; treat n8n updates like an exposed service; confirm LAN/VPN boundary is acceptable
