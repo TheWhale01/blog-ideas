@@ -27,7 +27,7 @@ Point-in-time security audit of Erebos: live version inventory (systemd units, N
 | Nextcloud | 35.0.2 + Collabora `collabora/code` container | public |
 | Jellyfin | 12.2.0 | public (LDAP auth) |
 | Matrix | Synapse 1.163.2 + MAS | public (federation) |
-| Ollama → llama.cpp | **llama-cpp 0.8.0** (`6ef7e41`, 2026-11-04) | **unit intentionally stopped by owner since 2026-11-04** (do not flag as silent death in future runs). If re-enabled: config binds `0.0.0.0:8080`, unauthenticated — reachable by containers (`podman0`) and Netbird mesh (`wt0`); firewalled from public |
+| Ollama → llama.cpp | **llama-cpp 0.8.0** (`6ef7e41`→`d5340e3`, 2026-11-04) | `127.0.0.1:8080` only (rebound same day) ✓; **unit intentionally stopped by owner** — do not flag as silent death in future runs |
 | Vaultwarden | 1.37.4 | public (Authentik SSO) |
 | Grafana | 13.0.11 | public (Authentik) |
 | PostgreSQL | 16.15 | 0.0.0.0:5432, scram, pg_hba scoped to 127.0.0.1/10.88/::1 |
@@ -80,12 +80,12 @@ All require an authenticated (non-admin) account → single-user instance = low 
 - **Ollama (until 2026-11-04)**: was patched vs GGUF advisories (memory-leak <0.17.1; CVE-2026-86289 needs loading a crafted model) and bound to loopback — the *trust-the-model-source* warning carries over to llama.cpp/GGUF usage in [[ideas/Translaitor]].
 - **Vaultwarden 1.37.4, PostgreSQL 16.15, Grafana 13.0.11, nginx, podman 5.8.9, kernel 7.3.0**: no unpatched published advisories found at audit; nixpkgs pin is 24 h old, so backports are current *as of the pin* — which decays until the next `nix flake update`.
 
-### P3 (new 2026-11-04) — local LLM runtime (llama.cpp, replaced Ollama)
-Commit `6ef7e41` swapped Ollama (was `127.0.0.1`-bound) for `services.llama-cpp` bound to **`0.0.0.0:8080` with no authentication**. Not public (firewall only allows 80/443; no `openFirewall`), but `trustedInterfaces = [podman0 wt0]` makes it freely reachable by every container and the Netbird mesh — an anonymous inference/compute endpoint and a DoS vector for Hermes.
-**Cheap fix:** `services.llama-cpp.host = "127.0.0.1"` — Hermes consumes it via loopback; only future remote consumers would need the mesh binding.
-Two landmines to clear **before re-enabling** (owner purposely stopped the unit on 2026-11-04; it had been exiting ~8 s after start, root journal never checked):
+### P3 (new 2026-11-04, **bind partially remediated same day**) — local LLM runtime (llama.cpp, replaced Ollama)
+Commit `6ef7e41` swapped Ollama for `services.llama-cpp` initially bound to **`0.0.0.0:8080` with no authentication** — containers and the Netbird mesh could reach it freely. **Fixed in `d5340e3` (same day): rebound `127.0.0.1`, loopback-only.** ✓
+Remaining pre-conditions for whenever the (purposely stopped) unit is re-enabled:
 - `modelsPreset` is a **removed option in newer nixpkgs** — the next `nix flake update` breaks evaluation until migrated to per-model `services.llama-cpp.<name>`;
-- server-side context was never verified (`-c` absent vs Hermes' 64000 default) and tool-calling was never smoke-tested on this endpoint.
+- server-side context was never verified (`-c` absent vs Hermes' 64000 default) and tool-calling was never smoke-tested on this endpoint;
+- note the fallback inversion in `d5340e3`: local LFM3 is now the **fallback** for Hermes — a broken local unit only degrades silently when the cloud provider is down, so if that path is ever needed in anger, verify it actually serves first.
 
 ## Action list
 
@@ -97,7 +97,7 @@ Two landmines to clear **before re-enabling** (owner purposely stopped the unit 
 - [ ] P2: track Jellyfin fix (>12.4) via `nix flake update`
 - [ ] P2: re-bind Prometheus/Loki/Alertmanager (+ Jellyfin) to loopback; re-check `ss -ltn` after
 - [ ] Systemic: keep a manual patch cadence — `autoUpgrade` removed (`6ef7e41`); `nix flake update` + `nix run .#apply` on a schedule (weekly?); [[todo/scheduled-security-audit]] is the reminder mechanism
-- [ ] llama.cpp (unit intentionally stopped — checklist for whenever it's re-enabled): bind to `127.0.0.1` (only consumer is loopback Hermes), verify server-side `n_ctx` vs Hermes `context_length`, migrate off removed `modelsPreset` option at next flake update, smoke-test tool calling
+- [x] ~~llama.cpp bind 0.0.0.0 → 127.0.0.1~~ — done in `d5340e3` (2026-11-04). Remaining checklist if the stopped unit is re-enabled: verify server-side `n_ctx` vs Hermes `context_length`, smoke-test tool calling, migrate off removed `modelsPreset` option at next flake update
 - [ ] Next audit run: confirm the 2026-11-04 `nix flake update` + rebuild actually advanced Authentik/Immich versions past their P1 fixes
 - [ ] Optional: run `nix-audit-info`/`vulnix` against the system to catch store-level flagged packages automatically
 
@@ -124,3 +124,4 @@ Two landmines to clear **before re-enabling** (owner purposely stopped the unit 
 - **2026-10-26** — Initial snapshot (manual). P1: Authentik 2026.8.1 advisory batch (fix 2026.8.2), Immich 2.7.5 incl. CVE-2026-119328, ~~n8n internet-exposed without SSO~~. P2: Jellyfin ≤12.4 set; verify `richdocumentscode` (KEV); monitoring ports on 0.0.0.0. Systemic: flake-pin patch cadence. Open follow-ups: P1 items not yet confirmed remediated. *(Ollama 0.40.3 row since superseded — runtime replaced, see below.)*
 - **2026-10-26 (same day, corrected)** — n8n finding downgraded P1→P3: **not internet-forwarded** (owner-confirmed); original in-host test misled by NAT hairpinning (200 from inside ≠ public reachability). Built-in owner auth is deliberate (n8n SSO is paid). Residual: enable MFA on owner, keep update cadence high, LAN/VPN boundary is the wall.
 - **2026-11-04** — Delta from commit `6ef7e41` (no full re-inventory): Ollama → llama-cpp 0.8.0 with **new unauthenticated `0.0.0.0:8080` bind** (P3 above); `system.autoUpgrade` removed → manual flake-update cadence (pins advanced same day — Authentik/Immich remediation **not yet verified by version probe**); n8n now from `pkgs-unstable`; `hermes.age` access tightened to 0400. P1/P2 status: unchanged pending next inventory. *(Same day, owner correction: llama-cpp unit **purposely stopped** — absence of :8080 is intended, not a silent service death; do not re-flag in future runs. A todo was briefly filed for it and removed per lifecycle.)*
+- **2026-11-04 (later, `d5340e3`)** — Bind P3 **remediated**: llama.cpp rebound to `127.0.0.1` ✓. Hermes topology inverted: OpenRouter primary, local LFM3 fallback ("fallback to local inference"). Audit→fix turnaround: ~1 h.

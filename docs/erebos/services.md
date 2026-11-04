@@ -175,14 +175,13 @@ Commit `6ef7e41` deleted `ollama.nix` and added `services.llama-cpp` from `pkgs-
 - Flags: `-fa on` (flash attention), `-ctk q8_0` / `-ctv q8_0` (q8 KV cache) — no explicit `-c`,
   so the server-side context is llama-server's default (verify vs Hermes' 64000 default — the
   classic local-model trap documented in the original idea).
-- Binds **`0.0.0.0:8080`, unauthenticated**; `openFirewall` is not set (public stays firewalled),
-  but `trustedInterfaces = [podman0 wt0]` means every container and the Netbird mesh can use the
-  endpoint freely.
+- Binds **`127.0.0.1:8080` (loopback only)** — initially `0.0.0.0`, hardened same day in `d5340e3`
+  after the audit P3; only the co-located Hermes consumes it.
 - ⚠️ Upstream churn: `modelsPreset` is a **removed option** in newer nixpkgs (per-model
   `services.llama-cpp.<name>` instances). The next `nix flake update` will need this module migrated.
 - **Live status 2026-11-04**: unit **purposely stopped by the owner** (it had also been exiting ~8 s
-  after start). Deliberately dormant — before re-enabling: bind `127.0.0.1`, verify server-side
-  context (`-c` vs Hermes' 64000 assumption), migrate off the upstream-removed `modelsPreset`.
+  after start). Deliberately dormant — before re-enabling: verify server-side context
+  (`-c` vs Hermes' 64000 assumption) and migrate off the upstream-removed `modelsPreset`.
 
 ## AI Agents
 
@@ -191,11 +190,11 @@ Commit `6ef7e41` deleted `ollama.nix` and added `services.llama-cpp` from `pkgs-
 The **Hermes Agent** (this assistant — "Odin") runs as a systemd service via the `services.hermes-agent` NixOS module, provided by the `hermes-agent` flake input:
 
 - `enable = true`, `addToSystemPackages = true`.
-- Model (since `6ef7e41`, 2026-11-04): **custom endpoint** `http://127.0.0.1:8080/v1` → local
-  **LFM3-1.7B Q6_K** (llama.cpp), with `fallback_providers = [{ provider = "openrouter"; default = "qwen/qwen3.8-flash"; }]`.
-  The fallback proved itself: it carried the gateway when llama-cpp failed to start on day one.
-  (Previous: OpenRouter-only since 2026-10-22; provider keys in `secrets/shared/hermes.age`,
-  now `0400`, owner = hermes service user — access tightened in `6ef7e41`.)
+- Model (since `d5340e3`, 2026-11-04): **primary = OpenRouter** (`qwen/qwen3.8-flash`),
+  **fallback = custom endpoint** `http://127.0.0.1:8080/v1` → local **LFM3-1.7B Q6_K**
+  (llama.cpp) — i.e. cloud normally serves, local inference is the no-network safety net
+  (`6ef7e41` had it the other way around that same day). Keys in `secrets/shared/hermes.age`,
+  `0400`, owner = hermes service user (access tightened in `6ef7e41`).
 - Matrix gateway: `require_mention = true`, `allowed_users = ["@whale:matrix.thewhale.fr"]` — the agent DM room.
 - Secrets: `environmentFiles = [ config.age.secrets.hermes.path ]` (`secrets/shared/hermes.age`).
 - The `hades` user is member of the `hermes` group (added in `configuration.nix`, 2026-10-15) to manage the agent's state.

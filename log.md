@@ -13,6 +13,15 @@ tags: [meta, log]
 > Actions: ingest, update, query, lint, create, archive, delete
 > When this file exceeds 500 entries, rotate: rename to log-YYYY.md, start fresh.
 
+## [2026-11-04] update | Erebos sync: commit d5340e3 "fallback to local inference"
+- Provider roles inverted: **OpenRouter qwen3.8-flash = primary**, local LFM3/llama.cpp = fallback
+  (safety net when cloud is down); docs/erebos/services.md Hermes section rewritten accordingly
+- **Audit P3 closed same day**: llama.cpp rebound `0.0.0.0` → `127.0.0.1` ✓ — audit→fix turnaround
+  ~1 h, recorded in Audit log + action list ticked (remaining checklist for a future re-enable:
+  verify n_ctx, tool-call smoke test, modelsPreset migration)
+- Audit P3 section, inventory row, docs/erebos/index.md service rows updated; services.md +
+  security-audit.md dates refreshed
+
 ## [2026-11-04] delete | todo/llama-cpp-service-dying removed — shutdown is intentional
 - Owner: llama-cpp unit purposely stopped, not a fault. Deleted the todo (created minutes earlier);
   repointed refs in security-audit (inventory row, P3 section, action list → "checklist for whenever
