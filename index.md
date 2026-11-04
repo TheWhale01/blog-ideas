@@ -10,7 +10,7 @@ tags: [meta, index]
 
 > Content catalog. Every wiki page listed under its type with a one-line summary.
 > Read this first to find relevant pages for any query.
-> Last updated: 2026-11-04 | Total pages: 30
+> Last updated: 2026-11-04 | Total pages: 29
 
 ## Concepts
 
@@ -34,7 +34,6 @@ tags: [meta, index]
 - [[todo/secrets-management]] – High · rotation policy, per-service recipients, offline key backup
 - [[todo/terraform-workflow]] – Medium · remote state + locking, CI drift-check
 - [[todo/authentik-policy-revalidation]] – Medium · username re-check at login (feasible) + forced password rotation on policy change (retroactive check impossible — hashes)
-- [[todo/llama-cpp-service-dying]] – High · llama-cpp unit exits ~8 s after start; local LFM3 path down (OpenRouter fallback serving); bind-to-loopback + modelsPreset migration included
 - [[todo/scheduled-security-audit]] – Medium · weekly Hermes cron job re-auditing Erebos and updating [[queries/security-audit]]
 
 ## Queries

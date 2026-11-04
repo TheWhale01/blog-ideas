@@ -13,6 +13,12 @@ tags: [meta, log]
 > Actions: ingest, update, query, lint, create, archive, delete
 > When this file exceeds 500 entries, rotate: rename to log-YYYY.md, start fresh.
 
+## [2026-11-04] delete | todo/llama-cpp-service-dying removed — shutdown is intentional
+- Owner: llama-cpp unit purposely stopped, not a fault. Deleted the todo (created minutes earlier);
+  repointed refs in security-audit (inventory row, P3 section, action list → "checklist for whenever
+  re-enabled"), todo/index.md, root index.md (29 pages), Translaitor Related, docs/erebos/services.md
+- Audit log records the intent so the future scheduled job doesn't re-flag the absent :8080
+
 ## [2026-11-04] update | Erebos sync: commit 6ef7e41 "upgrade + running local LFM3" — idea IMPLEMENTED
 - **[[ideas/Hermes-Local-LFM3]] implemented → deleted** (lifecycle rule); durable design knowledge folded
   into new `sys/services/llamacpp.nix` section in [[docs/erebos/services]]: llama-cpp 0.8.0 from

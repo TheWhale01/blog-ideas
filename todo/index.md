@@ -20,7 +20,6 @@ sources: []
 ## High
 - [[todo/podman-image-updates]] — Partial · digest-based auto-update, failure notifications, no restart loops
 - [[todo/secrets-management]] — Partial · rotation policy, per-service age recipients, offline key backup
-- [[todo/llama-cpp-service-dying]] — Not started · llama-cpp exits ~8 s after start (status 0); local LFM3 path down, OpenRouter fallback serving
 
 ## Medium
 - [[todo/terraform-workflow]] — Partial · remote state + locking, CI drift-check plan, `nix run .#plan`

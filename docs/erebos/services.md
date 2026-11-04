@@ -180,8 +180,9 @@ Commit `6ef7e41` deleted `ollama.nix` and added `services.llama-cpp` from `pkgs-
   endpoint freely.
 - ⚠️ Upstream churn: `modelsPreset` is a **removed option** in newer nixpkgs (per-model
   `services.llama-cpp.<name>` instances). The next `nix flake update` will need this module migrated.
-- **Live status 2026-11-04**: unit exited ~8 s after start (status 0), nothing on :8080 — agents
-  are served by the OpenRouter fallback. Tracked in [[todo/llama-cpp-service-dying]].
+- **Live status 2026-11-04**: unit **purposely stopped by the owner** (it had also been exiting ~8 s
+  after start). Deliberately dormant — before re-enabling: bind `127.0.0.1`, verify server-side
+  context (`-c` vs Hermes' 64000 assumption), migrate off the upstream-removed `modelsPreset`.
 
 ## AI Agents
 

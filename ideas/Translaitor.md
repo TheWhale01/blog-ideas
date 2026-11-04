@@ -27,5 +27,5 @@ For now it's in its early stages but I can translate entire books without being 
 
 ## Related
 
-- [[docs/erebos/services]] – llama.cpp runtime on Erebos (replaced Ollama 2026-11-04); translategemma hosting must migrate to a GGUF under llama.cpp
-- [[todo/llama-cpp-service-dying]] – the local runtime this project depends on is currently down
+- [[docs/erebos/services]] – llama.cpp runtime on Erebos (replaced Ollama 2026-11-04, currently stopped by owner); translategemma hosting must migrate to a GGUF under llama.cpp
+- [[docs/erebos/index]] – deployment target for the service once its local-LLM runtime is back
