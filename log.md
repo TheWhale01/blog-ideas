@@ -13,6 +13,18 @@ tags: [meta, log]
 > Actions: ingest, update, query, lint, create, archive, delete
 > When this file exceeds 500 entries, rotate: rename to log-YYYY.md, start fresh.
 
+## [2026-10-26] create | Hermes-Local-LFM3 idea
+- Added [[ideas/Hermes-Local-LFM3]]: move Odin from OpenRouter (qwen3.8-flash) to a local custom
+  provider running Liquid AI LFM3-1.7B (released 2026-10-27, post-trained for agentic harnesses
+  incl. Hermes Agent explicitly)
+- Grounded in live facts: Erebos = 12 cores / 31 GiB, Ollama already serving qwen3.5:9b +
+  translategemma:4b; ollama.com/library/lfm3 confirmed with CPU quants (lfm3:1.7b-q4_ ~1 GB)
+- Covers Hermes `provider: custom` config (nix snippet for sys/services/hermes.nix), the
+  OLLAMA num_ctx vs context_length trap, timeouts, license (LFM Open v1.0), and the honest
+  trade-off: sweet spot = scheduled/background/triage work; heavy coding stays with cloud →
+  hybrid topology proposed; eval-before-switch checklist
+- 6 external references, all curl-verified; index.md (total: 30 pages)
+
 ## [2026-10-26] update | Moved Scheduled-Security-Audit: ideas/ → todo/
 - `git mv ideas/Scheduled-Security-Audit.md todo/scheduled-security-audit.md`; frontmatter now `type: todo`
   with Status: Not started / Priority: Medium / parent hub

@@ -10,7 +10,7 @@ tags: [meta, index]
 
 > Content catalog. Every wiki page listed under its type with a one-line summary.
 > Read this first to find relevant pages for any query.
-> Last updated: 2026-10-26 | Total pages: 29
+> Last updated: 2026-10-26 | Total pages: 30
 
 ## Entities
 
@@ -26,6 +26,7 @@ tags: [meta, index]
 - [[ideas/Fail2ban]] – Log-based IP banning for SSH and web services, journald/nftables integration on NixOS
 - [[ideas/Chezmoi-Pontos]] – Declarative dotfiles for the pontos laptop (Fedora) with chezmoi + age, wipe-and-recover story
 - [[ideas/Quickshell-Notification-Client]] – Catppuccin notification daemon as a quickconf module, built on quickshell's Quickshell.Services.Notifications
+- [[ideas/Hermes-Local-LFM3]] – Switch Hermes to a local custom provider (Ollama/llama.cpp) running Liquid AI's LFM3-1.7B, agentic-trained, ~1 GB at 4-bit
 
 ## Todo
 > Improvements/fixes for things already implemented on Erebos (new services go in Ideas).
