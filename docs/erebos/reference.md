@@ -2,7 +2,7 @@
 title: Reference
 type: reference
 created: 2026-10-15
-updated: 2026-10-26
+updated: 2026-11-04
 tags: [nixos, erebos, reference, flake, outputs]
 sources: []
 ---
@@ -88,7 +88,7 @@ traefik = {
 | `config.services.trangers` | disabled (use Authentik OIDC) |
 | `networking.firewall.allowedTCPPorts` | `[80 443]` (public) |
 | `networking.firewall.trustedInterfaces` | `[podman0 wt0]` |
-| `system.autoUpgrade` | enable + allowReboot + daily at `Sun 04:00` |
+| `system.autoUpgrade` | **removed** in `6ef7e41` (2026-11-04) — patching is now manual: `nix flake update` + `nix run .#apply` (done that day: nixpkgs-unstable + hermes-agent pins advanced) |
 | `programs.zsh.enable` | true (default shell is zsh) |
 | `virtualisation.libvirtd.enable` | true (QEMU + swtpm) |
 | `nix.settings.download-buffer-size` | 500 MB |

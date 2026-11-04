@@ -21,7 +21,7 @@ sources: []
 
 A **Hermes Agent cron job** running on Erebos (the agent already has terminal + web access here) that, on schedule:
 
-1. **Re-inventories live versions** the same way the first audit did: `systemctl show <unit> -p ExecStart` → Nix store paths (Traefik, Ollama, Synapse, Vaultwarden, n8n, Postgres, Podman, kernel `uname -r`, `os-release` pin date), container image digests (`podman images` via root or `systemctl show podman-*`), and public API probes where safe (`/status.php`, `/_matrix/client/versions`, `/System/Info/Public`, `/api/version`, `/healthz`).
+1. **Re-inventories live versions** the same way the first audit did: `systemctl show <unit> -p ExecStart` → Nix store paths (Traefik, llama-cpp, Synapse, Vaultwarden, n8n, Postgres, Podman, kernel `uname -r`, `os-release` pin date), container image digests (`podman images` via root or `systemctl show podman-*`), and public API probes where safe (`/status.php`, `/_matrix/client/versions`, `/System/Info/Public`, `/api/version`, `/healthz`).
 2. **Diff against the previous snapshot** stored in the audit page — anything changed (up *or* down) gets called out.
 3. **Cross-check advisories** per changed/notable component: web search + vendor GHSA pages for CVEs published since the last run (`GHSA`/`CISA KEV` for actively-exploited flags).
 4. **Update `queries/security-audit.md`**: refresh the inventory table, re-grade P1/P2/P3, tick/untick the action list based on what's actually deployed now, append a dated entry to the **Audit log** section.

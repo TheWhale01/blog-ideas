@@ -1,7 +1,7 @@
 ---
 title: Erebos Security Audit
 created: 2026-10-26
-updated: 2026-10-26
+updated: 2026-11-04
 type: query
 tags: [erebos, nixos, security, analysis]
 sources: [live service inventory (2026-10-26), vendor advisories — see References]
@@ -12,7 +12,7 @@ confidence: high
 
 > Living document, refreshed by the scheduled audit job ([[todo/scheduled-security-audit]]).
 > Newest findings first; per-run history in the Audit log at the bottom.
-> Current snapshot: **2026-10-26**.
+> Current snapshot: **2026-10-26** inventory + **2026-11-04** delta (see Audit log at the bottom).
 
 Point-in-time security audit of Erebos: live version inventory (systemd units, Nix store paths, running service APIs) cross-checked against published advisories as of **2026-10-26**.
 
@@ -27,14 +27,14 @@ Point-in-time security audit of Erebos: live version inventory (systemd units, N
 | Nextcloud | 35.0.2 + Collabora `collabora/code` container | public |
 | Jellyfin | 12.2.0 | public (LDAP auth) |
 | Matrix | Synapse 1.163.2 + MAS | public (federation) |
-| Ollama | 0.40.3 | **127.0.0.1 only** ✓ |
+| Ollama → llama.cpp | 0.40.3 → **llama-cpp 0.8.0** (`6ef7e41`, 2026-11-04) | **`0.0.0.0:8080`, unauthenticated**; firewalled from public but reachable by containers (`podman0`) and Netbird mesh (`wt0`) via `trustedInterfaces`; unit currently exits ~8 s after start → see [[todo/llama-cpp-service-dying]] |
 | Vaultwarden | 1.37.4 | public (Authentik SSO) |
 | Grafana | 13.0.11 | public (Authentik) |
 | PostgreSQL | 16.15 | 0.0.0.0:5432, scram, pg_hba scoped to 127.0.0.1/10.88/::1 |
 | Podman | 5.8.9 | — |
-| kernel / nixpkgs | 7.3.0 / 26.05 pinned rev 2026-10-27 | fresh |
+| kernel / nixpkgs | 7.3.0 / 26.05; pins advanced by `nix flake update` on 2026-11-04 | fresh |
 
-⚠️ **Systemic caveat**: `autoUpgrade` runs `nixos-rebuild` on the *pinned flake.lock* — it does **not** advance nixpkgs or container images. Security fixes land only when you run `nix flake update` + `nix run .#apply` for images. This is the real patch pipeline gap.
+⚠️ **Systemic caveat** *(updated 2026-11-04)*: commit `6ef7e41` **removed `system.autoUpgrade`** entirely — the old silent-rebuild-on-stale-pin trap is gone, replaced by a fully manual pipeline: `nix flake update` → `nix run .#apply`. Flakes were updated that day (nixpkgs-unstable + hermes-agent pins advanced). Patch cadence is now *entirely* a human habit — exactly what [[todo/scheduled-security-audit]] exists to remind about.
 
 ## Findings by risk
 
@@ -77,8 +77,15 @@ All require an authenticated (non-admin) account → single-user instance = low 
 ### P3 — Clean/fresh at audit time
 - **Traefik 3.7.13**: ahead of all known 2026 advisories (3.7.3 batch etc.); no mTLS/HTTP3 in use.
 - **Synapse 1.163.2**: ahead of fixes for PYSEC-2026 CPU-starvation (1.152.1), federation depth (1.127.1), thumbnails/Ghostscript (1.120.1).
-- **Ollama 0.40.3**: patched vs GGUF advisories (memory-leak <0.17.1; CVE-2026-86289 needs loading a crafted model) — and **correctly bound to loopback**. Relevant for [[ideas/Translaitor]]: only pull models from trusted sources.
+- **Ollama (until 2026-11-04)**: was patched vs GGUF advisories (memory-leak <0.17.1; CVE-2026-86289 needs loading a crafted model) and bound to loopback — the *trust-the-model-source* warning carries over to llama.cpp/GGUF usage in [[ideas/Translaitor]].
 - **Vaultwarden 1.37.4, PostgreSQL 16.15, Grafana 13.0.11, nginx, podman 5.8.9, kernel 7.3.0**: no unpatched published advisories found at audit; nixpkgs pin is 24 h old, so backports are current *as of the pin* — which decays until the next `nix flake update`.
+
+### P3 (new 2026-11-04) — local LLM runtime (llama.cpp, replaced Ollama)
+Commit `6ef7e41` swapped Ollama (was `127.0.0.1`-bound) for `services.llama-cpp` bound to **`0.0.0.0:8080` with no authentication**. Not public (firewall only allows 80/443; no `openFirewall`), but `trustedInterfaces = [podman0 wt0]` makes it freely reachable by every container and the Netbird mesh — an anonymous inference/compute endpoint and a DoS vector for Hermes.
+**Cheap fix:** `services.llama-cpp.host = "127.0.0.1"` — Hermes consumes it via loopback; only future remote consumers would need the mesh binding.
+Two landmines beside the bind:
+- `modelsPreset` is a **removed option in newer nixpkgs** — the next `nix flake update` breaks evaluation until migrated to per-model `services.llama-cpp.<name>`;
+- the unit currently **exits ~8 s after start** (clean exit 0) — the LFM3 primary path is down and OpenRouter fallback carries everything. Diagnosis + fixes tracked in [[todo/llama-cpp-service-dying]].
 
 ## Action list
 
@@ -89,7 +96,9 @@ All require an authenticated (non-admin) account → single-user instance = low 
 - [ ] P2: verify `richdocumentscode` app absent in Nextcloud (KEV-listed, actively exploited)
 - [ ] P2: track Jellyfin fix (>12.4) via `nix flake update`
 - [ ] P2: re-bind Prometheus/Loki/Alertmanager (+ Jellyfin) to loopback; re-check `ss -ltn` after
-- [ ] Systemic: define a patch cadence — `nix flake update` + rebuild on a schedule (weekly?), since `autoUpgrade` alone never moves the pin; candidate for [[todo/index]]
+- [ ] Systemic: keep a manual patch cadence — `autoUpgrade` removed (`6ef7e41`); `nix flake update` + `nix run .#apply` on a schedule (weekly?); [[todo/scheduled-security-audit]] is the reminder mechanism
+- [ ] llama.cpp: bind to `127.0.0.1` (only consumer is loopback Hermes); recover the dying unit ([[todo/llama-cpp-service-dying]]); verify server-side `n_ctx` vs Hermes `context_length`; migrate off removed `modelsPreset` option at next flake update
+- [ ] Next audit run: confirm the 2026-11-04 `nix flake update` + rebuild actually advanced Authentik/Immich versions past their P1 fixes
 - [ ] Optional: run `nix-audit-info`/`vulnix` against the system to catch store-level flagged packages automatically
 
 ## References
@@ -112,5 +121,6 @@ All require an authenticated (non-admin) account → single-user instance = low 
 
 ## Audit log
 
-- **2026-10-26** — Initial snapshot (manual). P1: Authentik 2026.8.1 advisory batch (fix 2026.8.2), Immich 2.7.5 incl. CVE-2026-119328, ~~n8n internet-exposed without SSO~~. P2: Jellyfin ≤12.4 set; verify `richdocumentscode` (KEV); monitoring ports on 0.0.0.0. Systemic: flake-pin patch cadence. Open follow-ups: P1 items not yet confirmed remediated.
+- **2026-10-26** — Initial snapshot (manual). P1: Authentik 2026.8.1 advisory batch (fix 2026.8.2), Immich 2.7.5 incl. CVE-2026-119328, ~~n8n internet-exposed without SSO~~. P2: Jellyfin ≤12.4 set; verify `richdocumentscode` (KEV); monitoring ports on 0.0.0.0. Systemic: flake-pin patch cadence. Open follow-ups: P1 items not yet confirmed remediated. *(Ollama 0.40.3 row since superseded — runtime replaced, see below.)*
 - **2026-10-26 (same day, corrected)** — n8n finding downgraded P1→P3: **not internet-forwarded** (owner-confirmed); original in-host test misled by NAT hairpinning (200 from inside ≠ public reachability). Built-in owner auth is deliberate (n8n SSO is paid). Residual: enable MFA on owner, keep update cadence high, LAN/VPN boundary is the wall.
+- **2026-11-04** — Delta from commit `6ef7e41` (no full re-inventory): Ollama → llama-cpp 0.8.0 with **new unauthenticated `0.0.0.0:8080` bind** (P3 above) + dying unit; `system.autoUpgrade` removed → manual flake-update cadence (pins advanced same day — Authentik/Immich remediation **not yet verified by version probe**); n8n now from `pkgs-unstable`; `hermes.age` access tightened to 0400. P1/P2 status: unchanged pending next inventory.

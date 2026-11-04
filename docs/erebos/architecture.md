@@ -54,7 +54,9 @@ This page explains how the pieces of the `erebos` NixOS configuration fit togeth
 `sys/configuration.nix` is the main NixOS module. It:
 
 - imports the hardware config, containers, services, secrets, disko env, and packages;
-- sets up systemd-boot, kernel, networking, firewall, users (`hades`), libvirtd, auto-upgrade.
+- sets up systemd-boot, kernel, networking, firewall, users (`hades`), libvirtd.
+  (`system.autoUpgrade` was removed in commit `6ef7e41`, 2026-11-04 — updates are applied manually
+  via `nix flake update` + `nix run .#apply`.)
 
 ### 3. Modular composition
 

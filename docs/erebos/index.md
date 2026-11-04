@@ -2,7 +2,7 @@
 title: Erebos
 type: reference
 created: 2026-10-15
-updated: 2026-10-26
+updated: 2026-11-04
 tags: [nixos, server, homelab, documentation, erebos]
 sources: []
 ---
@@ -206,8 +206,8 @@ All public-facing services are reverse-proxied through **Traefik** under `*.thew
 | Grafana / Prometheus / Loki / Promtail | `sys/services/monitoring/` | Observability | GUI + metrics |
 | Jellyfin | `sys/services/jellyfin/jellyfin.nix` | Media server | `jellyfin.thewhale.fr` |
 | Vaultwarden | `sys/services/vaultwarden.nix` | Bitwarden-compatible vault | `vaultwarden.thewhale.fr` (PostgreSQL backend, Authentik SSO) |
-| Ollama | `sys/services/ollama.nix` | Local LLM runtime | Local-only |
-| Hermes Agent | `sys/services/hermes.nix` | AI assistant ("Odin"), Matrix gateway, OpenRouter model | Local-only (Matrix) |
+| llama.cpp | `sys/services/llamacpp.nix` | Local LLM runtime (LFM3-1.7B Q6_K) | `0.0.0.0:8080` (LAN/mesh, unauth; firewalled from public) — [[docs/erebos/services]] |
+| Hermes Agent | `sys/services/hermes.nix` | AI assistant ("Odin"), Matrix gateway, local LFM3 + OpenRouter fallback | Local-only (Matrix) |
 | Hermes Dashboard | `sys/services/hermes.nix` | Agent web dashboard (systemd unit in same module) | `hermes-dashboard.thewhale.fr` (Authentik) — [[docs/erebos/services/hermes-dashboard]] |
 | Immich | `sys/services/immich.nix` | Photo management | `immich.thewhale.fr` |
 | Slskd | `sys/containers/slskd.nix` | Music streaming (Podman, own VPN tunnel) | `slskd.thewhale.fr` (Authentik) |
@@ -395,7 +395,7 @@ sys/
 │   │   └── jellyfin.nix
 │   │   └── get_m3u.py
 │   ├── homepage.nix
-│   ├── ollama.nix
+│   ├── llamacpp.nix
 │   ├── immich.nix
 │   ├── hermes.nix
 │   ├── nginx.nix

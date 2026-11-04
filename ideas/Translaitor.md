@@ -1,7 +1,7 @@
 ---
 title: Translaitor
 created: 2025-06-09
-updated: 2026-10-26
+updated: 2026-11-04
 type: idea
 tags: [blog, AI, book, french, IT, sveltejs, web, english]
 sources: []
@@ -27,5 +27,5 @@ For now it's in its early stages but I can translate entire books without being 
 
 ## Related
 
-- [[docs/erebos/services]] – Ollama service on Erebos that already serves `translategemma:4b` for this project
-- [[ideas/Hermes-Local-LFM3]] – same local-inference pattern (Ollama + agentic models on Erebos)
+- [[docs/erebos/services]] – llama.cpp runtime on Erebos (replaced Ollama 2026-11-04); translategemma hosting must migrate to a GGUF under llama.cpp
+- [[todo/llama-cpp-service-dying]] – the local runtime this project depends on is currently down

@@ -13,6 +13,27 @@ tags: [meta, log]
 > Actions: ingest, update, query, lint, create, archive, delete
 > When this file exceeds 500 entries, rotate: rename to log-YYYY.md, start fresh.
 
+## [2026-11-04] update | Erebos sync: commit 6ef7e41 "upgrade + running local LFM3" — idea IMPLEMENTED
+- **[[ideas/Hermes-Local-LFM3]] implemented → deleted** (lifecycle rule); durable design knowledge folded
+  into new `sys/services/llamacpp.nix` section in [[docs/erebos/services]]: llama-cpp 0.8.0 from
+  pkgs-unstable replacing Ollama (module deleted), LFM3-1.7B **Q6_K** via HF `modelsPreset`,
+  `-fa on -ctk q8_0 -ctv q8_0`; Hermes = custom provider :8080 + **fallback_providers OpenRouter**
+  (qwen3.8-flash) — fallback proven live this session
+- **Live observation** (from this very box): llama-cpp unit exits ~8 s after start (status 0),
+  nothing on :8080 → created [[todo/llama-cpp-service-dying]] (High): journal diagnosis,
+  `-c` context verification vs Hermes 64000 default, `modelsPreset` removed upstream (next flake
+  update breaks eval), and P3 security note: unauth bind moved loopback → 0.0.0.0 (reachable via
+  podman0/wt0 trusted interfaces)
+- Also in `6ef7e41`: **`system.autoUpgrade` removed** (docs index/reference/architecture + audit
+  systemic caveat updated — manual `nix flake update` cadence now; pins advanced same day,
+  Authentik/Immich remediation pending version-probe), n8n → pkgs-unstable, cleanerr
+  `ignoredDirectories` {aurral,lidarr,slskd}, `hermes.age` tightened 0440→0400 owner=svc user
+  (secrets.md row updated)
+- [[queries/security-audit]]: inventory Ollama row → llama.cpp, P3 finding added, action list +4/1
+  updated, 2026-11-04 audit log entry; [[todo/scheduled-security-audit]] inventory list updated;
+  [[ideas/Translaitor]] relinked (Ollama runtime gone — translategemma hosting must migrate)
+- index.md: idea row removed, todo row added (30 pages); 7 pages date-bumped
+
 ## [2026-10-26] lint | Structural alignment: three consistency debts fixed
 - [[HERMES]] naming rule amended: lowercase-hyphens for docs/todo/queries/raw/comparisons/concepts;
   Title-Case allowed in ideas/ (idea filenames are stable blog permalinks — renaming would break

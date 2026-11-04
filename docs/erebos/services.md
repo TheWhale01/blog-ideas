@@ -2,7 +2,7 @@
 title: Services
 type: reference
 created: 2026-10-15
-updated: 2026-10-26
+updated: 2026-11-04
 tags: [nixos, erebos, services]
 sources: []
 ---
@@ -126,7 +126,9 @@ Download cleanup daemon.
 
 - `downloadDir = "/data/downloads"`;
 - `transmissionUrl = http://127.0.0.1:9091`;
-- secret: `transmission.age`.
+- secret: `transmission.age`;
+- `ignoredDirectories` (since `6ef7e41`): `/data/downloads/{aurral,lidarr,slskd}` — keeps
+  media-tree downloads out of the janitor's reach.
 
 ### `sys/services/transmission` (container)
 
@@ -156,13 +158,30 @@ Seerr media request manager (enable + proxy, behind Authentik). `services.seerr.
 
 Each is enabled in Nix and reverse-proxied through Traefik on its own subdomain.
 
-### `sys/services/authentik.nix`, `sys/services/n8n.nix`, `sys/services/ollama.nix`, `sys/services/monitoring/`
+### `sys/services/authentik.nix`, `sys/services/n8n.nix`, `sys/services/monitoring/`
 
 | Service | Role |
 |---|---|
-| n8n | Workflow automation UI (`n8n.thewhale.fr`) |
-| Ollama | Local LLM runtime |
+| n8n | Workflow automation UI (`n8n.thewhale.fr`) — pinned to `pkgs-unstable` since commit `6ef7e41` (fresher release channel than the stable pin) |
 | monitoring/ | Prometheus + Grafana + Loki + Promtail |
+
+### `sys/services/llamacpp.nix` — Local LLM (replaced Ollama, 2026-11-04)
+
+Commit `6ef7e41` deleted `ollama.nix` and added `services.llama-cpp` from `pkgs-unstable`
+(llama-cpp **0.8.0**):
+
+- Model auto-downloaded from Hugging Face via `modelsPreset`: **`LiquidAI/LFM3-1.7B-GGUF`**, file
+  `LFM3-1.7B-Q6_K.gguf` (Q6_K chosen over the ~1 GB q4 default for quality).
+- Flags: `-fa on` (flash attention), `-ctk q8_0` / `-ctv q8_0` (q8 KV cache) — no explicit `-c`,
+  so the server-side context is llama-server's default (verify vs Hermes' 64000 default — the
+  classic local-model trap documented in the original idea).
+- Binds **`0.0.0.0:8080`, unauthenticated**; `openFirewall` is not set (public stays firewalled),
+  but `trustedInterfaces = [podman0 wt0]` means every container and the Netbird mesh can use the
+  endpoint freely.
+- ⚠️ Upstream churn: `modelsPreset` is a **removed option** in newer nixpkgs (per-model
+  `services.llama-cpp.<name>` instances). The next `nix flake update` will need this module migrated.
+- **Live status 2026-11-04**: unit exited ~8 s after start (status 0), nothing on :8080 — agents
+  are served by the OpenRouter fallback. Tracked in [[todo/llama-cpp-service-dying]].
 
 ## AI Agents
 
@@ -171,7 +190,11 @@ Each is enabled in Nix and reverse-proxied through Traefik on its own subdomain.
 The **Hermes Agent** (this assistant — "Odin") runs as a systemd service via the `services.hermes-agent` NixOS module, provided by the `hermes-agent` flake input:
 
 - `enable = true`, `addToSystemPackages = true`.
-- Model: OpenRouter (`qwen/qwen3.8-flash`) — switched from previous provider on 2026-10-22 (`secrets/shared/hermes.age` updated with keys).
+- Model (since `6ef7e41`, 2026-11-04): **custom endpoint** `http://127.0.0.1:8080/v1` → local
+  **LFM3-1.7B Q6_K** (llama.cpp), with `fallback_providers = [{ provider = "openrouter"; default = "qwen/qwen3.8-flash"; }]`.
+  The fallback proved itself: it carried the gateway when llama-cpp failed to start on day one.
+  (Previous: OpenRouter-only since 2026-10-22; provider keys in `secrets/shared/hermes.age`,
+  now `0400`, owner = hermes service user — access tightened in `6ef7e41`.)
 - Matrix gateway: `require_mention = true`, `allowed_users = ["@whale:matrix.thewhale.fr"]` — the agent DM room.
 - Secrets: `environmentFiles = [ config.age.secrets.hermes.path ]` (`secrets/shared/hermes.age`).
 - The `hades` user is member of the `hermes` group (added in `configuration.nix`, 2026-10-15) to manage the agent's state.
