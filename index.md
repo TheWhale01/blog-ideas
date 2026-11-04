@@ -12,8 +12,6 @@ tags: [meta, index]
 > Read this first to find relevant pages for any query.
 > Last updated: 2026-10-26 | Total pages: 30
 
-## Entities
-
 ## Concepts
 
 ## Comparisons
@@ -41,8 +39,6 @@ tags: [meta, index]
 
 ## Queries
 - [[queries/security-audit]] – Living security audit of Erebos (current snapshot 2026-10-26): P1 = Authentik 2026.8.1 batch, Immich 2.7.5 (unauth ML RCE); maintained by [[todo/scheduled-security-audit]]
-
-## Summaries
 
 ## Documentation
 

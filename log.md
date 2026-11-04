@@ -13,6 +13,19 @@ tags: [meta, log]
 > Actions: ingest, update, query, lint, create, archive, delete
 > When this file exceeds 500 entries, rotate: rename to log-YYYY.md, start fresh.
 
+## [2026-10-26] lint | Structural alignment: three consistency debts fixed
+- [[HERMES]] naming rule amended: lowercase-hyphens for docs/todo/queries/raw/comparisons/concepts;
+  Title-Case allowed in ideas/ (idea filenames are stable blog permalinks — renaming would break
+  published URLs)
+- Entity layer formalized: docs/ (docs/erebos/services/* = per-service entity pages); retired empty
+  generic folders entities/ and summaries/ (removed from disk + index.md sections); _archive/
+  re-scoped in Page Thresholds to rare non-git-recoverable material, supersede = delete+fold per the
+  lifecycle rule
+- Wikilink backfill (min-2 rule) on the three pre-convention idea pages: [[ideas/Deezify]] →
+  Translaitor + docs/erebos/index; [[ideas/Remote-Gaming-Server]] → docs/erebos/index +
+  Cloudflare-Tunnel-SSH; [[ideas/Translaitor]] → docs/erebos/services + Hermes-Local-LFM3
+  (all link targets verified to exist; dates bumped)
+
 ## [2026-10-26] lint | Link checklist run: 89 URLs, 1 real finding
 - External: 87/89 healthy. Flags: deezify.thewhale.fr → genuine 404 (offline instance; annotated
   in [[ideas/Deezify]], URL kept as historical — matches the rebuild-from-scratch plan);

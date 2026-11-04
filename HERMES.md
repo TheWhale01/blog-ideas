@@ -17,7 +17,10 @@ The former `/home/hades/code/blog-ideas` copy is not authoritative; the two conv
 GitHub remote. Obsidian should point at the `$WIKI_PATH` checkout.
 
 ## Conventions
-- File names: lowercase, hyphens, no spaces (e.g., `nixos-configuration.md`)
+- File names: `docs/`, `todo/`, `queries/`, `raw/`, `comparisons/`, `concepts/` use lowercase +
+  hyphens (e.g., `nixos-configuration.md`). `ideas/` uses Title-Case-with-hyphens
+  (e.g., `Cloudflare-Tunnel-SSH.md`) — historical decision: idea filenames are stable blog
+  permalinks, renaming them would break published URLs (amended 2026-10-26).
 - Every wiki page starts with YAML frontmatter (see below)
 - Use `[[wikilinks]]` to link between pages (minimum 2 outbound links per page)
 - When updating a page, always bump the `updated` date
@@ -69,9 +72,16 @@ Rule: every tag on a page must appear in this taxonomy. Add new tags here first.
 - **Add to existing page** when a source mentions something already covered
 - **DON'T create a page** for passing mentions, minor details, or things outside the domain
 - **Split a page** when it exceeds ~200 lines — break into sub-topics with cross-links
-- **Archive a page** when its content is fully superseded — move to `_archive/`, remove from index
+- **Supersede a page** when its content is fully replaced — fold knowledge into `docs/`, DELETE the
+  page, repoint links, log it (lifecycle rule; git history preserves the original). `_archive/` is
+  reserved for material worth keeping out of the active wiki but not re-fetchable from git (rare)
 
 ## Entity Pages
+**Entity/service location:** deployed things get their pages under `docs/` —
+`docs/erebos/*` is the entity layer for the server, `docs/erebos/services/<name>.md` for each
+deployed service. The former generic `entities/` and `summaries/` folders are retired (2026-10-26);
+do not recreate them.
+
 One page per notable entity (tools, technologies, projects). Include:
 - Overview / what it is
 - Key facts and dates

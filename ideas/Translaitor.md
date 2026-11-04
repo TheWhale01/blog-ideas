@@ -1,7 +1,7 @@
 ---
 title: Translaitor
 created: 2025-06-09
-updated: 2026-10-15
+updated: 2026-10-26
 type: idea
 tags: [blog, AI, book, french, IT, sveltejs, web, english]
 sources: []
@@ -24,3 +24,8 @@ The goal would be to:
 - [ ] Once every paragrah has been written, compress to epub and send it to the client
 
 For now it's in its early stages but I can translate entire books without being restricted by a free-tier API
+
+## Related
+
+- [[docs/erebos/services]] – Ollama service on Erebos that already serves `translategemma:4b` for this project
+- [[ideas/Hermes-Local-LFM3]] – same local-inference pattern (Ollama + agentic models on Erebos)
