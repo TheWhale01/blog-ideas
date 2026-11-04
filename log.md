@@ -13,6 +13,17 @@ tags: [meta, log]
 > Actions: ingest, update, query, lint, create, archive, delete
 > When this file exceeds 500 entries, rotate: rename to log-YYYY.md, start fresh.
 
+## [2026-10-26] lint | Link checklist run: 89 URLs, 1 real finding
+- External: 87/89 healthy. Flags: deezify.thewhale.fr → genuine 404 (offline instance; annotated
+  in [[ideas/Deezify]], URL kept as historical — matches the rebuild-from-scratch plan);
+  gitlab.gnome.org/GNOME/dconf → 406 is a urllib content-negotiation artifact (curl returns 200),
+  link kept.
+- Internal wikilinks: clean. Remaining "broken" hits are by-design: historical references in
+  log.md (append-only record pointing at since-deleted pages) and the [[wikilinks]] placeholder
+  example in [[HERMES]].
+- Added .linkcheck-last.json to .gitignore (machine artifact of this and future runs — the
+  scheduled audit job, [[todo/scheduled-security-audit]], can reuse this exact procedure)
+
 ## [2026-10-26] create | Hermes-Local-LFM3 idea
 - Added [[ideas/Hermes-Local-LFM3]]: move Odin from OpenRouter (qwen3.8-flash) to a local custom
   provider running Liquid AI LFM3-1.7B (released 2026-10-27, post-trained for agentic harnesses
