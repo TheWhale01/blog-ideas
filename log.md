@@ -13,6 +13,18 @@ tags: [meta, log]
 > Actions: ingest, update, query, lint, create, archive, delete
 > When this file exceeds 500 entries, rotate: rename to log-YYYY.md, start fresh.
 
+## [2026-11-04] create | todo/initrd-systemd-stage1-migration
+- User-reported eval warning "Scripted initrd is deprecated… removal in 26.11" — root cause pinpointed:
+  `sys/configuration.nix` line ~52 `boot.initrd.systemd.enable = false` (explicit opt-out; no
+  documented reason — first checklist item is `git log -S` archaeology)
+- High priority: hard deadline 2026-11-30 (26.11 stable deletes scripted initrd; flake pins
+  nixpkgs-unstable, removal already in pin range)
+- Boot-surface audit makes it a boring migration: root is plain GPT + vfat + btrfs (no LUKS/LVM);
+  /data mapper volume defined outside NixOS entirely; stage-first path available; rollback =
+  previous generation in systemd-boot menu
+- 3 curl-verified references (release notes, impermanence#325, option docs); todo/index.md +
+  root index.md wired (30 pages)
+
 ## [2026-11-04] create | Authentik upgrade + rollback runbook (tutorials §7)
 - Added [[docs/erebos/tutorials]] **§7**: full procedure for the user's stack — one-variable version
   pin (`authentikVersion` → all 4 images), host-Postgres pg_dump backup, pull-before-stop, explicit

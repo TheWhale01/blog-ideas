@@ -10,7 +10,7 @@ tags: [meta, index]
 
 > Content catalog. Every wiki page listed under its type with a one-line summary.
 > Read this first to find relevant pages for any query.
-> Last updated: 2026-11-04 | Total pages: 29
+> Last updated: 2026-11-04 | Total pages: 30
 
 ## Concepts
 
@@ -35,6 +35,7 @@ tags: [meta, index]
 - [[todo/terraform-workflow]] – Medium · remote state + locking, CI drift-check
 - [[todo/authentik-policy-revalidation]] – Medium · username re-check at login (feasible) + forced password rotation on policy change (retroactive check impossible — hashes)
 - [[todo/scheduled-security-audit]] – Medium · weekly Hermes cron job re-auditing Erebos and updating [[queries/security-audit]]
+- [[todo/initrd-systemd-stage1-migration]] – High · scripted-initrd opt-out in configuration.nix triggers the 26.05 deprecation warning; one-line removal + boot test before 26.11 (2026-11-30) deletes it
 
 ## Queries
 - [[queries/security-audit]] – Living security audit of Erebos (current snapshot 2026-10-26): P1 = Authentik 2026.8.1 batch, Immich 2.7.5 (unauth ML RCE); maintained by [[todo/scheduled-security-audit]]
