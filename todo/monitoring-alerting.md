@@ -9,7 +9,8 @@ sources: ["live inspection 2026-11-07: alertmanager 0.31.1 + matrix-alertmanager
 
 # Implement Proper Monitoring & Alerting
 
-- **Status**: In progress — discovered already 80% deployed (2026-11-07)
+- **Status**: Core complete — all pipeline tests owner-confirmed working (2026-11-07 night);
+  remainder = loopback binds, ALERT_LINKS suppression, Loki panels, issues-room read-only
 - **Priority**: Critical
 - **Parent**: [[todo/index]]
 
@@ -22,10 +23,12 @@ healthy (`/-/healthy` = OK):
 - routing → receiver `erebot` → `webhook_configs` → `services.matrix-alertmanager` (port 3004),
   homeserver `matrix.thewhale.fr`, `tokenFile = erebot.age`, `secretFile = matrix-alertmanager-webhook.age`,
   posting into a configured room ID
-- Prometheus side: 2 alert rules already active (`ServiceCrashed` 1m/critical, `ServiceOffline` 3m/warning)
+- Prometheus side: **9 alert rules live** (3 groups — see attached `todo/alert-rules.yml`; the
+  original 2-rule draft was deleted in `790c16a` and rebuilt after promtool validation)
 
-Synthetic end-to-end test fired 2026-11-07 (alert `WikiPipelineTest` injected via AM API, visible in
-`/api/v2/alerts`) — **awaiting owner confirmation it rendered in the Matrix room**.
+End-to-end status: **FULLY CONFIRMED BY OWNER (2026-11-07, "all the tests worked perfectly")** —
+server-level journal evidence (6× send 200 + event IDs) and client-side rendering in the ops room
+agree; rule set fires as unit-tested. The v12 room-visibility question is settled.
 
 ## Proposed replacement rules (dry-run validated against live Prometheus 2026-11-07)
 
@@ -213,12 +216,10 @@ regex if you want them paged).
       `matrixRooms` (room ID must be copied from Element — chat/log text mangles `+/=` as `_`).
       ⚠️ silence/fix the queued ServiceOffline spam BEFORE the bot joins, it lands instantly.
       Versions observed: matrix-alertmanager 0.9.0 (js-sdk), Synapse 1.164.2.
-- [x] **DELIVERY VERIFIED AT SERVER LEVEL 2026-11-07 21:22–21:44 (journal)**: join → 200, six
-      `PUT /send/m.room.message` → all 200 with event IDs (`$f6x-4VPN…` etc.) — every retry of my
-      three probe alerts (`OdinReTest`/`OdinLiveTest`/`OdinJournalProbe`) was ACCEPTED INTO THE ROOM.
-      AM's 5-min retry backoff behaved exactly as the source read predicted. If owner still sees no
-      messages, the discrepancy is purely which room is being looked at (navigate by exact ID via
-      matrix.to) — membership confirmed, sends confirmed.
+- [x] **DELIVERY VERIFIED END-TO-END, TWICE**: server level (journal, 21:22–21:44 — join→200,
+      six `PUT /send`→200 with event IDs, all three probe alerts accepted; AM's 5-min retry behaved
+      exactly as the source read predicted) AND client level — owner confirmation 2026-11-07 night:
+      **"all the tests worked perfectly"**, messages rendered in the ops room. Pipeline CLOSED.
 - [x] Source read (0.9.0 store copy, nixpkgs-patched — durable knowledge for this stack):
       · webhook secret IS enforced in-app: `routes.js` checks `?secret=` OR Basic-auth password vs
         `APP_ALERTMANAGER_SECRET` env (403 without/with-wrong secret — probed live ✓). NOTE: upstream

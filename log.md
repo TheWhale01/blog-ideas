@@ -590,3 +590,7 @@ tags: [meta, log]
 ## 2026-11-07 — odin display name applied: odin → Odin
 
 - Owner changed it; verified live via profile endpoint (displayname=Odin). Recorded in docs/erebos/services.md Hermes section. Last open chat-tracked item from the alerting thread closed.
+
+## 2026-11-07 — alerting thread CLOSED at owner level
+
+- Owner: all @erebot tests worked perfectly — delivery now verified both server-side (journal event IDs) and client-side (rendered in ops room). todo/monitoring-alerting status → Core complete; reality-check paragraph refreshed (9 rules live, end-to-end confirmed); v12 room-visibility question settled. Remaining items unchanged: loopback binds, ALERT_LINKS suppression, Loki panels, issues-room read-only.
