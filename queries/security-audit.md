@@ -59,11 +59,17 @@ All require an authenticated (non-admin) account → single-user instance = low 
 - Nextcloud 35.0.2: searched advisories affect 29–33.x — no known unpatched NC-35 advisory at audit time; keep the image fresh (it auto-updates daily via the update-containers service).
 
 ### P2 — Unauthenticated internal services still on all interfaces (lateral movement surface)
-Verified live `ss -ltn` 2026-11-07: **Alertmanager `*:9093`, Loki `*:3100`, Jellyfin `0.0.0.0:8096`**.
+Verified live `ss -ltn` 2026-11-07: **Alertmanager `*:9093`, Loki `*:3100`, Jellyfin `0.0.0.0:8096`** —
+plus the alert bridge `matrix-alertmanager` `*:3004`.
+⚠️ **New exposure (2026-11-07):** the matrix-alertmanager webhook secret is committed **in plaintext
+in the public repo** (`sys/services/monitoring/prometheus.nix`, receiver URL query string), and the
+bridge listens on all interfaces — anyone on the LAN *or anyone who reads the repo* can forge alerts
+into the Matrix room (noise/phishing vector; not data exfil). Rotate the secret, keep it agenix-only,
+bind `alertmanager`/`matrix-alertmanager`/`loki` loopback.
 `podman0` is a trusted interface, so any compromised container is a guest: it can **post silences to
-Alertmanager** (blinding future alerting) and **read all logs via Loki**.
-**Fix**: bind Alertmanager + Loki to `127.0.0.1` in `sys/services/monitoring/{alertmanager,loki}.nix`,
-Jellyfin `network.bindAddrs = [ "::1" ]`. (Prometheus + Immich + llama.cpp were loopbacked already.)
+Alertmanager** (blinding alerting) and **read all logs via Loki**.
+**Fix**: bind Alertmanager + Loki (+bridge) to `127.0.0.1` in `sys/services/monitoring/*`, Jellyfin
+`network.bindAddrs = [ "::1" ]`.
 
 ### P3 — Clean/fresh at audit time
 - **Traefik 3.7.13**: ahead of all known 2026 advisories (3.7.3 batch etc.); no mTLS/HTTP3 in use.
@@ -86,7 +92,7 @@ Jellyfin `network.bindAddrs = [ "::1" ]`. (Prometheus + Immich + llama.cpp were 
 - [ ] n8n: enable MFA on the owner account; keep n8n updates urgent (auth→RCE advisories all year); LAN/VPN boundary is the wall
 - [ ] P2: verify `richdocumentscode` app absent in Nextcloud (KEV-listed, actively exploited)
 - [ ] P2: track Jellyfin fix (>12.4) via `nix flake update`
-- [ ] P2: bind Alertmanager 9093, Loki 3100, Jellyfin 8096 to loopback
+- [ ] P2: bind Alertmanager 9093, Loki 3100, matrix-alertmanager 3004, Jellyfin 8096 to loopback; **rotate the matrix-alertmanager webhook secret** (plaintext in public repo) and keep it agenix-only
 - [ ] P3: llama.cpp — align Hermes fallback `model.default` to preset alias `LFM3-1.7B` + smoke-test load; migrate off removed `modelsPreset` option at next flake update
 - [ ] Systemic: keep a manual patch cadence — `nix flake update` + `nix run .#apply` on a schedule (weekly?); [[todo/scheduled-security-audit]] is the reminder mechanism
 - [ ] Optional: run `nix-audit-info`/`vulnix` against the system to catch store-level flagged packages automatically

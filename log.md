@@ -13,6 +13,21 @@ tags: [meta, log]
 > Actions: ingest, update, query, lint, create, archive, delete
 > When this file exceeds 500 entries, rotate: rename to log-YYYY.md, start fresh.
 
+## [2026-11-07] query | Monitoring alerting: pipeline was already deployed — verified live
+- User asked to "add alertmanager" → inspection + live probes show **it has been fully deployed since
+  ~mid-Oct** inside prometheus.nix: AM 0.31.1 (active, healthy), matrix-alertmanager bridge (@erebot →
+  configured room, agenix token+secretFile), 2 systemd rules loaded by Prometheus
+- **Synthetic end-to-end test fired**: WikiPipelineTest alert injected via AM API, confirmed accepted
+  (`/api/v2/alerts`); owner asked whether it rendered in the Matrix room → pending confirmation
+- New security finding filed in [[queries/security-audit]] (P2): **webhook secret committed in
+  plaintext in the PUBLIC repo** (receiver URL) + bridge on `*:3004` → forged-alert injection from
+  anywhere; action item: rotate + agenix-only (gitignored local for URL build) + loopback binds
+  (9093/3100/3004 all still `*` per `ss`)
+- [[todo/monitoring-alerting]] rewritten: Status In progress; task 1 [x]; remaining = secret hygiene,
+  binds, rule expansion (disk/cpu/mem/targets + SMART later via [[ideas/Drive-Health-Monthly-Newsletter]]),
+  Loki LogQL panels, podman-restart noise guard, no dual alert brains (Grafana unified alerting optional)
+- todo hub + root index lines updated
+
 ## [2026-11-07] update | pvs ground truth: /data is a 5-disk LVM pool, fully allocated
 - Owner ran `sudo pvs`: VG is **`whale-nas`** (mapper `whale--nas-data`) spanning **5 PVs** — sda
   (WD20EARX 1.82t), **sdb3** (640 GB ~2009 disk!), sdc1 + sde1 (2× ~931g WD), sdf1 (8t SMR BarraCuda)

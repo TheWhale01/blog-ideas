@@ -4,41 +4,49 @@ created: 2026-10-15
 updated: 2026-11-07
 type: todo
 tags: [nixos, erebos, todo, improvement, infrastructure]
-sources: []
+sources: ["live inspection 2026-11-07: alertmanager 0.31.1 + matrix-alertmanager active"]
 ---
 
 # Implement Proper Monitoring & Alerting
 
-- **Status**: Not started
+- **Status**: In progress — discovered already 80% deployed (2026-11-07)
 - **Priority**: Critical
 - **Parent**: [[todo/index]]
 
-## Description
-The monitoring stack (Prometheus + Grafana + Loki + Promtail) is deployed on Erebos but lacks alerting rules and structured log analysis. Metrics are collected; nothing acts on them.
+## Reality check (was written assuming nothing existed)
 
-## Tasks
-- [ ] Add `alertmanager` to the monitoring stack
-- [ ] Define Prometheus alert rules (CPU, disk, memory, service health)
-- [ ] Configure Loki for structured log queries (filter errors from Traefik/Nextcloud)
-- [ ] Set up Grafana unified alerting with Matrix notifications (use existing `matrix-alertmanager-webhook` secret)
-- [ ] Fire one synthetic alert end-to-end and confirm it lands in the Matrix room
+`sys/services/monitoring/prometheus.nix` already contains a **complete alerting pipeline**, live and
+healthy (`/-/healthy` = OK):
 
-## Detailed notes
-Deploy `alertmanager` as a new module under `sys/services/monitoring/` and import it in `default.nix`.
+- `services.prometheus.alertmanager` — enabled, v0.31.1, port 9093, `openFirewall = false`
+- routing → receiver `erebot` → `webhook_configs` → `services.matrix-alertmanager` (port 3004),
+  homeserver `matrix.thewhale.fr`, `tokenFile = erebot.age`, `secretFile = matrix-alertmanager-webhook.age`,
+  posting into a configured room ID
+- Prometheus side: 2 alert rules already active (`ServiceCrashed` 1m/critical, `ServiceOffline` 3m/warning)
 
-Rules to start with:
-- Disk >85% on `/` (btrfs) and `/data` (LVM)
-- Sustained CPU >90% for 15m
-- Free memory <256 MB
-- `podman-*.service` units failed
-- Traefik backend-down
+Synthetic end-to-end test fired 2026-11-07 (alert `WikiPipelineTest` injected via AM API, visible in
+`/api/v2/alerts`) — **awaiting owner confirmation it rendered in the Matrix room**.
 
-Loki: build LogQL queries per service (Traefik 5xx spikes, Nextcloud login failures) and pin them as Grafana panels.
+## Remaining work
 
-Alert routing: Grafana unified alerting → Alertmanager → Matrix via the `matrix-alertmanager-webhook` age secret already present in `secrets.nix`.
-
-Caveat: the daily `update-containers` unit restarts every `podman-*` service — alert rules must treat transient podman restarts as noise (update pipeline stays as-is, owner decision 2026-11-07, [[docs/erebos/containers]]).
+- [ ] ⚠️ **Rotate the leaked webhook secret + remove it from git**: the query-string secret is
+      committed in plaintext in a **public** repo (prometheus.nix `webhook_configs.url`). Anyone can
+      forge alerts into the room. New secret must not return to the repo: keep it agenix-only and
+      build the URL from a gitignored local file (e.g. `sys/secrets.local.nix`, mode 0600, imported
+      optionally) — acceptable on-box (store is local-readable) vs global-public today
+- [ ] Bind loopback (closes audit P2 remainder): `alertmanager.listenAddress = "127.0.0.1"` …
+      live `ss` shows `*:9093`, `*:3004`, `*:3100` (Loki) still all-interfaces
+- [ ] Expand rules beyond systemd state: disk >85 % (`/` btrfs + `/data`), sustained CPU, free mem,
+      `node_xfs`/filesystem read-only remount, Prometheus target-missing; SMART rules later via
+      [[ideas/Drive-Health-Monthly-Newsletter]]
+- [ ] Loki LogQL error panels (Traefik 5xx, Nextcloud) — still to do
+- [ ] Noise guard: daily `update-containers` restarts all `podman-*` — rules must ignore transient
+      restarts (`for: 5m` or dependency-aware inhibit) — owner decision 2026-11-07, [[docs/erebos/containers]]
+- [ ] Confirm Grafana path: current design is Prometheus-native rules → AM → Matrix; Grafana unified
+      alerting is **optional**, don't run two alert brains
 
 ## Related
-- [[docs/erebos/monitoring]]
-- [[docs/erebos/containers]] — daily update-containers behavior
+
+- [[docs/erebos/monitoring]] — the stack
+- [[queries/security-audit]] — P2 binds + new secret-exposure finding
+- [[ideas/Drive-Health-Monthly-Newsletter]] — future SMART alert source into this pipeline

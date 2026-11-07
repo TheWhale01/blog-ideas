@@ -14,7 +14,7 @@ sources: []
 > One file per item, ordered by impact. Statuses are mirrored here; details live in each file.
 
 ## Critical
-- [[todo/monitoring-alerting]] — Not started · Alertmanager + Prometheus rules + Loki queries + Grafana→Matrix routing
+- [[todo/monitoring-alerting]] — In progress · pipeline already deployed+tested; remaining: rotate leaked webhook secret, loopback binds, rule expansion, Loki panels
 - [[todo/backups]] — Not started · respec'd: only vaultwarden/immich/nextcloud (PG dumps + /data trees) → Borg/Restic over SSH to strategos
 
 ## High
