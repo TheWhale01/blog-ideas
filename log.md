@@ -594,3 +594,7 @@ tags: [meta, log]
 ## 2026-11-07 — alerting thread CLOSED at owner level
 
 - Owner: all @erebot tests worked perfectly — delivery now verified both server-side (journal event IDs) and client-side (rendered in ops room). todo/monitoring-alerting status → Core complete; reality-check paragraph refreshed (9 rules live, end-to-end confirmed); v12 room-visibility question settled. Remaining items unchanged: loopback binds, ALERT_LINKS suppression, Loki panels, issues-room read-only.
+
+## 2026-11-07 — monitoring note restructured (owner request)
+
+- 263-line debug chronicle slimmed to a 100-line remainder-at-a-glance page. Nothing lost: durable knowledge (v12 gotchas, appservice/MAS token recipes, bridge source semantics, promtool -cli location) folded into docs/erebos/services.md 'Maintenance recipes & Matrix gotchas'; rule YAML + tests already attached as todo/alert-rules.yml/.test.yml; incident story remains in this file's git history + today's log entries. Structure now: Current state → What's left (6 open items) → rules workflow → safe re-test drills → history pointer.

@@ -191,6 +191,36 @@ Config shape worth remembering:
   `{labels.x}`/`{annotations.x}` interpolation. `services.matrix-alertmanager.mention = true`
   prefixes '@room' pings (module-supported option, default off).
 
+#### Maintenance recipes & Matrix gotchas (learned the hard way, 2026-11-07)
+
+- **Room version v12** (spec v1.16 "Project Hydra", Synapse default since 1.162; ours 1.164.2):
+  room IDs are create-event hashes **without `:server_name`** — matrix.to/permalinks must use the
+  bare ID (`https://matrix.to/#/!C-EIAS89vRQV7k6yUk34TTqXDro5S3Xwx_sJidUW3Lk`, appending the domain
+  breaks resolution). **Upgrading a room yields a NEW ID** (tombstone) — if alerts vanish silently
+  (journal 200s, room empty), compare live room ID in Element (Settings → Advanced) with `matrixRooms`.
+  Creators hold infinite immutable power in v12 → see [[todo/issues-room-readonly]].
+- **@erebot is an appservice user** (registration: `/run/agenix/matrix-appservice`, incl. `as_token`)
+  — MAS can never own it (exclusive namespace). Re-mint its access token (never expires otherwise):
+  ```bash
+  curl -X POST http://127.0.0.1:8008/_matrix/client/v3/login \
+    -H "Authorization: Bearer ***" -H 'Content-Type: application/json' \
+    -d '{"type":"m.login.application_service","identifier":{"type":"server","user":"erebot"}}'
+  ```
+  ⚠️ **localhost:8008 only** — the public `/login` is routed to MAS by Traefik `mas-compat`, which
+  rejects `m.login.application_service`. `as_token` is NOT an access token (AS endpoints only).
+  Token → `agenix -e secrets/shared/matrix/erebot.age` (single line) → rebuild → invite to room if
+  private (bridge auto-joins configured rooms; join attempted per send due upstream cache bug — benign).
+- **MAS users (other bots)**: binary + configs from `systemctl show mas -p ExecStart` (mas-cli
+  1.28.0, `--config /run/agenix/mas --config <store mas-config.yaml>`, run `sudo -u mas`);
+  `manage register-user --yes <name>` + `manage issue-compatibility-token <name> <device>`;
+  `.env PermissionDenied` warning is cosmetic (cwd). AS-reserved localparts fail with
+  "Username not available on homeserver".
+- **Bridge delivery semantics**: `receiver`→room via `MATRIX_ROOMS=<recv>/<roomId>`; webhook secret
+  enforced in-app (nixpkgs patch; query `?secret=` **or Basic-auth** user `alertmanager`); Matrix send
+  failure → HTTP 500 → AM retries ~5 min; successful-but-invisible → check v12 room identity first.
+- **promtool** ships in the prometheus derivation's `-cli` store output:
+  `ls /nix/store/*-prometheus-*-cli/bin/promtool`; unit-test rule edits via `todo/alert-rules.test.yml`.
+
 ### `sys/services/llamacpp.nix` — Local LLM (replaced Ollama, 2026-11-04)
 
 Commit `6ef7e41` deleted `ollama.nix` and added `services.llama-cpp` from `pkgs-unstable`

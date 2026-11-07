@@ -4,260 +4,89 @@ created: 2026-10-15
 updated: 2026-11-07
 type: todo
 tags: [nixos, erebos, todo, improvement, infrastructure]
-sources: ["live inspection 2026-11-07: alertmanager 0.31.1 + matrix-alertmanager active"]
+sources: ["live inspection + end-to-end owner confirmation 2026-11-07 (erebos 790c16a, 85c5ebe)"]
 ---
 
 # Implement Proper Monitoring & Alerting
 
-- **Status**: Core complete — all pipeline tests owner-confirmed working (2026-11-07 night);
-  remainder = loopback binds, ALERT_LINKS suppression, Loki panels, issues-room read-only
-- **Priority**: Critical
+- **Status**: Core **complete & owner-confirmed** (2026-11-07, "all tests worked perfectly") —
+  this note now tracks only the remainder.
+- **Priority**: High (what's left is hardening + polish; the bind item below is the last open
+  security thread → [[queries/security-audit]])
 - **Parent**: [[todo/index]]
 
-## Reality check (was written assuming nothing existed)
+## Current state (live)
 
-`sys/services/monitoring/prometheus.nix` already contains a **complete alerting pipeline**, live and
-healthy (`/-/healthy` = OK):
+Prometheus rules → Alertmanager 0.31.1 → matrix-alertmanager 0.9.0 bridge → ops room as **@erebot**
+(appservice bot). **9 rules / 3 groups**: `systemd_services` (crash catch-all + 25-unit ServiceOffline
+whitelist), `host_resources` (disk 10 %/5 %, read-only-fs canary, memory, CPU, reboot),
+`monitoring_self` (ScrapeTargetDown). Promtool unit-tested before deploy, firing correctly,
+`send_resolved` on. Webhook secret is **agenix-only** (envsubst placeholder, rotated in `85c5ebe`).
+Delivery verified twice: server-side (journal event IDs) and client-side (owner's eyes).
 
-- `services.prometheus.alertmanager` — enabled, v0.31.1, port 9093, `openFirewall = false`
-- routing → receiver `erebot` → `webhook_configs` → `services.matrix-alertmanager` (port 3004),
-  homeserver `matrix.thewhale.fr`, `tokenFile = erebot.age`, `secretFile = matrix-alertmanager-webhook.age`,
-  posting into a configured room ID
-- Prometheus side: **9 alert rules live** (3 groups — see attached `todo/alert-rules.yml`; the
-  original 2-rule draft was deleted in `790c16a` and rebuilt after promtool validation)
+## What's left
 
-End-to-end status: **FULLY CONFIRMED BY OWNER (2026-11-07, "all the tests worked perfectly")** —
-server-level journal evidence (6× send 200 + event IDs) and client-side rendering in the ops room
-agree; rule set fires as unit-tested. The v12 room-visibility question is settled.
+- [ ] **Loopback binds** — Alertmanager `:9093`, bridge `:3004`, Loki `:3100` still listen on `*`
+      (live `ss` 2026-11-07). `podman0` is a trusted network ⇒ any container breach could currently
+      silence Alertmanager or read Loki. One `listenAddress = "127.0.0.1"` per service in
+      `sys/services/monitoring/*`. (Jellyfin `:8096` tracked in [[queries/security-audit]].)
+- [ ] **Alert-link suppression** — one-line `ALERT_LINKS` env entry, not yet applied (unit env
+      verified unset). Snippet: [[docs/erebos/services]] "Maintenance recipes & Matrix gotchas".
+- [ ] **Loki LogQL error panels** (Traefik 5xx, Nextcloud) on the Grafana side.
+- [ ] **Noise guard soak** — after ~1 week, confirm daily `update-containers` restarts stay absorbed
+      by `for: 5m` (no storm in the room); keep Grafana unified alerting OFF: single alert brain.
+- [ ] **Issues room read-only** (bot-only writes) → [[todo/issues-room-readonly]]
+- [ ] Later: SMART rules → [[ideas/Drive-Health-Monthly-Newsletter]]; `livekit`/`homepage-dashboard`/
+      seerr/arr-stack are deliberately NOT in the ServiceOffline whitelist — add to the regex in
+      `todo/alert-rules.yml` if you want them paged.
 
-## Proposed replacement rules (dry-run validated against live Prometheus 2026-11-07)
+## Editing the rules — workflow
 
-Findings that shaped them: (1) node_exporter `type` label = **StartType**
-(`oneshot|simple|notify|dbus|exec|notify-reload|system`), NOT unit class → guard =
-`name=~".+\\.service"` + `type!~"oneshot.*"` (kills all 3 historic false-positive classes);
-(2) `state="active" == 0` unfiltered fires today (69 active units + legit-stopped ones) →
-offline rule is WHITELIST-based; (3) `/data` at 13.1 % free → thresholds 10 %/5 % (validated
-silent); (4) `llama-cpp` deliberately NOT watched (owner-stopped service).
-Paste into `services.prometheus.rules = [ '' ... '' ];` (same shape as the pre-`790c16a` file):
+Source of truth: attached **`todo/alert-rules.yml`** (embeds verbatim into
+`services.prometheus.rules = [ ''…'' ];` in `prometheus.nix`). Tests: attached
+**`todo/alert-rules.test.yml`** (6 promtool scenarios — currently all green).
 
-```yaml
-groups:
-- name: systemd_services
-  rules:
-  - alert: ServiceCrashed
-    expr: node_systemd_unit_state{name=~".+\\.service",state="failed"} == 1
-    for: 1m
-    labels:
-      severity: critical
-    annotations:
-      summary: "Service crashed: {{ $labels.name }}"
-      description: "{{ $labels.name }} entered failed state on {{ $labels.instance }}."
-  - alert: ServiceOffline
-    expr: node_systemd_unit_state{name=~"(matrix-synapse|mas|matrix-alertmanager|prometheus|prometheus-node-exporter|alertmanager|grafana|loki|alloy|traefik|nginx|postgresql|redis-immich|immich-server|vaultwarden|n8n|jellyfin|hermes-agent|netbird|sshd|podman-authentik.*|podman-nextcloud).*\\.service",type!~"oneshot.*",state="active"} == 0
-    for: 5m
-    labels:
-      severity: warning
-    annotations:
-      summary: "Service offline: {{ $labels.name }}"
-      description: "Watched service {{ $labels.name }} not active for 5m on {{ $labels.instance }} (covers daily update-containers restarts)."
-- name: host_resources
-  rules:
-  - alert: DiskSpaceLow
-    expr: node_filesystem_avail_bytes{mountpoint=~"/|/data",fstype!~"tmpfs|overlay|ramfs"} / node_filesystem_size_bytes{mountpoint=~"/|/data"} < 0.10
-    for: 30m
-    labels:
-      severity: warning
-    annotations:
-      summary: "Disk low on {{ $labels.mountpoint }} ({{ $value | humanizePercentage }} free)"
-  - alert: DiskSpaceCritical
-    expr: node_filesystem_avail_bytes{mountpoint=~"/|/data",fstype!~"tmpfs|overlay|ramfs"} / node_filesystem_size_bytes{mountpoint=~"/|/data"} < 0.05
-    for: 10m
-    labels:
-      severity: critical
-    annotations:
-      summary: "Disk CRITICAL on {{ $labels.mountpoint }} ({{ $value | humanizePercentage }} free)"
-  - alert: FilesystemReadOnly
-    expr: node_filesystem_readonly{fstype!~"tmpfs|overlay|ramfs"} == 1
-    for: 5m
-    labels:
-      severity: critical
-    annotations:
-      summary: "{{ $labels.mountpoint }} remounted READ-ONLY (device: {{ $labels.device }})"
-  - alert: MemoryLow
-    expr: node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes < 0.10
-    for: 5m
-    labels:
-      severity: warning
-    annotations:
-      summary: "Available memory <10% on {{ $labels.instance }}"
-  - alert: CPUSaturated
-    expr: 1 - avg(rate(node_cpu_seconds_total{mode="idle"}[5m])) > 0.90
-    for: 15m
-    labels:
-      severity: warning
-    annotations:
-      summary: "CPU >90% sustained 15m on {{ $labels.instance }}"
-  - alert: HostRebooted
-    expr: changes(node_boot_time_seconds[10m]) > 0
-    labels:
-      severity: info
-    annotations:
-      summary: "{{ $labels.instance }} rebooted"
-- name: monitoring_self
-  rules:
-  - alert: ScrapeTargetDown
-    expr: up == 0
-    for: 5m
-    labels:
-      severity: critical
-    annotations:
-      summary: "Prometheus cannot scrape {{ $labels.job }} ({{ $labels.instance }})"
-```
-
-### Verified & attached artifacts (promtool, 2026-11-07)
-
-Rules + unit tests are **attached files** in this folder: `todo/alert-rules.yml` (the YAML body)
-and `todo/alert-rules.test.yml` (six promtool scenarios). `promtool check rules` → 9 rules OK;
-`promtool test rules` → **SUCCESS**: ServiceOffline fires exactly at +5m for a watched unit;
-oneshot/.target/.socket all three historic noise-makers stay silent; llama-cpp unwatched by
-design; failed blog-builder (oneshot) caught by ServiceCrashed; today's real /data level
-(13.1 %) silent while 9 %/30 m fires; ScrapeTargetDown at +5m. `promtool` ships in the
-`prometheus` derivation's **-cli output** (`/nix/store/*-prometheus-*-cli/bin/promtool`).
-
-Run before/after any rule edit:
 ```bash
 PT=$(ls /nix/store/*-prometheus-*-cli/bin/promtool | head -1)
-$PT check rules todo/alert-rules.yml && $PT test rules todo/alert-rules.test.yml
+$PT check rules todo/alert-rules.yml && $PT test rules todo/alert-rules.test.yml   # BEFORE deploy
+curl -s 127.0.0.1:9090/api/v1/rules | grep -o '"health":"[^"]*"'                   # AFTER apply
 ```
-Embedding into the module: `services.prometheus.rules = [ ''<file contents>'' ];`
-(live check after apply: `curl -s 127.0.0.1:9090/api/v1/rules` → 9 rules, `lastError` empty).
 
-Covers: crashes, 25 watched long-running services, root+data disk, read-only fs remount
-(LVM pool watcher), memory, CPU, reboots (audit trail), monitoring-brain blindness.
-Not (yet): SMART (→ [[ideas/Drive-Health-Monthly-Newsletter]]), container health beyond
-unit state, `livekit`/`homepage-dashboard`/`seerr`/arr-stack (not whitelisted — add to the
-regex if you want them paged).
+Guard logic — do not regress:
+- exporter `type` label = systemd **StartType** ⇒ keep `type!~"oneshot.*"` + `.service` name
+  suffixes (this is what killed the target/oneshot/socket spam);
+- offline rule stays **whitelist-based** — unfiltered `state="active" == 0` fires on legitimately
+  stopped units; `llama-cpp` intentionally unwatched;
+- `/data` sits ~13 % free ⇒ disk thresholds must stay **10 %/5 %** or the warning is on day one.
 
-## Room version v12 — what it changes for this pipeline (research, 2026-11-07)
+## Re-testing delivery (safe drills)
 
-- Spec v1.16 "Project Hydra" version; fixes CVE-2025-49090 / CVE-2025-54315; Synapse **default since
-  1.162** (ours 1.164.2 → new rooms are v12 automatically).
-- **Room IDs lose the `:server_name` component** — v12 ID = hash of the create event. `!C-EIAS89…`
-  is exactly that shape. ⇒ Permalink/matrix.to links with a `:matrix.thewhale.fr` SUFFIX are WRONG
-  for v12 rooms (that's why the by-ID link failed to show anything). Correct:
-  `https://matrix.to/#/!C-EIAS89vRQV7k6yUk34TTqXDro5S3Xwx_sJidUW3Lk` — no suffix.
-- **Upgrading a room to v12 creates a NEW room ID** (tombstone + predecessor). If the ops room was
-  upgraded AFTER 790c16a, the bridge posts into the old dead room: journal shows send 200s into
-  !C-EIAS89… while the user watches the new room → the exact "delivered but unseen" signature.
-  ⇒ VERIFY in Element: room settings → advanced → compare live room ID with config value.
-- Creators get infinite immutable power level (bot unaffected); state resolution v2.1; Synapse
-  had v12 edge-case bugs (room-ID collisions, 3pid invites) fixed by 1.162 — 1.164.2 is post-fix.
-- **Not affected**: the bridge's join/send worked fine with the bare-ID form (journal proves 200s).
+```bash
+# format + delivery smoke, no for:-timer wait (~40 s to room):
+NOW=$(date -u +%Y-%m-%dT%H:%M:%S.000Z)
+curl -X POST http://127.0.0.1:9093/api/v2/alerts -H 'Content-Type: application/json' -d \
+'[{"labels":{"alertname":"ServiceOffline","severity":"warning","name":"matrix-synapse.service",
+"type":"notify","state":"active","instance":"127.0.0.1:9100","job":"node_exporter"},
+"annotations":{"summary":"DRILL — injected, not real"},"startAt":"'"$NOW"'"}]'
 
-## Remaining work
+# real trigger incl. resolved message (~7 min, zero user impact):
+sudo systemctl stop prometheus-node-exporter; sleep 420; sudo systemctl start prometheus-node-exporter
+```
 
-- [x] ~~Fire one synthetic alert end-to-end~~ attempted 2026-11-07 — **pipeline is BROKEN at the
-      bridge→Matrix leg**: direct bridge POST with the correct webhook envelope (`receiver: erebot`)
-      returns `{"result":"error"}` + HTTP 500, i.e. the room for `erebot` IS matched but the Matrix
-      send fails. Strongest hypothesis (2026-11-07): **@erebot likely does not exist** — MAS is the
-      identity store (`enable_registration=false`, passwords off) and the profile probe returned
-      `No row found (profiles)` (inconclusive: an existing user with no displayname set gives the
-      same answer; positive controls @whale/@odin resolved fine). The webhook secret itself is valid
-      (bridge accepted POSTs without 401). `manage register-user` below resolves both cases: it
-      errors cleanly if the user already exists, and the token issuance then fixes the dead-token case.
-- [x] ~~Create the bot in MAS~~ (attempted; superseded — @erebot turned out to be an **appservice**
-      user, see the route-A resolution below. MAS recipe kept for reference/other bots — NOT
-      Authentik, Matrix users live in MAS; binary from `systemctl show mas -p ExecStart` →
-      mas-cli 1.28.0):
-      ```bash
-      MAS=/nix/store/4m2bp2m0rpiy96vfa3xiv3iyw2scgmk5-matrix-authentication-service-1.28.0/bin/mas-cli
-      CFG="--config /run/agenix/mas --config /nix/store/0xlj62hlal43kzq5810kbwv629kgsj5d-mas-config.yaml"
-      sudo -u mas $MAS $CFG manage register-user --yes erebot --display-name "Erebot"
-      sudo -u mas $MAS $CFG manage issue-compatibility-token erebot matrix-alertmanager
-      ```
-      (compat-token = the documented long-lived headless-bot route; NO admin privileges flag; token
-      output → `sudo agenix -e` into `secrets/shared/matrix/erebot.age` as a single line → rebuild →
-      invite `@erebot:matrix.thewhale.fr` to room `!FVqWRrn1…` in Element — matrix-webhook
-      auto-joins invites → re-fire test alert)
-- [x] ~~create via MAS~~ **blocked 2026-11-07**: `manage register-user --yes erebot` →
-      `Error: Username not available on homeserver` — Synapse reports the localpart taken: an
-      **`@erebot` exists as a Synapse-LOCAL user outside MAS** (likely from the original webhook
-      setup via the registration shared secret — also explains the 500 at delivery: old/invalid
-      token in erebot.age for an account MAS doesn't own). Verify:
-      `sudo -u postgres psql -d matrix-synapse -Atc "SELECT name,deactivated,is_guest FROM users WHERE name LIKE '%erebot%';"`
-- [x] ~~Choose remediation route~~ → **A, via the appservice** (owner confirmed 2026-11-07:
-      `@erebot` exists **as an application-service user**, registered through
-      `secrets/${env}/matrix/appservice.age` → runtime `/run/agenix/matrix-appservice`). MAS is not in the
-      picture for this account at all — and can't be (exclusive AS namespace reserves the localpart).
-      Fresh-token recipe (no admin, no MAS):
-      ```bash
-      sudo cat /run/agenix/matrix-appservice          # as_token (runtime dir = /run/agenix)
-      curl -X POST http://127.0.0.1:8008/_matrix/client/v3/login \
-        -H "Authorization: Bearer <as_token>" -H 'Content-Type: application/json' \
-        -d '{"type":"m.login.application_service","identifier":{"type":"server","user":"erebot"}}'
-      ```
-      ⚠️ must hit **localhost:8008 (Synapse direct)** — Traefik's `mas-compat` router proxies all
-      public `/login` to MAS, which rejects `m.login.application_service`. Token → `agenix -e`
-      into `secrets/shared/matrix/erebot.age` → rebuild. AS virtual users have no profile row
-      until they set one — explains the earlier 404 probe; display name can be PUT with the new
-      token. (The `.env PermissionDenied` warning during mas-cli runs = cosmetic; cwd unreadable
-      to the mas user.)
-      NOTE on as_token ≠ access token: per spec, `as_token` is only valid on AS-API endpoints
-      (login, namespace queries) — Synapse accepting it on arbitrary client endpoints is an
-      unguaranteed implementation detail; always mint the syt_ token first.
-- [x] ~~Diagnose delivery 500~~ **RESOLVED by journalctl 2026-11-07 19:49**: bridge logs
-      `M_FORBIDDEN: User @erebot:matrix.thewhale.fr not in room` — the configured room is
-      **`!C-EIAS89vRQV7k6yUk34TTqXDro5S3Xwx_sJidUW3Lk:matrix.thewhale.fr`** (supersedes the earlier
-      `!FVqWRrn1…` ID noted from the config summary — stale). This 403 was ALSO the cause of the
-      direct-bridge HTTP 500 earlier. Chain fully proven healthy otherwise: token now VALID
-      (403-from-send ≠ 401 M_UNKNOWN_TOKEN), webhook secret OK, Alertmanager routing OK.
-      Failed events are DROPPED (`clearing queue`), not retried.
-      Fix: invite @erebot to that room in Element (restart bridge if no auto-join), or repoint
-      `matrixRooms` (room ID must be copied from Element — chat/log text mangles `+/=` as `_`).
-      ⚠️ silence/fix the queued ServiceOffline spam BEFORE the bot joins, it lands instantly.
-      Versions observed: matrix-alertmanager 0.9.0 (js-sdk), Synapse 1.164.2.
-- [x] **DELIVERY VERIFIED END-TO-END, TWICE**: server level (journal, 21:22–21:44 — join→200,
-      six `PUT /send`→200 with event IDs, all three probe alerts accepted; AM's 5-min retry behaved
-      exactly as the source read predicted) AND client level — owner confirmation 2026-11-07 night:
-      **"all the tests worked perfectly"**, messages rendered in the ops room. Pipeline CLOSED.
-- [x] Source read (0.9.0 store copy, nixpkgs-patched — durable knowledge for this stack):
-      · webhook secret IS enforced in-app: `routes.js` checks `?secret=` OR Basic-auth password vs
-        `APP_ALERTMANAGER_SECRET` env (403 without/with-wrong secret — probed live ✓). NOTE: upstream
-        0.9.0 lacks this; the store build is patched by nixpkgs. Basic-auth form enables
-        header-based delivery once the URL is fixed
-      · send errors DO return 500 to Alertmanager (`res.status(500)` in routes.js) — so AM retries;
-        earlier "ACKs-but-drops" theory wrong
-      · upstream bug in client.js: `joinedRoomsCache.indexOf(roomId === -1)` — misplaced parens make
-        the cache check vacuous → ensureInRoom always attempts join (benign: join-as-member = no-op)
-      · payload contract: top-level `receiver` field maps via MATRIX_ROOMS entries
-        `<receiver>/<roomId>` (`lastIndexOf('/')`); env seen live: MATRIX_USER=@erebot:matrix.thewhale.fr,
-        homeserver direct :8008; unit restarted 21:22:20 after apply, NRestarts 0
-      · failed direct probes: minimal payload → "no rooms configured" (no receiver field); bad
-        envelope → 400; correct envelope → whatever the Matrix send returns
-- [x] ~~Fix rule spam~~ — resolved by `790c16a` **deleting both alert rules** (−31 lines: the
-      `ServiceOffline` + disk rule with the ineffective `unit-include` premise). Consequence:
-- [x] ~~Rule coverage is now ZERO~~ → RESOLVED 2026-11-07 night: 9-rule set (below, attached as
-      `todo/alert-rules.yml`) deployed, promtool-validated, owner-confirmed working end-to-end.
-- [ ] Room hygiene follow-up: make the issues room bot-writable-only → [[todo/issues-room-readonly]]
-- [x] Rotate the leaked webhook secret + remove it from git → **DONE by owner, commit `85c5ebe`
-      (2026-11-07 21:49Z)**, implemented exactly along the envsubst recipe: new
-      `secrets/shared/prometheus.age` (KEY=VALUE `MATRIX_ALERT_WEBHOOK_SECRET=…`, owner
-      `vars.prometheus.user`, 0400) wired via `services.prometheus.alertmanager.environmentFile`;
-      receiver URL now `?secret=$MATRIX_ALERT_WEBHOOK_SECRET` (placeholder in store — verified:
-      `grep -c` of old value in the live store `alertmanager.yml` = **0**); bridge's
-      `alertmanager-webhook.age` re-encrypted with the same new value. Unit loads
-      `EnvironmentFiles=/run/agenix/prometheus` (note: agenix runtime dir is **/run/agenix**, not
-      /run/secrets — references corrected). Old value persists only in git history; rotation voids it.
-- [ ] Bind loopback (closes audit P2 remainder): AM 9093, bridge 3004, Loki 3100 — live `ss` still `*`
-- [x] ~~Expand rules beyond systemd state~~ — covered by the 9-rule set (`host_resources`,
-      `monitoring_self` groups now live; SMART still via [[ideas/Drive-Health-Monthly-Newsletter]])
-- [ ] Alert message polish: `ALERT_LINKS` suppression of the built-in "Alert link" still **not applied**
-      (env entry verified unset on live unit) — snippet in [[docs/erebos/services]]
-- [ ] Loki LogQL error panels
-- [ ] Noise guard + confirm single alert brain (Grafana unified alerting stays optional)
+Trouble map: journal shows send-200s but room empty → **v12 room-identity check** (Element →
+Settings → Advanced vs `matrixRooms`); `M_FORBIDDEN`/`M_UNKNOWN_TOKEN` in the bridge journal →
+appservice invite + token re-mint recipes in [[docs/erebos/services]] "Maintenance recipes &
+Matrix gotchas".
+
+## History
+
+Full 2026-11-07 debugging story (HTTP 500s → appservice ghost account → room membership → v12 link
+confusion → secret leak & rotation) lives in **this file's git history** + the 2026-11-07 `log.md`
+entries. Durable knowledge was folded into [[docs/erebos/services]] and [[docs/erebos/secrets]].
+Slimmed 2026-11-07 at owner request: the page shows the remainder at a glance.
 
 ## Related
 
-- [[docs/erebos/monitoring]] — the stack
-- [[queries/security-audit]] — P2 binds + new secret-exposure finding
-- [[ideas/Drive-Health-Monthly-Newsletter]] — future SMART alert source into this pipeline
+- [[docs/erebos/services]] — pipeline description, maintenance recipes, gotchas
+- [[queries/security-audit]] — P2 binds (open); webhook-leak finding (resolved)
+- [[ideas/Drive-Health-Monthly-Newsletter]] — future SMART source into this pipeline
