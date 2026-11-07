@@ -1,7 +1,7 @@
 ---
 title: Erebos Server TODO — Index
 created: 2026-10-22
-updated: 2026-10-22
+updated: 2026-11-07
 type: todo
 tags: [erebos, todo, improvement, meta]
 sources: []
@@ -15,9 +15,10 @@ sources: []
 
 ## Critical
 - [[todo/monitoring-alerting]] — Not started · Alertmanager + Prometheus rules + Loki queries + Grafana→Matrix routing
+- [[todo/backups]] — Not started · respec'd: only vaultwarden/immich/nextcloud (PG dumps + /data trees) → Borg/Restic to the Raspberry Pi
 
 ## High
-- _(none at this level right now)_
+- [[todo/age-keys-to-rpi]] — Not started · agenix identity keys have NO offline copy today; passphrase-archive onto the Pi + round-trip drill
 
 ## Medium
 - [[todo/terraform-workflow]] — Partial · remote state + locking, CI drift-check plan, `nix run .#plan`

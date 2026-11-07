@@ -78,13 +78,14 @@ hook (it duplicated stage-1's built-in activation and was rejected by systemd st
 `5f41664` + `034cd93`, verified by successful cold reboot with `/data` mounting). The scripted initrd
 is deleted from nixpkgs in 26.11 (2026-11-30) — the old deprecation warning is gone.
 
-**Backup posture (2026-11-07):** no backup system is in place. Owner stance: `/data` (the NAS-backed
-LVM volume) **mainly stores non-sensitive data**, so a critical-set list is being defined before any
-tooling is picked. Known facts to carry into that spec: Immich media (`/data/Immich`) and Nextcloud
-data (`/data/nextcloud`) live on `/data`; service state **outside** `/data` includes PostgreSQL
-databases (`vaultwarden`, `nextcloud`, `authentik`, `matrix-synapse`, `mas`), `/var/lib/opengym/api`,
-`/var/lib/{transmission,lidarr,…}`, agenix identity keys, the secrets repo and the flake repo itself —
-those are the loss-if-root-dies set regardless of `/data` sensitivity.
+**Backup posture (owner-confirmed 2026-11-07):** no backup system in place yet. `/data` is **not
+redundant** — `whale--nas-data` is a legacy VG name from a previous, separate NAS build (rename never
+done); it is plain LVM on this server, so disk death loses it. Only three services hold
+backup-worthy data: **vaultwarden, immich, nextcloud** → PG logical dumps of their three databases +
+`/data/Immich` + `/data/nextcloud`; everything else is explicitly out of scope. The agenix identity
+keys have **no offline copy today** — planned onto the owner's Raspberry Pi (NixOS, same LAN), which
+is also the intended remote target for the data backups. Tracked in [[todo/backups]] and
+[[todo/age-keys-to-rpi]].
 
 ### 6. Terraform / OpenTofu (terranix)
 

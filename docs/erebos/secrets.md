@@ -89,6 +89,6 @@ No rotation-policy backlog item is tracked: the `.age` secrets here are **mostly
 `client_secret` keys** (plus outpost tokens and SMTP keys) which are *not easily rotatable* —
 rotation means coordinated regeneration on both issuer and consumer sides for marginal benefit on a
 single-admin box. Quarterly-rotation work was explicitly dropped. What remains true and cheap:
-recipients are still broad (`hades` + services), and there is **no documented offline backup of the
-age identity keys** — losing them makes every `.age` file unrecoverable (see the loss-if-root-dies
-set in [[docs/erebos/architecture]] §5).
+recipients are still broad (`hades` + services), and there is **no offline backup of the
+age identity keys** — losing them makes every `.age` file unrecoverable. **Planned fix (2026-11-07):
+back the identity keys up to the owner's Raspberry Pi (NixOS, same LAN)** → [[todo/age-keys-to-rpi]].

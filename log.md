@@ -13,6 +13,20 @@ tags: [meta, log]
 > Actions: ingest, update, query, lint, create, archive, delete
 > When this file exceeds 500 entries, rotate: rename to log-YYYY.md, start fresh.
 
+## [2026-11-07] create | Backup spec answered → todo/backups reborn + todo/age-keys-to-rpi
+- Owner answered the three architecture questions; facts now govern scope:
+  (1) `/data` NOT redundant — `whale--nas-data` is a stale VG name from a previous NAS build, plain
+  LVM on this server; (2) only **vaultwarden, immich, nextcloud** need backups — everything else
+  explicitly out of scope; (3) **no offline copy of agenix identity keys exists** — target for the
+  backup is the owner's **Raspberry Pi (NixOS, same LAN)**, new third machine of the fleet
+- Recreated [[todo/backups]] (Critical) precisely scoped: 3 PG logical dumps + /data/Immich +
+  /data/nextcloud + vaultwarden state dir; Borg-vs-restic open; Pi = remote target (off-box, not
+  off-site — documented limitation); quarterly restore drill
+- New [[todo/age-keys-to-rpi]] (High): passphrase-archive (recommended) vs Pi-as-agenix-recipient;
+  round-trip decrypt drill from a clean machine is the step that makes it real
+- Updated: architecture §5 backup posture, secrets.md cliff → planned fix link, todo/index + root
+  index (29 pages)
+
 ## [2026-11-07] delete | 3 todo items pruned per owner — decisions folded to docs
 - [[todo/podman-image-updates]] deleted: current daily update-containers **works as-is**; no
   digest-diff/signature/notification work wanted — failure observability deferred to
