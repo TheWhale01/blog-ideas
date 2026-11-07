@@ -22,7 +22,7 @@ highest-severity latent risk on Erebos: silent until the day it isn't.
 
 ## Target
 
-**strategos** — the owner's Raspberry Pi, aarch64 NixOS, same LAN ([config repo](https://github.com/TheWhale01/strategos): flake pinning `nixpkgs release-25.11` stable, user `athena`,
+**strategos** — the owner's Raspberry Pi **3B+**, aarch64 NixOS, same LAN ([config repo](https://github.com/TheWhale01/strategos): flake pinning `nixpkgs release-25.11` stable, user `athena`,
 shares the `nixos-modules` input with Erebos). Current state relevant to this task: **SSH server up
 with `athena` authorized keys** (transfer channel exists today), firewall enabled, NetworkManager +
 DHCP (pin a static lease or use `strategos.local` mDNS so Erebos' job targets a stable address),

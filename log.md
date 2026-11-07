@@ -13,6 +13,17 @@ tags: [meta, log]
 > Actions: ingest, update, query, lint, create, archive, delete
 > When this file exceeds 500 entries, rotate: rename to log-YYYY.md, start fresh.
 
+## [2026-11-07] update | strategos readme fixed upstream; fleet facts corrected
+- Owner gave three corrections: olympos **never existed** (abandoned gaming-console idea, config was
+  to mirror pontos; "probably never exist"); Pi model = **Raspberry Pi 3B+**; asked for the readme
+- Cloned https://github.com/TheWhale01/strategos, rewrote readme.md to match reality (pushed as
+  Odin): strategos-only repo (erebos → own flake repo; pontos → Fedora, config retired), dropped the
+  stale `hosts/`-disko install section (Pi has no disko — plain hardware-configuration), documented
+  actual services (key-based ssh + create_ap on wlan0 — soft AP, noted for LAN topology), nixpkgs
+  25.11 pin, athena user, and planned role: agenix keyring host (links todo). Verified
+  nixos-modules URL 200
+- Wiki: 3B+ model added to [[todo/age-keys-to-strategos]] Target
+
 ## [2026-11-07] update | strategos identified: Raspberry Pi config repo integrated
 - Owner shared https://github.com/TheWhale01/strategos (verified 200): the Pi is **strategos** — aarch64
   NixOS flake pinning nixpkgs release-25.11 stable, user `athena`, shares nixos-modules input with
