@@ -562,3 +562,8 @@ tags: [meta, log]
 
 - Room v12 (spec v1.16, Project Hydra; Synapse default since 1.162): room IDs drop the :server component (create-event hash); matrix.to links with a suffix are invalid for v12 rooms — the by-ID link I sent was malformed, that likely hid the confirmed-delivered alerts; version upgrade ⇒ NEW room ID (tombstone) — verify live room ID vs config.
 - New 9-rule set (3 groups) designed from live evidence: StartType-label discovery, whitelist-based ServiceOffline (69-unit reality), 10%/5% disk thresholds vs live 13.1% /data, readonly-fs & target-down & reboot watchers; llama-cpp intentionally unwatched. YAML validated parseable; full block in 'Proposed replacement rules'.
+
+## 2026-11-07 (late night) — ruleset unit-tested green via promtool; artifacts attached
+
+- Discovered promtool in prometheus 3.12.0 derivation's -cli store output. check rules: 9 OK; test rules SUCCESS across 6 scenarios (timing boundary +5m/+30m, noise-regression for oneshot/target/socket, whitelist for llama-cpp, real 13.1 % /data silent, target-down).
+- Attached todo/alert-rules.yml + todo/alert-rules.test.yml to the vault; todo page gained 'Verified & attached artifacts' section with rerun command.

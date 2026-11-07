@@ -111,6 +111,24 @@ groups:
       summary: "Prometheus cannot scrape {{ $labels.job }} ({{ $labels.instance }})"
 ```
 
+### Verified & attached artifacts (promtool, 2026-11-07)
+
+Rules + unit tests are **attached files** in this folder: `todo/alert-rules.yml` (the YAML body)
+and `todo/alert-rules.test.yml` (six promtool scenarios). `promtool check rules` → 9 rules OK;
+`promtool test rules` → **SUCCESS**: ServiceOffline fires exactly at +5m for a watched unit;
+oneshot/.target/.socket all three historic noise-makers stay silent; llama-cpp unwatched by
+design; failed blog-builder (oneshot) caught by ServiceCrashed; today's real /data level
+(13.1 %) silent while 9 %/30 m fires; ScrapeTargetDown at +5m. `promtool` ships in the
+`prometheus` derivation's **-cli output** (`/nix/store/*-prometheus-*-cli/bin/promtool`).
+
+Run before/after any rule edit:
+```bash
+PT=$(ls /nix/store/*-prometheus-*-cli/bin/promtool | head -1)
+$PT check rules todo/alert-rules.yml && $PT test rules todo/alert-rules.test.yml
+```
+Embedding into the module: `services.prometheus.rules = [ ''<file contents>'' ];`
+(live check after apply: `curl -s 127.0.0.1:9090/api/v1/rules` → 9 rules, `lastError` empty).
+
 Covers: crashes, 25 watched long-running services, root+data disk, read-only fs remount
 (LVM pool watcher), memory, CPU, reboots (audit trail), monitoring-brain blindness.
 Not (yet): SMART (→ [[ideas/Drive-Health-Monthly-Newsletter]]), container health beyond

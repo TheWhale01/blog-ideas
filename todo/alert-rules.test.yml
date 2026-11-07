@@ -1,0 +1,117 @@
+rule_files:
+  - rules.yml
+
+evaluation_interval: 1m
+
+tests:
+# ---- ServiceOffline: watched, non-oneshot, inactive > 5m => fires
+- interval: 1m
+  input_series:
+    - series: 'node_systemd_unit_state{name="matrix-synapse.service",type="notify",state="active"}'
+      values: '0x30'
+  alert_rule_test:
+    - eval_time: 4m
+      alertname: ServiceOffline
+      exp_alerts: []
+    - eval_time: 6m
+      alertname: ServiceOffline
+      exp_alerts:
+        - exp_labels:
+            severity: warning
+            type: notify
+            name: matrix-synapse.service
+            state: active
+          exp_annotations:
+            summary: "Service offline: matrix-synapse.service"
+            description: "Watched service matrix-synapse.service not active for 5m on  (covers daily update-containers restarts)."
+
+# ---- NO noise regression: the three historic false positives must NOT alert
+- interval: 1m
+  input_series:
+    - series: 'node_systemd_unit_state{name="systemd-update-done.service",type="oneshot",state="active"}'
+      values: '0x30'
+    - series: 'node_systemd_unit_state{name="poweroff.target",state="active"}'
+      values: '0x30'
+    - series: 'node_systemd_unit_state{name="virtlxcd-admin.socket",type="oneshot",state="active"}'
+      values: '0x30'
+  alert_rule_test:
+    - eval_time: 10m
+      alertname: ServiceOffline
+      exp_alerts: []
+
+# ---- whitelist respected: unwatched inactive service must NOT alert
+- interval: 1m
+  input_series:
+    - series: 'node_systemd_unit_state{name="llama-cpp.service",type="simple",state="active"}'
+      values: '0x30'
+  alert_rule_test:
+    - eval_time: 10m
+      alertname: ServiceOffline
+      exp_alerts: []
+
+# ---- ServiceCrashed: any failed .service (even oneshot) fires after 1m
+- interval: 1m
+  input_series:
+    - series: 'node_systemd_unit_state{name="blog-builder.service",type="oneshot",state="failed"}'
+      values: '1x30'
+  alert_rule_test:
+    - eval_time: 2m
+      alertname: ServiceCrashed
+      exp_alerts:
+        - exp_labels:
+            severity: critical
+            type: oneshot
+            name: blog-builder.service
+            state: failed
+          exp_annotations:
+            summary: "Service crashed: blog-builder.service"
+            description: "blog-builder.service entered failed state on ."
+
+# ---- Disk: 13.1% free (today's /data reality) => silent; 9% => warning @30m; 4% => critical @10m
+- interval: 1m
+  input_series:
+    - series: 'node_filesystem_avail_bytes{mountpoint="/data",device="/dev/mapper/whale--nas-data",fstype="ext4"}'
+      values: '13.1x30'
+    - series: 'node_filesystem_size_bytes{mountpoint="/data",device="/dev/mapper/whale--nas-data",fstype="ext4"}'
+      values: '100x30'
+  alert_rule_test:
+    - eval_time: 31m
+      alertname: DiskSpaceLow
+      exp_alerts: []
+
+- interval: 1m
+  input_series:
+    - series: 'node_filesystem_avail_bytes{mountpoint="/data",device="/dev/mapper/whale--nas-data",fstype="ext4"}'
+      values: '9x30'
+    - series: 'node_filesystem_size_bytes{mountpoint="/data",device="/dev/mapper/whale--nas-data",fstype="ext4"}'
+      values: '100x30'
+  alert_rule_test:
+    - eval_time: 29m
+      alertname: DiskSpaceLow
+      exp_alerts: []
+    - eval_time: 31m
+      alertname: DiskSpaceLow
+      exp_alerts:
+        - exp_labels:
+            severity: warning
+            mountpoint: /data
+            device: /dev/mapper/whale--nas-data
+            fstype: ext4
+          exp_annotations:
+            summary: "Disk low on /data (9% free)"
+
+# ---- ScrapeTargetDown fires at 5m
+- interval: 1m
+  input_series:
+    - series: 'up{job="authentik",instance="127.0.0.1:9000"}'
+      values: '0x30'
+  alert_rule_test:
+    - eval_time: 6m
+      alertname: ScrapeTargetDown
+      exp_alerts:
+        - exp_labels:
+            severity: critical
+            job: authentik
+            instance: 127.0.0.1:9000
+          exp_annotations:
+            summary: "Prometheus cannot scrape authentik (127.0.0.1:9000)"
