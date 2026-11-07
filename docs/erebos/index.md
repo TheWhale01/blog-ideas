@@ -166,10 +166,10 @@ Secret categories:
 
 **Prod (`prod.nix`):**
 
-- `disk /dev/vda`: GPT, 512 MB EFI system partition (`/boot`, vfat) + btrfs root on remaining space.
+- `disk /dev/vda` (⚠️ stale path — prod is bare metal with ATA disks `sda`–`sdf`; see [[docs/erebos/architecture]] §5): GPT, 512 MB EFI system partition (`/boot`, vfat) + btrfs root on remaining space.
 - `data /dev/mapper/whale--nas-data`: LVM volume group, ext4 on `/data` with `noatime`.
 
-Prod also ships an initrd post-device command (`lvm vgchange -ay`) so the LVM data volume is activated at boot.
+The LVM data volume is activated at boot automatically by systemd stage-1 (`boot.initrd.services.lvm`, default-on since `034cd93`/`5f41664` removed the scripted opt-out and the old `vgchange` post-device hook).
 
 **Stage (`stage.nix`):**
 

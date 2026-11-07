@@ -13,7 +13,26 @@ tags: [meta, log]
 > Actions: ingest, update, query, lint, create, archive, delete
 > When this file exceeds 500 entries, rotate: rename to log-YYYY.md, start fresh.
 
-## [2026-11-07] create | Drive-Health-Monthly-Newsletter idea (researched)
+## [2026-11-07] update | Owner correction: prod is BARE METAL — drive-health unblocked, new todo
+- Owner: "Erebos prod is not a VM" (stage is — and stage is deliberately out of newsletter scope).
+  Verified live from the container view: `systemd-detect-virt` none, Ryzen 5 5600, DMI generic board,
+  **6 ATA disks** (WD20EARX, WD6400AAKS, WD10EZEX, Kingston SA400S3 SSD, WD1001FALS, ST8000DM004 8TB),
+  zero virtio devices — my earlier "prod = VM" inference (from disko's `/dev/vda`) was wrong; libvirtd
+  exists to host the stage VM
+- Consequence: SMART collection happens ON Erebos itself → rewrote
+  [[ideas/Drive-Health-Monthly-Newsletter]]: gating question removed; disk inventory table added
+  (no redundancy exists → newsletter is the only failure strategy today; 2011-era drives flagged for
+  power-on-hours); collection now = NixOS smartctl_exporter module on localhost + services.smartd
+  self-tests; tasks/index line refreshed
+- **New latent bug found & filed** → [[todo/disko-prod-device-paths]] (High): prod.nix targets
+  `/dev/vda` on hardware where no vda exists — harmless until someone re-runs disko; disk-role map
+  needed (also feeds newsletter per-disk labeling); architecture §5 + docs/erebos/index disko section
+  annotated with the stale-path warning
+- Also swept leftover stale line: docs/erebos/index still described the removed `vgchange` post-device
+  hook (missed in the initrd fold) → updated to stage-1 services.lvm reality
+- 34 pages
+
+## [2026-11-07] create | Drive-Health-Monthly-Newsletter idea (feasibility researched)
 - Owner asked: monthly drive-state email + always-viewable source; "make all the research on if this
   is feasible" → [[ideas/Drive-Health-Monthly-Newsletter]] with verdict **feasible, one gating fact**
 - Research findings: (1) **Erebos is a VM → SMART never crosses virtio** — collection MUST run on the

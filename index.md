@@ -10,7 +10,7 @@ tags: [meta, index]
 
 > Content catalog. Every wiki page listed under its type with a one-line summary.
 > Read this first to find relevant pages for any query.
-> Last updated: 2026-11-07 | Total pages: 33
+> Last updated: 2026-11-07 | Total pages: 34
 
 ## Concepts
 
@@ -25,7 +25,7 @@ tags: [meta, index]
 - [[ideas/Chezmoi-Pontos]] – Declarative dotfiles for the pontos laptop (Fedora) with chezmoi + age, wipe-and-recover story
 - [[ideas/Quickshell-Notification-Client]] – Catppuccin notification daemon as a quickconf module, built on quickshell's Quickshell.Services.Notifications
 - [[ideas/CVE-Now-MCP]] – Give Odin structured CVE lookups via cve.now's free hosted MCP server (no auth; `get_vulnerability`/`list_feed`/`check_stack` incl. flake.lock) feeding [[todo/scheduled-security-audit]]
-- [[ideas/Drive-Health-Monthly-Newsletter]] – Feasible: smartctl_exporter on the physical disk host → Prometheus/Grafana live view + Hermes monthly cron digest via Resend; gating question = what is the host and the array
+- [[ideas/Drive-Health-Monthly-Newsletter]] – Unblocked: prod is bare metal (6 ATA disks, Ryzen 5 5600) → smartctl_exporter + smartd locally → Prometheus/Grafana live view + Hermes monthly cron digest via Resend
 
 ## Todo
 > Improvements/fixes for things already implemented on Erebos (new services go in Ideas).
@@ -33,6 +33,7 @@ tags: [meta, index]
 - [[todo/monitoring-alerting]] – Critical · Alertmanager, Prometheus rules, Loki queries, Grafana→Matrix
 - [[todo/backups]] – Critical · respecified: vaultwarden/immich/nextcloud only (PG dumps + /data trees), target = strategos (Pi)
 - [[todo/age-keys-to-strategos]] – High · agenix identity keys have no offline copy; passphrase-archive onto strategos + round-trip decrypt drill
+- [[todo/disko-prod-device-paths]] – High · prod.nix declares /dev/vda on a bare-metal box (6 ATA disks); reinstall footgun — map disk roles & switch to by-id paths
 - [[todo/terraform-workflow]] – Medium · remote state + locking, CI drift-check
 - [[todo/authentik-policy-revalidation]] – Medium · username re-check at login (feasible) + forced password rotation on policy change (retroactive check impossible — hashes)
 - [[todo/scheduled-security-audit]] – Medium · weekly Hermes cron job re-auditing Erebos and updating [[queries/security-audit]]

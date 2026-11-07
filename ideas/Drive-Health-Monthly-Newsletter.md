@@ -9,7 +9,7 @@ sources: []
 
 # Drive Health Monthly Newsletter
 
-**Status**: researched — feasible, with one location decision to make first
+**Status**: feasible — unblocked (prod is bare metal; SMART is local)
 
 ## Goal
 
@@ -17,43 +17,59 @@ A **monthly email newsletter** on the state of the physical hard drives ("should
 sourced from the **existing monitoring stack** — so the same data is also always live on a Grafana
 dashboard, no need to wait for the mail to check.
 
-## Feasibility verdict — YES, with one structural requirement
+## Feasibility verdict — YES, fully local
 
-**Erebos is a VM** (`/dev/vda` virtio root, `libvirtd` on the physical machine beneath).
-SMART is a property of *physical* disks and **does not cross a virtio/VM boundary** — `smartctl`
-inside Erebos sees nothing useful about the real drives. Therefore the collection layer must run on
-**the physical host that owns the disks** (the box Erebos's VMs run on — the machine holding the
-array in question). Everything else slots into the stack that already exists:
+**Erebos prod is a physical machine** (owner-confirmed 2026-11-07; verified live:
+`systemd-detect-virt` = none, AMD Ryzen 5 5600, six ATA disks visible in `/sys/block`). SMART data is
+therefore directly collectable **on Erebos itself** — no host/VM indirection. (Erebos *hosts* the
+erebos-stage VM via libvirtd; the stage environment is deliberately out of scope for the newsletter —
+its virtual disks are portable by design.)
+
+The "array" — the actual physical inventory, verified 2026-11-07:
+
+| Device | Disk | Role hint |
+|---|---|---|
+| `sda` | WDC WD20EARX (2 TB, Green) | |
+| `sdb` | WDC WD6400AAKS (640 GB) | |
+| `sdc` | WDC WD10EZEX (1 TB) | |
+| `sdd` | Kingston SA400S3 (SATA SSD) | |
+| `sde` | WDC WD1001FALS (1 TB Black) | |
+| `sdf` | Seagate ST8000DM004 (8 TB BarraCuda) | likely `/data` backend |
+
+No mdraid/ZFS — redundancy does not exist; SMART-driven early replacement is the *only* failure
+strategy, which makes this idea more load-bearing than it looks. Two of these drives (the 640 GB
+AAKS, the 2011-era 1001FALS) are old enough that power-on hours alone may decide the first swap.
 
 ```
-physical host ── smartctl_exporter (:9633) + node_exporter (:9100)
-                     │  (scraped over the LAN by…)
-Erebos ── Prometheus ─┤── Grafana dashboard  ← always-viewable state ("so I don't need to wait")
-                     │
-        monthly job ──┘── query Prometheus HTTP API → compose mail → Resend SMTP → inbox
+Erebos (bare metal) ── smartctl_exporter (:9633, new) + node_exporter (:9100, exists)
+                          │ scraped locally
+                    Prometheus ── Grafana "Disk Health" dashboard   ← always-viewable
+                          │
+              Hermes monthly cron ── Prometheus HTTP API → digest → Resend email → inbox
 ```
 
 ## Components (researched & verified 2026-11-07)
 
 1. **Collection** — [smartctl_exporter](https://github.com/prometheus-community/smartctl_exporter)
-   (prometheus-community; a NixOS module exists: [`services.prometheus.exporters.smartctl`](https://search.nixos.org/options?query=services.prometheus.exporters.smartctl),
-   wraps [smartmontools](https://www.smartmontools.org/)). Exposes per-disk: health status, reallocated/pending/
-   uncorrectable sectors, temperature, power-on hours, SSD wear (percentage used), smartd test results.
-   Runs on the disk host; NVMe needs the device nodes readable (`disk` group / udev rule per the module docs).
-   *Caveat found:* SSD/NVMe coverage is best-effort — some vendor attributes surface inconsistently;
-   classic SATA/HDD metrics are solid.
-   Plus `node_exporter` (already the fleet pattern) for I/O errors, and its built-in **mdstat** collector
-   if the array is mdraid — or a ZFS pool exporter if the host is TrueNAS/Proxmox-ZFS (→ open question below).
+   on Erebos itself via the NixOS module [`services.prometheus.exporters.smartctl`](https://search.nixos.org/options?query=services.prometheus.exporters.smartctl)
+   (wraps [smartmontools](https://www.smartmontools.org/)). Exposes per-disk: health status,
+   reallocated/pending/uncorrectable sectors, temperature, power-on hours, SSD wear (percentage used),
+   test results. Bind to `localhost:9633`, scrape locally — the loopback rule from
+   [[queries/security-audit]] applies (nothing needs this over the LAN).
+   *Caveat found:* SATA/HDD coverage is rock-solid; the SATA SSD (Kingston) reports vendor-attribute
+   style wear — verify its `percentage_used` equivalent appears; NVMe/RAID-card issues don't apply here.
+   Plus `node_exporter` (already running) for I/O error counters; no mdstat/ZFS collector needed —
+   there is no mdraid or pool, just ATA disks + LVM.
+   Bonus, same machine, complementary: enable `services.smartd` (smartmontools daemon) to run weekly
+   SHORT / monthly LONG self-tests and mail/report failures — the newsletter *reads* trends, smartd
+   *creates* them.
 
-2. **Always-on view** — scrape `host:9633` + `host:9100` from Erebos' Prometheus (add one job to
-   `sys/services/monitoring/`), then a Grafana dashboard: the community "SMART / Disk Health" panels
-   plug straight into `smartctl_*` metric names. Note: **Grafana must reach the host from Erebos** —
-   the exporter binds the LAN interface; keep it firewalled to the Erebos VM IP (never public; the
-   loopback-bindings lesson from [[queries/security-audit]] applies — bind `--web.listen-address=host-virbr-ip:9633`
-   or firewall-source-restrict).
+2. **Always-on view** — scrape `localhost:9633` from Erebos' Prometheus (one extra job in
+   `sys/services/monitoring/`), then a Grafana dashboard wired to the `smartctl_*` metric names —
+   per-disk tiles: health flag, temp, reallocated/pending sectors, power-on hours, SSD wear.
    *Alternative single-app:* [Scrutiny](https://github.com/AnalogJ/scrutiny) — a self-contained SMART
-   web UI + daemon on the host (Docker or NixOS service) with its own dashboard and (older) built-in
-   hourly email. Cleaner if the host isn't NixOS; duplicates Prometheus-side features though.
+   web UI + daemon with its own dashboards. Cleaner as a one-container answer, but it duplicates what
+   Prometheus already gives you and sits outside the alerting plan; documented, not recommended here.
 
 3. **The newsletter itself** — Grafana OSS **has no native scheduled email/PDF reporting** (it's an
    Enterprise/Cloud feature — [docs](https://grafana.com/docs/grafana/latest/dashboards/create-reports/)),
@@ -75,26 +91,26 @@ Erebos ── Prometheus ─┤── Grafana dashboard  ← always-viewable sta
    wait for the newsletter. The same `smartctl_health` metric feeds instant Alertmanager rules
    (`smartctl_health == 0`, pending-sectors jump, temp > 55 °C) → Matrix. That's a sub-item of
    [[todo/monitoring-alerting]]; the newsletter is the *trend* view, alerts are the *tripwire*.
-   (If the host runs Scrutiny instead, it can also mail hourly — but then it bypasses Grafana.)
+   (Scrutiny-style all-in-one setups mail hourly themselves, but bypass Grafana/alerting.)
 
-## Open question that gates the build
+## Remaining open questions (no longer gating — sizing questions)
 
-**What is the physical host, and can we deploy to it?** The plan assumes a Linux box we control
-(NixOS ideal → the exporter modules drop in next to `sys/services/monitoring/` style configs; any
-Linux → static binary + systemd unit; TrueNAS/Proxmox → exporter story changes: Proxmox has native
-SMART + its own metrics API; TrueNAS SCALE runs k3s/docker → Scrutiny fits there). "My array" needs
-a definition: mdraid? ZFS pool? plain passthrough disks into the VM? → determines which collectors
-besides SMART matter (mdstat / zpool status / btrfs device stats).
+1. **Which sdX is which role**: the physical mapping of the six disks (root btrfs on which?, whale VG
+   on which — likely `sdf` the 8 TB) is worth recording once, see [[todo/disko-prod-device-paths]].
+2. Newsletter content depth: pure SMART digest, or include filesystem usage + backup-job status too
+   (a true "state of the drives AND their data" monthly)?
+3. Recipient/route: personal inbox via Resend (token reuse) — confirm the from-address policy
+   (`authentik-no-reply@thewhale.fr` exists; a dedicated `odin@` might be cleaner).
 
 ## Tasks
 
-- [ ] Answer the host question (OS + how the disks are attached + what "the array" actually is)
-- [ ] Deploy `smartctl_exporter` (+ `node_exporter` if missing) on the host, restricted bind/firewall
-- [ ] Scrape job in Erebos' Prometheus + Grafana disk-health dashboard (verify live view first)
-- [ ] Hermes monthly cron job: Prometheus query → digest → Resend email (+ archive to vault)
-- [ ] Immediate-alert rules via [[todo/monitoring-alerting]] (`smartctl_health`, sector growth, temp)
-- [ ] Define the per-drive replace verdict thresholds in the prompt (green/yellow/red rubric)
-- [ ] First newsletter = manual dry-run, sanity-check the numbers against `smartctl -a` on the host
+- [ ] Enable `services.prometheus.exporters.smartctl` (localhost bind) + scrape job + `services.smartd` self-tests in `sys/services/monitoring/`
+- [ ] Reconcile prod device paths ([[todo/disko-prod-device-paths]]) before trusting any disk-role claims
+- [ ] Build the Grafana disk-health dashboard (tiles per `/sys/block` disk, thresholds colored)
+- [ ] Hermes monthly cron digest: Prometheus queries → green/yellow/red rubric → Resend email + vault archive
+- [ ] Immediate Alertmanager rules via [[todo/monitoring-alerting]] (`smartctl_health`, sector growth, temp)
+- [ ] Define replace-verdict thresholds (new reallocated/pending > 0 sustained; wear > 80 %; SMART self-test errors; power-on > ~40k h on greens)
+- [ ] First digest = manual dry-run, cross-checked against `sudo smartctl -a /dev/sdX` on each disk
 
 ## Related
 

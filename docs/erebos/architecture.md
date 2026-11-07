@@ -68,8 +68,11 @@ This page explains how the pieces of the `erebos` NixOS configuration fit togeth
 
 ### 5. Disk layout (disko)
 
-`sys/disko/` defines the partition tables. Prod uses a GPT disk with virtio root disk `/dev/vda`:
-ESP (vfat, `/boot`) + btrfs root; `/data` is an ext4 filesystem on the pre-existing LVM volume
+`sys/disko/` defines the partition tables. Prod uses a GPT disk (ESP vfat `/boot` + btrfs root) that
+`prod.nix` names `/dev/vda` — a **stale device path**: Erebos prod is **bare metal** (owner-confirmed
+2026-11-07, verified live: `systemd-detect-virt` = none, Ryzen 5 5600, six ATA disks `sda`–`sdf` in
+`/sys/block`, no virtio devices; `libvirtd` runs here to host the **erebos-stage VM**, not itself).
+`/data` is an ext4 filesystem on the pre-existing LVM volume
 `/dev/mapper/whale--nas-data` (`type = "lvm"` mount entry). Since 2026-11-07 the boot runs
 **systemd stage-1 initrd** (`boot.initrd.systemd.enable` default): LVM activation in the initrd is
 handled automatically by `boot.initrd.services.lvm.enable` (default-on via lvm2 udev rules —
