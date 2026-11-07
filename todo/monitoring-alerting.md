@@ -32,11 +32,26 @@ Synthetic end-to-end test fired 2026-11-07 (alert `WikiPipelineTest` injected vi
 - [x] ~~Fire one synthetic alert end-to-end~~ attempted 2026-11-07 — **pipeline is BROKEN at the
       bridge→Matrix leg**: direct bridge POST with the correct webhook envelope (`receiver: erebot`)
       returns `{"result":"error"}` + HTTP 500, i.e. the room for `erebot` IS matched but the Matrix
-      send fails. Prime suspects: (a) `@erebot` not joined to room `!FVqWRrn1hvNO8Ykzs3xEdSP00B3mokJ7Ad38LkqNL0Y`
-      (note: configured room ≠ the Odin DM room — alerts go to a separate room), (b) dead/expired
-      access token in `erebot.age`. Diagnose: `sudo journalctl -u matrix-alertmanager -n 50`
-      (expect `M_UNKNOWN_TOKEN` / 403), then re-login + `agenix -e` the token file if needed.
-      The webhook **secret** itself is confirmed working (bridge accepted our POST without 401).
+      send fails. Strongest hypothesis (2026-11-07): **@erebot likely does not exist** — MAS is the
+      identity store (`enable_registration=false`, passwords off) and the profile probe returned
+      `No row found (profiles)` (inconclusive: an existing user with no displayname set gives the
+      same answer; positive controls @whale/@odin resolved fine). The webhook secret itself is valid
+      (bridge accepted POSTs without 401). `manage register-user` below resolves both cases: it
+      errors cleanly if the user already exists, and the token issuance then fixes the dead-token case.
+- [ ] **Create the bot in MAS** (NOT Authentik — Matrix users live in MAS; verified binary:
+      `systemctl show mas -p ExecStart` → mas-cli 1.28.0):
+      ```bash
+      MAS=/nix/store/4m2bp2m0rpiy96vfa3xiv3iyw2scgmk5-matrix-authentication-service-1.28.0/bin/mas-cli
+      CFG="--config /run/secrets/mas --config /nix/store/0xlj62hlal43kzq5810kbwv629kgsj5d-mas-config.yaml"
+      sudo -u mas $MAS $CFG manage register-user --yes erebot --display-name "Erebot"
+      sudo -u mas $MAS $CFG manage issue-compatibility-token erebot matrix-alertmanager
+      ```
+      (compat-token = the documented long-lived headless-bot route; NO admin privileges flag; token
+      output → `sudo agenix -e` into `secrets/shared/matrix/erebot.age` as a single line → rebuild →
+      invite `@erebot:matrix.thewhale.fr` to room `!FVqWRrn1…` in Element — matrix-webhook
+      auto-joins invites → re-fire test alert)
+- [ ] Then re-test: inject via `http://127.0.0.1:9093/api/v2/alerts` (curl in the chat thread), expect
+      message in the alerts room within ~40 s
 - [ ] ⚠️ **Fix rule spam before enabling delivery**: live AM currently holds firing `ServiceOffline`
       alerts for `systemd-update-done.service` (oneshot), `poweroff.target` (target) and
       `virtlxcd-admin.socket` (socket) — the `unit-include` regex in node_exporter extraFlags is not
