@@ -14,7 +14,7 @@ sources: []
 > One file per item, ordered by impact. Statuses are mirrored here; details live in each file.
 
 ## Critical
-- [[todo/monitoring-alerting]] — In progress · pipeline deployed but DELIVERY BROKEN (bridge→Matrix returns 500 — check @erebot token/room membership); also pending: rule spam fix, leaked webhook secret rotation, loopback binds
+- [[todo/monitoring-alerting]] — In progress · root cause CONFIRMED (bridge log 403: @erebot not in alerts room — token/secret/routing all healthy); fix = invite bot (+ spam rule first); then rotate leaked webhook secret, loopback binds
 - [[todo/backups]] — Not started · respec'd: only vaultwarden/immich/nextcloud (PG dumps + /data trees) → Borg/Restic over SSH to strategos
 
 ## High

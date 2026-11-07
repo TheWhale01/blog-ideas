@@ -78,11 +78,17 @@ Synthetic end-to-end test fired 2026-11-07 (alert `WikiPipelineTest` injected vi
       NOTE on as_token ≠ access token: per spec, `as_token` is only valid on AS-API endpoints
       (login, namespace queries) — Synapse accepting it on arbitrary client endpoints is an
       unguaranteed implementation detail; always mint the syt_ token first.
-- [ ] Room membership: the bridge is **jaywink/matrix-alertmanager** (confirmed via nixpkgs
-      `pkgs/by-name/ma/matrix-alertmanager` — NOT matrix-webhook as earlier assumed). Its README:
-      "Automatic joining of configured rooms. **Private rooms require an invite**." → ensure the
-      target room ID is in `matrixRooms` (prometheus.nix) and invite @erebot (Element) if private;
-      `systemctl restart matrix-alertmanager` and it joins on startup — no manual /join call needed
+- [x] ~~Diagnose delivery 500~~ **RESOLVED by journalctl 2026-11-07 19:49**: bridge logs
+      `M_FORBIDDEN: User @erebot:matrix.thewhale.fr not in room` — the configured room is
+      **`!C-EIAS89vRQV7k6yUk34TTqXDro5S3Xwx_sJidUW3Lk:matrix.thewhale.fr`** (supersedes the earlier
+      `!FVqWRrn1…` ID noted from the config summary — stale). This 403 was ALSO the cause of the
+      direct-bridge HTTP 500 earlier. Chain fully proven healthy otherwise: token now VALID
+      (403-from-send ≠ 401 M_UNKNOWN_TOKEN), webhook secret OK, Alertmanager routing OK.
+      Failed events are DROPPED (`clearing queue`), not retried.
+      Fix: invite @erebot to that room in Element (restart bridge if no auto-join), or repoint
+      `matrixRooms` (room ID must be copied from Element — chat/log text mangles `+/=` as `_`).
+      ⚠️ silence/fix the queued ServiceOffline spam BEFORE the bot joins, it lands instantly.
+      Versions observed: matrix-alertmanager 0.9.0 (js-sdk), Synapse 1.164.2.
 - [ ] Then re-test: inject via `http://127.0.0.1:9093/api/v2/alerts` (curl in the chat thread), expect
       message in the alerts room within ~40 s
 - [ ] ⚠️ **Fix rule spam before enabling delivery**: live AM currently holds firing `ServiceOffline`

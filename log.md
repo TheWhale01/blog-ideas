@@ -538,3 +538,10 @@ tags: [meta, log]
 - Added summaries for each page
 
 ## [2026-10-15] create | Wiki initialized
+
+## 2026-11-07 (alerting) — root cause confirmed from bridge journalctl
+
+- matrix-alertmanager 0.9.0 logs `M_FORBIDDEN: @erebot not in room !C-EIAS89vRQV7k6yUk34TTqXDro5S3Xwx_sJidUW3Lk:matrix.thewhale.fr` — room ID superseded the stale `!FVqWRrn1…` noted earlier from config summary.
+- Proves the rest of the chain healthy: fresh AS-minted token VALID (403-on-send, not 401), webhook secret OK, Alertmanager routing OK. Failed events dropped, not retried (`clearing queue`).
+- Remaining: invite @erebot (or repoint matrixRooms; copy ID from Element, chat text mangles +/=), silence/fix ServiceOffline spam BEFORE joining, then end-to-end test; then secret rotation + loopback binds.
+- todo/monitoring-alerting, todo/index, index updated.
