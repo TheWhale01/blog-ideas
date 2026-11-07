@@ -10,7 +10,7 @@ tags: [meta, index]
 
 > Content catalog. Every wiki page listed under its type with a one-line summary.
 > Read this first to find relevant pages for any query.
-> Last updated: 2026-11-07 | Total pages: 29
+> Last updated: 2026-11-07 | Total pages: 32
 
 ## Concepts
 
@@ -55,6 +55,11 @@ tags: [meta, index]
 ### Erebos Services (per-service docs)
 - [[docs/erebos/services/opengym]] – Deployed self-hosted gym tracker: two-container Podman setup, passkey auth, Traefik routing on port 3006
 - [[docs/erebos/services/hermes-dashboard]] – Agent web dashboard: loopback :9119 + Traefik + Authentik OIDC→Basic bridge
+
+### Strategos (Raspberry Pi)
+- [[docs/strategos/index]] – Pi 3B+ on Erebos' LAN: soft AP (create_ap), hardened key-only SSH, future keyring + backup receiver; 25.11-stable flake sharing nixos-modules
+- [[docs/strategos/services]] – file-by-file docs of sys/ incl. the plaintext-AP-passphrase warning
+- [[docs/strategos/reference]] – options table, access matrix, security notes, planned roles
 
 ---
 

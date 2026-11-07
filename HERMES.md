@@ -77,8 +77,9 @@ Rule: every tag on a page must appear in this taxonomy. Add new tags here first.
   reserved for material worth keeping out of the active wiki but not re-fetchable from git (rare)
 
 ## Entity Pages
-**Entity/service location:** deployed things get their pages under `docs/` —
-`docs/erebos/*` is the entity layer for the server, `docs/erebos/services/<name>.md` for each
+**Entity/service location:** deployed things get their pages under `docs/<machine>/` —
+`docs/erebos/*` is the entity layer for the server, `docs/strategos/*` documents the Raspberry Pi
+(index/services/reference), `docs/erebos/services/<name>.md` for each
 deployed service. The former generic `entities/` and `summaries/` folders are retired (2026-10-26);
 do not recreate them.
 

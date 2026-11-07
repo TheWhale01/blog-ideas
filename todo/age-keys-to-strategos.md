@@ -54,5 +54,6 @@ DHCP (pin a static lease or use `strategos.local` mDNS so Erebos' job targets a 
 ## Related
 
 - [[docs/erebos/secrets]] — rotation posture; this closes its "key-loss cliff" caveat
+- [[docs/strategos/index]] — the Pi's own documentation (current config, security notes)
 - [[todo/backups]] — same Pi doubles as the backup target for the 3 sensitive services
 - **strategos config** — https://github.com/TheWhale01/strategos

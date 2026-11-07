@@ -13,6 +13,23 @@ tags: [meta, log]
 > Actions: ingest, update, query, lint, create, archive, delete
 > When this file exceeds 500 entries, rotate: rename to log-YYYY.md, start fresh.
 
+## [2026-11-07] create | docs/strategos/: full documentation tree for the Pi + olympos/pontos purged
+- New machine entity layer per amended [[HERMES]] (`docs/<machine>/`): **docs/strategos/{index,
+  services,reference}.md**, built from a fresh read of sys/ @ main (2026-11-07): Pi 3B+ aarch64,
+  25.11-stable flake sharing nixos-modules (same base as Erebos), extlinux boot, ext4 SD root,
+  4 GiB swapfile, NM + IPv6 fully disabled, hardened sshd (key-only, no root), **create_ap**: wired
+  `enu1u1u1` → AP `wlan0` SSID "Chambre Hugo"
+- **Security findings documented (not reproduced)**: AP WPA2 passphrase is a short weak pattern in
+  plaintext in the PUBLIC repo — flagged with fix path (agenix will arrive on the Pi with the
+  keyring work anyway); no disk encryption OK while only-encrypted-key material lands on it;
+  version-skew note for future borg receiver role; firewall rules to verify before adding services
+- Purged olympos + incidental pontos references per owner ("olympos never existed"): strategos
+  readme fleet section rewritten (erebos link kept; Chezmoi-Pontos idea untouched — pontos is its
+  genuine subject, confirm intent if that should go too); memory updated
+- Fixed my own transcription error mid-work: kernel module is `r8712u` (Realtek USB Wi-Fi dongle)
+- Wiring: root index + Strategos subsection (32 pages), age-keys todo links docs/strategos;
+  strategos repo: readme commit pending separate push
+
 ## [2026-11-07] update | strategos readme fixed upstream; fleet facts corrected
 - Owner gave three corrections: olympos **never existed** (abandoned gaming-console idea, config was
   to mirror pontos; "probably never exist"); Pi model = **Raspberry Pi 3B+**; asked for the readme
