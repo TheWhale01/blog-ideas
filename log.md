@@ -13,6 +13,18 @@ tags: [meta, log]
 > Actions: ingest, update, query, lint, create, archive, delete
 > When this file exceeds 500 entries, rotate: rename to log-YYYY.md, start fresh.
 
+## [2026-11-07] delete | todo/initrd-systemd-stage1-migration — COMPLETED & folded
+- Commits `5f41664` (delete `boot.initrd.systemd.enable = false`) + `034cd93` (delete the whole
+  `postDeviceCommands` vgchange hook from prod.nix; flake pins advanced incl. hermes-agent)
+- **Verified live on Erebos**: booted = current = `26.05.20261107.93fb760`, kernel **7.3.3**,
+  `/data` mounted from `/dev/mapper/whale--nas-data` → systemd stage-1 auto-activated the VG via
+  lvm2 udev rules exactly as predicted; the fallback `boot.initrd.systemd.services` unit was never needed
+- Destructive question answered affirmatively by reality: the scripted-era hook was a duplicate
+- Folded durable knowledge: [[docs/erebos/architecture]] §5 disk layout rewritten (stage-1 boot,
+  services.lvm defaults, commit refs, 26.11 context); [[docs/erebos/reference]] options table +
+  boot.initrd.systemd row; [[queries/security-audit]] kernel/pin rows refreshed
+- todo/index + root index lines removed (30 pages); deprecation warning era closed for this vault
+
 ## [2026-11-07] update | Initrd migration: prod assertion root-caused
 - Owner hit `systemd stage 1 does not support boot.initrd.postDeviceCommands` on prod (stage passed —
   no LVM there); definition pinpointed in sys/disko/prod.nix (their own `lvm vgchange -ay` hack for the

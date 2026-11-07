@@ -2,7 +2,7 @@
 title: Reference
 type: reference
 created: 2026-10-15
-updated: 2026-11-04
+updated: 2026-11-07
 tags: [nixos, erebos, reference, flake, outputs]
 sources: []
 ---
@@ -89,6 +89,7 @@ traefik = {
 | `networking.firewall.allowedTCPPorts` | `[80 443]` (public) |
 | `networking.firewall.trustedInterfaces` | `[podman0 wt0]` |
 | `system.autoUpgrade` | **removed** in `6ef7e41` (2026-11-04) — patching is now manual: `nix flake update` + `nix run .#apply` (done that day: nixpkgs-unstable + hermes-agent pins advanced) |
+| `boot.initrd.systemd.enable` | default `true` since 26.05 — migrated 2026-11-07 (`5f41664`), scripted initrd abandoned before 26.11 removal; initrd LVM via `boot.initrd.services.lvm` defaults |
 | `programs.zsh.enable` | true (default shell is zsh) |
 | `virtualisation.libvirtd.enable` | true (QEMU + swtpm) |
 | `nix.settings.download-buffer-size` | 500 MB |

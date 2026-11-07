@@ -34,7 +34,7 @@ Point-in-time security audit of Erebos: live version inventory (systemd units, N
 | Grafana | 13.0.11 | public (Authentik) |
 | PostgreSQL | 16.15 | 0.0.0.0:5432, scram, pg_hba scoped to 127.0.0.1/10.88/::1 |
 | Podman | 5.8.9 | — |
-| kernel / nixpkgs | **7.3.1** / system `26.05.20261104.994bb33` | fresh; rebooted 2026-11-04 ✓ |
+| kernel / nixpkgs | **7.3.3** / system `26.05.20261107.93fb760` | fresh; rebooted onto systemd stage-1 initrd 2026-11-07 ✓ |
 
 ⚠️ **Systemic caveat** *(updated 2026-11-04)*: commit `6ef7e41` **removed `system.autoUpgrade`** entirely — the old silent-rebuild-on-stale-pin trap is gone, replaced by a fully manual pipeline: `nix flake update` → `nix run .#apply`. Flakes were updated that day (nixpkgs-unstable + hermes-agent pins advanced). Patch cadence is now *entirely* a human habit — exactly what [[todo/scheduled-security-audit]] exists to remind about.
 

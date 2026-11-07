@@ -10,7 +10,7 @@ tags: [meta, index]
 
 > Content catalog. Every wiki page listed under its type with a one-line summary.
 > Read this first to find relevant pages for any query.
-> Last updated: 2026-11-07 | Total pages: 31
+> Last updated: 2026-11-07 | Total pages: 30
 
 ## Concepts
 
@@ -36,7 +36,6 @@ tags: [meta, index]
 - [[todo/terraform-workflow]] – Medium · remote state + locking, CI drift-check
 - [[todo/authentik-policy-revalidation]] – Medium · username re-check at login (feasible) + forced password rotation on policy change (retroactive check impossible — hashes)
 - [[todo/scheduled-security-audit]] – Medium · weekly Hermes cron job re-auditing Erebos and updating [[queries/security-audit]]
-- [[todo/initrd-systemd-stage1-migration]] – In progress · root-caused: prod's LVM `vgchange` hack (itself inert: quoting bug + redundant) triggers the stage-1 assertion; fix = delete two blocks, nixpkgs activates initrd LVM automatically
 
 ## Queries
 - [[queries/security-audit]] – Living security audit of Erebos, **open findings only** (re-check 2026-11-07): P1 Immich 2.7.5 sole open P1; P2 Jellyfin/KEV-verify/binds; P3 llama.cpp drift; maintained by [[todo/scheduled-security-audit]], future CVE lookups via [[ideas/CVE-Now-MCP]]

@@ -2,7 +2,7 @@
 title: Architecture
 type: reference
 created: 2026-10-15
-updated: 2026-10-15
+updated: 2026-11-07
 tags: [nixos, erebos, architecture, homelab]
 sources: []
 ---
@@ -68,7 +68,15 @@ This page explains how the pieces of the `erebos` NixOS configuration fit togeth
 
 ### 5. Disk layout (disko)
 
-`sys/disko/` defines the partition tables. Prod uses a GPT disk with ESP + btrfs root, plus an LVM data volume (`/data`), historically activated by a `postDeviceCommands` initrd hook — superseded by systemd stage-1's automatic `boot.initrd.services.lvm` ([[todo/initrd-systemd-stage1-migration]]).
+`sys/disko/` defines the partition tables. Prod uses a GPT disk with virtio root disk `/dev/vda`:
+ESP (vfat, `/boot`) + btrfs root; `/data` is an ext4 filesystem on the pre-existing LVM volume
+`/dev/mapper/whale--nas-data` (`type = "lvm"` mount entry). Since 2026-11-07 the boot runs
+**systemd stage-1 initrd** (`boot.initrd.systemd.enable` default): LVM activation in the initrd is
+handled automatically by `boot.initrd.services.lvm.enable` (default-on via lvm2 udev rules —
+`services.lvm.enable = true`), which replaced the old scripted-era `postDeviceCommands = "lvm vgchange -ay"`
+hook (it duplicated stage-1's built-in activation and was rejected by systemd stage-1; commits
+`5f41664` + `034cd93`, verified by successful cold reboot with `/data` mounting). The scripted initrd
+is deleted from nixpkgs in 26.11 (2026-11-30) — the old deprecation warning is gone.
 
 ### 6. Terraform / OpenTofu (terranix)
 
