@@ -1,7 +1,7 @@
 ---
 title: Improve Terraform / OpenTofu Workflow
 created: 2026-10-15
-updated: 2026-10-22
+updated: 2026-11-07
 type: todo
 tags: [nixos, erebos, todo, improvement, infrastructure]
 sources: []
@@ -29,10 +29,10 @@ CI: job runs `nix flake check` + terranix eval + `tofu plan -detailed-exitcode` 
 
 Applies stay deliberate: CI only plans; `nix run .#apply` remains the only way to mutate.
 
-Ordering: depends on [[todo/secrets-management]] for recipient discipline around the `secrets/{env}/terraform/` provider tokens.
+Ordering: recipient discipline for the `secrets/{env}/terraform/` provider tokens is deferred — secrets rotation policy was dropped 2026-11-07 ([[docs/erebos/secrets]]).
 
 Worst case is survivable: all resources are declared in `sys/terraform/*.nix`, so state loss means re-import/rebuild, not reconfiguration by hand.
 
 ## Related
 - [[docs/erebos/terraform]]
-- [[todo/secrets-management]]
+- [[docs/erebos/secrets]]

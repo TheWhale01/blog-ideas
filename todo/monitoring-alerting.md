@@ -1,7 +1,7 @@
 ---
 title: Implement Proper Monitoring & Alerting
 created: 2026-10-15
-updated: 2026-10-22
+updated: 2026-11-07
 type: todo
 tags: [nixos, erebos, todo, improvement, infrastructure]
 sources: []
@@ -37,8 +37,8 @@ Loki: build LogQL queries per service (Traefik 5xx spikes, Nextcloud login failu
 
 Alert routing: Grafana unified alerting → Alertmanager → Matrix via the `matrix-alertmanager-webhook` age secret already present in `secrets.nix`.
 
-Caveat: beware restart-chains — this work should land after [[todo/podman-image-updates]] or be scoped to ignore transient podman restarts.
+Caveat: the daily `update-containers` unit restarts every `podman-*` service — alert rules must treat transient podman restarts as noise (update pipeline stays as-is, owner decision 2026-11-07, [[docs/erebos/containers]]).
 
 ## Related
 - [[docs/erebos/monitoring]]
-- [[todo/podman-image-updates]]
+- [[docs/erebos/containers]] — daily update-containers behavior

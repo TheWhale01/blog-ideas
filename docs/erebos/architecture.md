@@ -78,6 +78,14 @@ hook (it duplicated stage-1's built-in activation and was rejected by systemd st
 `5f41664` + `034cd93`, verified by successful cold reboot with `/data` mounting). The scripted initrd
 is deleted from nixpkgs in 26.11 (2026-11-30) — the old deprecation warning is gone.
 
+**Backup posture (2026-11-07):** no backup system is in place. Owner stance: `/data` (the NAS-backed
+LVM volume) **mainly stores non-sensitive data**, so a critical-set list is being defined before any
+tooling is picked. Known facts to carry into that spec: Immich media (`/data/Immich`) and Nextcloud
+data (`/data/nextcloud`) live on `/data`; service state **outside** `/data` includes PostgreSQL
+databases (`vaultwarden`, `nextcloud`, `authentik`, `matrix-synapse`, `mas`), `/var/lib/opengym/api`,
+`/var/lib/{transmission,lidarr,…}`, agenix identity keys, the secrets repo and the flake repo itself —
+those are the loss-if-root-dies set regardless of `/data` sensitivity.
+
 ### 6. Terraform / OpenTofu (terranix)
 
 Terranix converts NixOS modules into Terraform JSON. OpenTofu then applies cloud/API resources (authentik, grafana, etc.). The generated `config.tf.json` is the bridge between the NixOS config and the IaC provider.

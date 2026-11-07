@@ -2,7 +2,7 @@
 title: Containers
 type: reference
 created: 2026-10-15
-updated: 2026-10-26
+updated: 2026-11-07
 tags: [nixos, erebos, containers, podman]
 sources: []
 ---
@@ -20,7 +20,7 @@ All containers are declared via the NixOS `virtualisation.oci-containers` module
   - `autoPrune.enable = true` (flags: `--all --force --volumes`);
   - `defaultNetwork.settings`: `dns_enabled = true`, `ipv6_enabled = true`.
 - `environment.extraInit` sets `DOCKER_HOST` from `$XDG_RUNTIME_DIR` when `DOCKER_HOST` is not set, so the host Podman CLI works for the user.
-- `systemd.services.update-containers`: a daily oneshot that pulls every container image and restarts the `podman-*.service` units.
+- `systemd.services.update-containers`: a daily oneshot that pulls every container image and restarts the `podman-*` service units. **Owner decision 2026-11-07: keep as-is** — no digest-diffing, signature validation, or dedicated update notifications planned; observability of update failures is folded into the upcoming [[todo/monitoring-alerting]] work.
 
 ## Containers
 

@@ -10,7 +10,7 @@ tags: [meta, index]
 
 > Content catalog. Every wiki page listed under its type with a one-line summary.
 > Read this first to find relevant pages for any query.
-> Last updated: 2026-11-07 | Total pages: 30
+> Last updated: 2026-11-07 | Total pages: 27
 
 ## Concepts
 
@@ -30,9 +30,6 @@ tags: [meta, index]
 > Improvements/fixes for things already implemented on Erebos (new services go in Ideas).
 - [[todo/index]] – Hub: all backlog items by priority
 - [[todo/monitoring-alerting]] – Critical · Alertmanager, Prometheus rules, Loki queries, Grafana→Matrix
-- [[todo/backups]] – Critical · Borg/Restic incl. out-of-/data dirs, pg dumps, restore drills
-- [[todo/podman-image-updates]] – High · digest-based auto-update with notifications
-- [[todo/secrets-management]] – High · rotation policy, per-service recipients, offline key backup
 - [[todo/terraform-workflow]] – Medium · remote state + locking, CI drift-check
 - [[todo/authentik-policy-revalidation]] – Medium · username re-check at login (feasible) + forced password rotation on policy change (retroactive check impossible — hashes)
 - [[todo/scheduled-security-audit]] – Medium · weekly Hermes cron job re-auditing Erebos and updating [[queries/security-audit]]

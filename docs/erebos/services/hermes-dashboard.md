@@ -2,7 +2,7 @@
 title: Hermes Dashboard
 type: reference
 created: 2026-10-26
-updated: 2026-10-26
+updated: 2026-11-07
 tags: [nixos, erebos, services, security, automation]
 sources: [erebos:sys/services/hermes.nix, erebos:sys/terraform/hermes.nix, erebos:sys/vars.nix]
 ---
@@ -113,4 +113,4 @@ vault question was decided the same day: **the source of truth is the `$WIKI_PAT
 - [[docs/erebos/services]] — Hermes Agent service section
 - [[docs/erebos/terraform]] — IaC module list (now incl. `hermes.nix`)
 - [[docs/erebos/secrets]] — `hermes.age` ownership update
-- [[todo/secrets-management]] — the Basic-auth pair in group attributes should follow rotation policy
+- [[docs/erebos/secrets]] — secrets incl. this Basic-auth pair; rotation policy dropped 2026-11-07 (mostly static SSO client_secrets)

@@ -15,11 +15,9 @@ sources: []
 
 ## Critical
 - [[todo/monitoring-alerting]] — Not started · Alertmanager + Prometheus rules + Loki queries + Grafana→Matrix routing
-- [[todo/backups]] — Not started · Borg/Restic for `/data` + out-of-`/data` dirs + pg dumps, remote target, restore drills
 
 ## High
-- [[todo/podman-image-updates]] — Partial · digest-based auto-update, failure notifications, no restart loops
-- [[todo/secrets-management]] — Partial · rotation policy, per-service age recipients, offline key backup
+- _(none at this level right now)_
 
 ## Medium
 - [[todo/terraform-workflow]] — Partial · remote state + locking, CI drift-check plan, `nix run .#plan`

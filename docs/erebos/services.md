@@ -2,7 +2,7 @@
 title: Services
 type: reference
 created: 2026-10-15
-updated: 2026-11-04
+updated: 2026-11-07
 tags: [nixos, erebos, services]
 sources: []
 ---

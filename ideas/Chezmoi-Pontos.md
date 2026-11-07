@@ -1,7 +1,7 @@
 ---
 title: Chezmoi for pontos dotfiles
 created: 2026-10-26
-updated: 2026-10-26
+updated: 2026-11-07
 type: idea
 tags: [IT, development, automation, homelab]
 sources: []
@@ -50,7 +50,7 @@ See: [home-manager](https://github.com/nix-community/home-manager) / [official d
    ├── private_dot_ssh/config.tmpl
    └── encrypted_dot_config/age/…              # chezmoi-managed secrets via age
    ```
-4. **Secrets**: use chezmoi's native `age` integration with a dedicated `chezmoi` age key (separate from agenix service keys), the key file itself bootstrapped from the offline key backup — do **not** reuse the SSH-derived identity for everything (see [[todo/secrets-management]] on Erebos for the same principle).
+4. **Secrets**: use chezmoi's native `age` integration with a dedicated `chezmoi` age key (separate from agenix service keys), the key file itself bootstrapped from the offline key backup — do **not** reuse the SSH-derived identity for everything (the same principle applies on Erebos — see [[docs/erebos/secrets]]).
 5. **Fedora specifics** that dotfiles alone won't cover — keep as `run_` scripts: dnf package set, flatpak list, `gnome-extension` enables, `gsettings` dumps (chezmoi handles files; gsettings/dconf need scripts or `dconf load`).
 6. **Wipe-and-recover drill** (the whole point): fresh Fedora → install curl/git/age → one line: `sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply TheWhale01` → `chezmoi verify` clean.
 

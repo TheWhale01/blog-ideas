@@ -13,6 +13,23 @@ tags: [meta, log]
 > Actions: ingest, update, query, lint, create, archive, delete
 > When this file exceeds 500 entries, rotate: rename to log-YYYY.md, start fresh.
 
+## [2026-11-07] delete | 3 todo items pruned per owner — decisions folded to docs
+- [[todo/podman-image-updates]] deleted: current daily update-containers **works as-is**; no
+  digest-diff/signature/notification work wanted — failure observability deferred to
+  [[todo/monitoring-alerting]] (restart-noise caveat moved there). Fact recorded in [[docs/erebos/containers]]
+- [[todo/backups]] deleted (paused): owner classifies `/data` as **mainly non-sensitive**; will define
+  the must-backup list first. Facts folded into [[docs/erebos/architecture]] §5 "Backup posture":
+  Immich/Nextcloud media on /data vs the loss-if-root-dies set (5 Postgres DBs, /var/lib/opengym/api,
+  agenix identity keys, secrets + flake repos); tutorials §7 last-resort warning repointed there
+- [[todo/secrets-management]] deleted: age secrets are **mostly Authentik SSO client_secrets — not
+  easily rotatable**; rotation policy explicitly dropped ([[docs/erebos/secrets]] new
+  "Rotation posture" section); surviving open fact kept: broad recipients + NO offline backup of
+  age identity keys — flagged as the real key-loss cliff
+- Cross-references repointed in 10 files (audit Related, opengym, hermes-dashboard, Chezmoi,
+  terraform-workflow, authentik-revalidation, monitoring, tutorials); todo hub High section now empty;
+  root index 27 pages; Open questions posed to owner re: NAS redundancy, Immich/NC media sensitivity,
+  age key offsite copies
+
 ## [2026-11-07] delete | todo/initrd-systemd-stage1-migration — COMPLETED & folded
 - Commits `5f41664` (delete `boot.initrd.systemd.enable = false`) + `034cd93` (delete the whole
   `postDeviceCommands` vgchange hook from prod.nix; flake pins advanced incl. hermes-agent)

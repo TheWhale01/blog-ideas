@@ -2,7 +2,7 @@
 title: Tutorials
 type: tutorial
 created: 2026-10-15
-updated: 2026-11-04
+updated: 2026-11-07
 tags: [nixos, erebos, tutorial, homelab]
 sources: ["https://docs.goauthentik.io/installation/upgrade/"]
 ---
@@ -160,7 +160,7 @@ in practice (some are reversible, some data transforms are not). The supported r
 
 Last resort, **unsupported** and only for patch-level rollbacks when no backup exists: run the old
 image with `migrate <app> <previous-revision>` to unwind the newest few migrations. Fragile —
-prefer the restore path; treat this as a warning sign to fix backups ([[todo/backups]]).
+prefer the restore path; treat this as a warning sign — no backup system exists yet ([[docs/erebos/architecture]] §5).
 
 ---
 

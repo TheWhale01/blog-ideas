@@ -1,7 +1,7 @@
 ---
 title: Authentik policy revalidation at login (username & password)
 created: 2026-10-26
-updated: 2026-10-26
+updated: 2026-11-07
 type: todo
 tags: [nixos, erebos, todo, improvement, security]
 sources: []
@@ -62,7 +62,6 @@ Authentik's official guide [Force password reset on next login](https://docs.goa
 ## Related
 
 - [[docs/erebos/containers]] — Authentik container definition
-- [[todo/secrets-management]] — same motivation: policy changes must propagate, not silently rot
 - [[docs/erebos/services/hermes-dashboard]] — an example of the outpost Basic-auth bridge pattern this flows through
 
 ## External references

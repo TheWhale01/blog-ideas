@@ -105,7 +105,7 @@ Jellyfin `network.bindAddrs = [ "::1" ]`. (Prometheus + Immich + llama.cpp were 
 ## Related
 
 - [[todo/scheduled-security-audit]] — the job that keeps this page current
-- [[todo/secrets-management]] — credential blast radius if P1 items are exploited
+- [[docs/erebos/secrets]] — credential blast radius if P1 items are exploited
 - [[todo/monitoring-alerting]] — silencing risk from unauthenticated Alertmanager
 - [[docs/erebos/index]] — the stack audited
 

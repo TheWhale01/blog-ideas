@@ -2,7 +2,7 @@
 title: openGym
 type: reference
 created: 2025-10-14
-updated: 2026-10-22
+updated: 2026-11-07
 tags: [nixos, erebos, services, containers]
 sources: [erebos:sys/containers/opengym.nix, erebos:sys/vars.nix]
 ---
@@ -152,4 +152,4 @@ sudo systemctl restart podman-opengym-api.service podman-opengym-web.service
 - [[docs/erebos/index]] — Erebos overview
 - [[docs/erebos/containers]] — global Podman settings and other containers
 - [[docs/erebos/services]] — systemd services and Traefik wiring
-- [[todo/backups]] — backup scope covers `/var/lib/opengym`
+- [[docs/erebos/architecture]] — backup posture; `/var/lib/opengym` is outside `/data`, in the loss-if-root-dies set

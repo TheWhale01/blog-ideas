@@ -2,7 +2,7 @@
 title: Secrets
 type: reference
 created: 2026-10-15
-updated: 2026-11-04
+updated: 2026-11-07
 tags: [nixos, erebos, secrets, agenix, age]
 sources: []
 ---
@@ -82,3 +82,13 @@ The authoritative map lives in `sys/secrets.nix`. Key entries:
 - **NixOS modules** reference them as `config.age.secrets.<name>.path`.
 
 > ⚠️ `.age` files are **age-encrypted**. Never commit plaintext secrets. The age keys are provided out-of-band when building or decrypting.
+
+## Rotation posture (owner decision, 2026-11-07)
+
+No rotation-policy backlog item is tracked: the `.age` secrets here are **mostly Authentik SSO
+`client_secret` keys** (plus outpost tokens and SMTP keys) which are *not easily rotatable* —
+rotation means coordinated regeneration on both issuer and consumer sides for marginal benefit on a
+single-admin box. Quarterly-rotation work was explicitly dropped. What remains true and cheap:
+recipients are still broad (`hades` + services), and there is **no documented offline backup of the
+age identity keys** — losing them makes every `.age` file unrecoverable (see the loss-if-root-dies
+set in [[docs/erebos/architecture]] §5).
