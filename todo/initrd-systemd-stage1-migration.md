@@ -23,9 +23,12 @@ The opt-out existed to support the LVM-for-`/data` hack, but the hack itself was
 - `sys/disko/prod.nix`: `boot.initrd.postDeviceCommands = lib.mkAfter ''"lvm vgchange -ay"'';` ← added
   to support LVM (`/dev/mapper/whale--nas-data`), and exactly what systemd stage 1 rejects with a
   hard assertion (verified on prod 2026-11-07; stage passed — it has no LVM: plain sda GPT+btrfs)
-- **The hack never did anything**: (1) quoting bug — `''"…"''` makes the shell execute one quoted
-  token → command-not-found, swallowed by scripted initrd; (2) redundant anyway — the scripted
-  `stage-1-init.sh` already runs `lvm vgchange -ay` itself inside its device-wait loop
+- **The hook was duplicating an existing mechanism**:
+  (1) PROVEN: the scripted nixpkgs `stage-1-init.sh` runs `lvm vgchange -ay` **unconditionally itself**
+  (store evidence: line ~289 "starting device mapper and LVM…" just before `@postDeviceCommands@`,
+  plus again in the root-device wait loop ~L108) — the custom hook duplicated what already happened;
+  (2) UNVERIFIED: the `''"…"''` quoting may additionally have made it a literal no-op, but the rendered
+  per-config script couldn't be inspected (flaky GC'd symlink; template shows placeholders)
 - **systemd stage 1 covers it declaratively**: in the pinned nixpkgs (`tasks/lvm.nix`),
   `boot.initrd.services.lvm.enable` defaults to `boot.initrd.systemd.enable && services.lvm.enable`,
   with `services.lvm.enable = true` by default → LVM tools + udev rules + activation units enter the
@@ -50,6 +53,10 @@ boot.initrd.postDeviceCommands = lib.mkAfter ''
 - [ ] `nix run .#dry-build` — assertion gone, eval warning-free
 - [ ] Prod: `nix run .#apply`, then **cold reboot** (stage-1 only takes effect at boot); previous
       generation stays in the systemd-boot menu as rollback
+- [ ] Pre-reboot confidence check: `nix eval .#nixosConfigurations."erebos".config.boot.initrd.services.lvm.enable`
+      → `true`; optional belt-and-braces explicit activation (only if verify after reboot shows /data
+      not mounting): a `boot.initrd.systemd.services` oneshot calling `lvm vgchange -ay whale`
+      ordered `after systemd-udev-settle.service`, `before initrd-root-fs.target`
 - [ ] Verify: `findmnt /data` → `/dev/mapper/whale--nas-data` ext4 · `systemctl status lvm2-monitor` ·
       `journalctl -b -p err` clean · Traefik/Authentik/Nextcloud come up
 - [ ] Note: prod root is plain btrfs on virtio `/dev/vda` (no LUKS/LVM in the boot path) — residual
