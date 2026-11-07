@@ -13,6 +13,20 @@ tags: [meta, log]
 > Actions: ingest, update, query, lint, create, archive, delete
 > When this file exceeds 500 entries, rotate: rename to log-YYYY.md, start fresh.
 
+## [2026-11-07] update | Initrd migration: prod assertion root-caused
+- Owner hit `systemd stage 1 does not support boot.initrd.postDeviceCommands` on prod (stage passed —
+  no LVM there); definition pinpointed in sys/disko/prod.nix (their own `lvm vgchange -ay` hack for the
+  whale--nas-data /data LV) — the origin the todo asked archaeology for
+- Three findings: hack is a quoting no-op (`''"…"''` → single quoted token); scripted stage-1-init.sh
+  already ran vgchange itself; and pinned nixpkgs tasks/lvm.nix auto-enables
+  boot.initrd.services.lvm under systemd stage-1 (default = stage1 && services.lvm, services.lvm
+  default true) → fix is TWO DELETIONS (postDeviceCommands block + systemd.enable=false), zero additions
+- [[todo/initrd-systemd-stage1-migration]] rewritten: Status In progress, root-cause section, checklist
+  reordered (stage done, delete→dry-build→apply→cold reboot→verify /data+lvm2-monitor+journal);
+  todo/index + root index lines refreshed
+- Live checks used: findmnt /data (/dev/mapper/whale--nas-data ext4), store-source greps of pinned
+  nixpkgs (stage-1-init.sh L109, systemd/initrd.nix assertion list, tasks/lvm.nix defaults)
+
 ## [2026-11-07] update + create | Audit → open-findings-only; idea: Odin + cve.now MCP
 - [[queries/security-audit]] **stripped of resolved findings** (owner convention, now encoded in
   [[todo/scheduled-security-audit]] steps 2+4 and the page header): deleted the RESOLVED Authentik P1

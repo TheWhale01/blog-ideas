@@ -9,53 +9,51 @@ sources: ["erebos:sys/configuration.nix"]
 
 # Migrate to systemd stage-1 initrd (remove scripted-initrd opt-out)
 
-- **Status**: Not started
+- **Status**: In progress (2026-11-07: stage env migrated cleanly; prod blocked by assertion — root-caused, fix known)
 - **Priority**: High — hard deadline: **NixOS 26.11 becomes stable 2026-11-30** and *deletes* the
   scripted initrd; the flake pins `nixpkgs-unstable`, so the removal is already landing in the pin.
   The build is already warning; after removal it becomes a build failure or worse.
 - **Parent**: [[todo/index]]
 
-## Root cause of the warning
+## Root cause of the warning — SOLVED (archaeology done 2026-11-07)
 
-`sys/configuration.nix` line ~52 explicitly opts out of the new default:
+The opt-out existed to support the LVM-for-`/data` hack, but the hack itself was inert:
+
+- `sys/configuration.nix`: `boot.initrd.systemd.enable = false;` ← the warning trigger
+- `sys/disko/prod.nix`: `boot.initrd.postDeviceCommands = lib.mkAfter ''"lvm vgchange -ay"'';` ← added
+  to support LVM (`/dev/mapper/whale--nas-data`), and exactly what systemd stage 1 rejects with a
+  hard assertion (verified on prod 2026-11-07; stage passed — it has no LVM: plain sda GPT+btrfs)
+- **The hack never did anything**: (1) quoting bug — `''"…"''` makes the shell execute one quoted
+  token → command-not-found, swallowed by scripted initrd; (2) redundant anyway — the scripted
+  `stage-1-init.sh` already runs `lvm vgchange -ay` itself inside its device-wait loop
+- **systemd stage 1 covers it declaratively**: in the pinned nixpkgs (`tasks/lvm.nix`),
+  `boot.initrd.services.lvm.enable` defaults to `boot.initrd.systemd.enable && services.lvm.enable`,
+  with `services.lvm.enable = true` by default → LVM tools + udev rules + activation units enter the
+  initrd automatically once stage-1 is on. No replacement config needed.
+
+## Fix = two deletions
 
 ```nix
-boot.initrd.systemd.enable = false;   # ← this is what triggers the eval warning
+# sys/configuration.nix — delete:
+boot.initrd.systemd.enable = false;
+# sys/disko/prod.nix — delete the whole block:
+boot.initrd.postDeviceCommands = lib.mkAfter ''
+  "lvm vgchange -ay"
+'';
 ```
-
-NixOS 26.05 "Yarara" made **systemd Stage 1 the default initrd**; the legacy scripted one is
-deprecated and removed in 26.11. There is **no comment or commit message found explaining the opt-out**
-— first task is `git log -S "boot.initrd.systemd" sys/configuration.nix` to check whether it papered
-over a real boot problem.
-
-## Why Erebos should be a boring migration
-
-Audited the boot surface in `sys/disko/prod.nix` + `stage.nix`:
-
-- Root disk: plain GPT → vfat ESP (`/boot`) + **btrfs root, no LUKS, no LVM**, virtio `/dev/vda`
-  (prod, i.e. a VM — console recoverable via `virsh console` on the qemu host) / `/dev/sda` (stage).
-- `/data` mounts `/dev/mapper/whale--nas-data` — an external LVM volume **defined nowhere in the
-  flake** (pre-opened outside NixOS boot, e.g. host pass-through); the scripted initrd never
-  opened it, so systemd Stage 1 changes nothing for it. Just verify it still mounts after reboot
-  (a stale `.mount` unit dependency could mask a change).
-- No initrd-time agenix secrets, no network root, no SSH boot unlock.
-
-If the opt-out was cargo-culted or covers only the `/data` mapper, the fix is one deleted line.
 
 ## Steps
 
-- [ ] Find the opt-out's origin (`git log -S`) and note it here before touching anything
-- [ ] Delete `boot.initrd.systemd.enable = false;` (default true now applies)
-- [ ] `nix run .#dry-build` (or `nixos-rebuild dry-build`) — closure must evaluate warning-free
-- [ ] **Stage first** if possible (`erebos-stage` env exists): reboot, confirm cold boot works
-- [ ] Prod: `nix run .#apply` (or `boot` + reboot), then verify:
-  - [ ] reaches login, `systemctl is-system-running`
-  - [ ] `findmnt /data` → ext4 from `whale--nas-data` still mounted
-  - [ ] `journalctl -b -p err` clean; `bootctl status` fine (systemd-boot unchanged)
-- [ ] Rollback plan (free): pick previous generation in the systemd-boot menu, then re-add the line
-  — the escape hatch exists **until 2026-11-30**, after that only "fix forward" works
-- [ ] Bonus: with systemd Stage 1, the root mount gets proper device-unit ordering and the
-  `rescue`/`emergency` targets; consider also dropping `x-systemd.device-timeout` worries later
+- [x] Find the opt-out's origin — done: prod-only LVM hack for disko `data` lvm-type device, inert
+- [x] Stage env migrated & rebooted — no issues (no LVM there, assertion never fires)
+- [ ] Delete the two blocks above
+- [ ] `nix run .#dry-build` — assertion gone, eval warning-free
+- [ ] Prod: `nix run .#apply`, then **cold reboot** (stage-1 only takes effect at boot); previous
+      generation stays in the systemd-boot menu as rollback
+- [ ] Verify: `findmnt /data` → `/dev/mapper/whale--nas-data` ext4 · `systemctl status lvm2-monitor` ·
+      `journalctl -b -p err` clean · Traefik/Authentik/Nextcloud come up
+- [ ] Note: prod root is plain btrfs on virtio `/dev/vda` (no LUKS/LVM in the boot path) — residual
+      risk minimal; `/data` is the only LVM consumer
 
 ## Related
 

@@ -68,7 +68,7 @@ This page explains how the pieces of the `erebos` NixOS configuration fit togeth
 
 ### 5. Disk layout (disko)
 
-`sys/disko/` defines the partition tables. Prod uses a GPT disk with ESP + btrfs root, plus an LVM data volume (`/data`) activated by an initrd hook.
+`sys/disko/` defines the partition tables. Prod uses a GPT disk with ESP + btrfs root, plus an LVM data volume (`/data`), historically activated by an `postDeviceCommands` initrd hook — superseded by systemd stage-1's automatic `boot.initrd.services.lvm` ([[todo/initrd-systemd-stage1-migration]]).
 
 ### 6. Terraform / OpenTofu (terranix)
 

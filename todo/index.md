@@ -20,7 +20,7 @@ sources: []
 ## High
 - [[todo/podman-image-updates]] — Partial · digest-based auto-update, failure notifications, no restart loops
 - [[todo/secrets-management]] — Partial · rotation policy, per-service age recipients, offline key backup
-- [[todo/initrd-systemd-stage1-migration]] — Not started · remove `boot.initrd.systemd.enable = false` opt-out before 26.11 deletes the scripted initrd (deadline 2026-11-30)
+- [[todo/initrd-systemd-stage1-migration]] — In progress · stage migrated; prod fix = delete two blocks (`systemd.enable = false` + inert `vgchange` hack), nixpkgs auto-handles stage-1 LVM
 
 ## Medium
 - [[todo/terraform-workflow]] — Partial · remote state + locking, CI drift-check plan, `nix run .#plan`
