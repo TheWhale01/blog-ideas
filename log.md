@@ -13,6 +13,22 @@ tags: [meta, log]
 > Actions: ingest, update, query, lint, create, archive, delete
 > When this file exceeds 500 entries, rotate: rename to log-YYYY.md, start fresh.
 
+## [2026-11-04] query | Security audit live re-check run (procedure of the future cron job)
+- Requested "update the audit" → ran the [[todo/scheduled-security-audit]] procedure manually:
+  commits since sync (`b1b690e` immich+prometheus loopback binds), repo HEAD pins, unit ExecStarts,
+  nixos-version, live `ss -ltn`, llama `/props` + `/v1/models` probes
+- **Honest headline: the two P1s are NOT remediated** — Authentik still `2026.8.1` at HEAD and Immich
+  still `2.7.5` running + `permittedInsecurePackages` in place; note the mismatch with owner's
+  expectation — ghcr/Nix pins don't move via `nix flake update`. P1 sections + action list marked "re-verified
+  not fixed", runbook link (§7) added
+- Remediated since Oct 26 (verified live): Prometheus 9090 ✓, Immich 2283 ✓, llama-cpp 8080 ✓ loopback;
+  kernel 7.3.0→7.3.1; still open: Alertmanager 9093, Loki 3100, Jellyfin 8096 binds
+- **New finding**: llama-cpp router up but **no model loaded**; Hermes fallback id
+  `LiquidAI/LFM3-1.7B-GGUF:Q6_K` ≠ preset alias `LFM3-1.7B` → offline safety-net would lazy-fetch
+  from HF and likely fail precisely when offline; fix = align model.default, smoke-test load
+- Updated: audit header/inventory/P1/P2/P3/action-list/audit-log; docs services + index rows
+  (llama re-enabled status); root index Queries line
+
 ## [2026-11-04] create | todo/initrd-systemd-stage1-migration
 - User-reported eval warning "Scripted initrd is deprecated… removal in 26.11" — root cause pinpointed:
   `sys/configuration.nix` line ~52 `boot.initrd.systemd.enable = false` (explicit opt-out; no

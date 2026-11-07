@@ -206,7 +206,7 @@ All public-facing services are reverse-proxied through **Traefik** under `*.thew
 | Grafana / Prometheus / Loki / Promtail | `sys/services/monitoring/` | Observability | GUI + metrics |
 | Jellyfin | `sys/services/jellyfin/jellyfin.nix` | Media server | `jellyfin.thewhale.fr` |
 | Vaultwarden | `sys/services/vaultwarden.nix` | Bitwarden-compatible vault | `vaultwarden.thewhale.fr` (PostgreSQL backend, Authentik SSO) |
-| llama.cpp | `sys/services/llamacpp.nix` | Local LLM runtime (LFM3-1.7B Q6_K; stopped by owner) | `127.0.0.1:8080` (loopback only) — [[docs/erebos/services]] |
+| llama.cpp | `sys/services/llamacpp.nix` | Local LLM runtime (LFM3-1.7B Q6_K) | `127.0.0.1:8080` (loopback only) — [[docs/erebos/services]] |
 | Hermes Agent | `sys/services/hermes.nix` | AI assistant ("Odin"), Matrix gateway, OpenRouter primary + local LFM3 fallback | Local-only (Matrix) |
 | Hermes Dashboard | `sys/services/hermes.nix` | Agent web dashboard (systemd unit in same module) | `hermes-dashboard.thewhale.fr` (Authentik) — [[docs/erebos/services/hermes-dashboard]] |
 | Immich | `sys/services/immich.nix` | Photo management | `immich.thewhale.fr` |

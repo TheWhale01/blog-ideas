@@ -110,7 +110,7 @@ Bitwarden-compatible self-hosted vault.
 
 Self-hosted photo/video management.
 
-- `services.immich.enable = true`, host `0.0.0.0`, media location `/data/Immich`;
+- `services.immich.enable = true`, host `127.0.0.1` (was `0.0.0.0` until `b1b690e`, 2026-11-04), media location `/data/Immich`;
 - `newVersionCheck.enabled = true`;
 - OAuth: `autoLaunch`, `autoRegister`, `buttonText = "Login with Authentik"`, issuer `https://authentik.thewhale.fr/application/o/immich/`, scope `openid email profile`.
 
@@ -179,9 +179,9 @@ Commit `6ef7e41` deleted `ollama.nix` and added `services.llama-cpp` from `pkgs-
   after the audit P3; only the co-located Hermes consumes it.
 - ⚠️ Upstream churn: `modelsPreset` is a **removed option** in newer nixpkgs (per-model
   `services.llama-cpp.<name>` instances). The next `nix flake update` will need this module migrated.
-- **Live status 2026-11-04**: unit **purposely stopped by the owner** (it had also been exiting ~8 s
-  after start). Deliberately dormant — before re-enabling: verify server-side context
-  (`-c` vs Hermes' 64000 assumption) and migrate off the upstream-removed `modelsPreset`.
+- **Live status 2026-11-04**: re-enabled and running on **`127.0.0.1:8080`**, router mode with both model
+  entries `unloaded`; Hermes' fallback id `LiquidAI/LFM3-1.7B-GGUF:Q6_K` doesn't match the preset alias
+  `LFM3-1.7B` (lazy HF fetch instead of provisioned preset) — see [[queries/security-audit]] P3.
 
 ## AI Agents
 

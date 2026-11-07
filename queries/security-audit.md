@@ -12,7 +12,7 @@ confidence: high
 
 > Living document, refreshed by the scheduled audit job ([[todo/scheduled-security-audit]]).
 > Newest findings first; per-run history in the Audit log at the bottom.
-> Current snapshot: **2026-10-26** inventory + **2026-11-04** delta (see Audit log at the bottom).
+> Last re-check: **2026-11-04** (live: `ss -ltn`, unit ExecStarts, repo HEAD `b1b690e`, `/props` probe) — base inventory 2026-10-26.
 
 Point-in-time security audit of Erebos: live version inventory (systemd units, Nix store paths, running service APIs) cross-checked against published advisories as of **2026-10-26**.
 
@@ -27,26 +27,32 @@ Point-in-time security audit of Erebos: live version inventory (systemd units, N
 | Nextcloud | 35.0.2 + Collabora `collabora/code` container | public |
 | Jellyfin | 12.2.0 | public (LDAP auth) |
 | Matrix | Synapse 1.163.2 + MAS | public (federation) |
-| Ollama → llama.cpp | **llama-cpp 0.8.0** (`6ef7e41`→`d5340e3`, 2026-11-04) | `127.0.0.1:8080` only (rebound same day) ✓; **unit intentionally stopped by owner** — do not flag as silent death in future runs |
+| Ollama → llama.cpp | **llama-cpp 0.8.0** (re-enabled 2026-11-04) | `127.0.0.1:8080` only ✓ (`ss` verified). But router serves **no loaded model**: Hermes' fallback id `LiquidAI/LFM3-1.7B-GGUF:Q6_K` matches a cache-derived entry, **not the preset alias `LFM3-1.7B`** — lazy HF fetch on demand, fragile offline |
 | Vaultwarden | 1.37.4 | public (Authentik SSO) |
 | Grafana | 13.0.11 | public (Authentik) |
 | PostgreSQL | 16.15 | 0.0.0.0:5432, scram, pg_hba scoped to 127.0.0.1/10.88/::1 |
 | Podman | 5.8.9 | — |
-| kernel / nixpkgs | 7.3.0 / 26.05; pins advanced by `nix flake update` on 2026-11-04 | fresh |
+| kernel / nixpkgs | **7.3.1** / system `26.05.20261104.994bb33` | fresh; rebooted 2026-11-04 ✓ |
 
 ⚠️ **Systemic caveat** *(updated 2026-11-04)*: commit `6ef7e41` **removed `system.autoUpgrade`** entirely — the old silent-rebuild-on-stale-pin trap is gone, replaced by a fully manual pipeline: `nix flake update` → `nix run .#apply`. Flakes were updated that day (nixpkgs-unstable + hermes-agent pins advanced). Patch cadence is now *entirely* a human habit — exactly what [[todo/scheduled-security-audit]] exists to remind about.
 
 ## Findings by risk
 
 ### P1 — Authentik 2026.8.1 sits exactly in the affected range of the September batch
+**Re-checked 2026-11-04: NOT remediated.** `authentikVersion = "2026.8.1"` still at repo HEAD — the image
+tag is pinned in your own Nix, so `nix flake update` never advances it (this is the misunderstanding to
+avoid: a rebuild/reboot does not update Authentik). **Runbook ready: [[docs/erebos/tutorials]] §7**,
+target **2026.8.5** (latest community release, verified on ghcr + GitHub Releases).
 Advisories published 2026-09-09 list affected `<= 2026.8.1`, patched in **2026.8.2**:
 - **GHSA-qgqp-xh8r-v73r** (CVE-2026-94606, 8.9 High): **MFA bypass via recipient override** in the email authenticator — attacker knowing a password gets the OTP code sent to *their* address → full account takeover of the IdP = every SSO app. Only exploitable if the **email authenticator** is enrolled during a flow — if you use only TOTP/WebAuthn the exposure drops, but this is the front door; do not rely on that.
 - **GHSA-h6c5-mpvq-j4jc** (High): privilege escalation via delegated group/user management.
 - **GHSA-m9h4-7j9c-55x9** (8.1 High): stored credentials (SMTP, outpost tokens, provider configs) readable with *view* permission alone — single-admin box = low practical risk, still patch.
 - **GHSA-cxwx-9x59-28qm** (7.5 High): unauthenticated SAML DoS (only if SAML enabled; you run LDAP+OIDC → low).
-**Fix**: bump `ghcr.io/goauthentik/server` to ≥2026.8.2 (prefer current stable) in `sys/containers/authentik.nix`, `podman pull`, restart stack; tasks run migrations automatically.
+**Fix**: bump `ghcr.io/goauthentik/server` to ≥2026.8.2 (prefer current stable) in `sys/containers/authentik.nix` — full procedure incl. backup, **explicit one-shot `migrate` step (the server does NOT auto-migrate)** and rollback: [[docs/erebos/tutorials]] §7.
 
 ### P1 — Immich 2.7.5: three published CVEs, one unauthenticated
+**Re-checked 2026-11-04: NOT remediated** — running unit still executes `immich-2.7.5` and
+`permittedInsecurePackages = [ "immich-2.7.5" ]` remains in `flake.nix` (host bind improved, see P2).
 - **CVE-2026-119328** (6.5, fixed 3.3.0): **unauthenticated** `/predict` on the machine-learning service accepts an `options` object → `cache_dir` path injection → arbitrary directory write + `shutil.rmtree()` on chosen paths. Reachability: ML listens on loopback (`127.0.0.1:3003`), so exploitation needs either a path proxied through the immich server or a foothold on the host/podman net — but this is the same podman network as every container.
 - **CVE-2026-119330** (fixed 3.2.0): cross-user shared links (authorized user can share another user's asset anonymously).
 - **CVE-2026-119329** (4.3, fixed 3.0.0): view-only partner GPS leak of archived assets.
@@ -71,8 +77,14 @@ All require an authenticated (non-admin) account → single-user instance = low 
 - Nextcloud 35.0.2: searched advisories affect 29–33.x — no known unpatched NC-35 advisory at audit time; keep the image fresh (it auto-updates daily via the update-containers service).
 
 ### P2 — Unauthenticated internal services on `0.0.0.0` (lateral movement surface)
-`ss` shows Prometheus 9090, Alertmanager 9093, Loki 3100, Jellyfin 8096, Nextcloud 8881, Authentik 9000 (admin API), Immich 2283, the *arr suite, slskd 5030, flood 3002… bound to **all interfaces**. The nftables default-deny (only 80/443 + trusted interfaces) keeps these off the internet, but `podman0` is trusted: **any compromised container is a guest** — it can read all metrics, query all logs via Loki, **post silences to Alertmanager** (blind your future item-1 alerting), and hit service APIs directly bypassing Traefik/Authentik.
-**Fix**: bind what you can to `127.0.0.1` (Prometheus/Loki/Alertmanager options in `sys/services/monitoring/*`; Jellyfin `bind = ::1`), keep Authentik reachable only via its outpost proxy; treat "Firewall + loopback" as the two controls and audit bindings with `ss -ltn` in your periodic lint.
+**Re-checked 2026-11-04 — partially remediated.** Commit `b1b690e` set `host`/`listenAddress = "127.0.0.1"`
+for Immich and Prometheus, confirmed live by `ss`: **9090 (Prometheus) and 2283 (Immich) are now
+loopback-only** ✓. Still on all interfaces: **Alertmanager 9093, Loki 3100, Jellyfin 8096** (`*:9093`
+`*:3100` `0.0.0.0:8096`).
+`podman0` is a trusted interface, so any compromised container is a guest: it can **post silences to
+Alertmanager** (blinding future item-1 alerting) and **read all logs via Loki**. Finish the job: bind
+Alertmanager + Loki to `127.0.0.1` in `sys/services/monitoring/{alertmanager,loki}.nix`, Jellyfin
+`network.bindAddrs = [ "::1" ]`. Keep auditing with `ss -ltn` in the periodic lint.
 
 ### P3 — Clean/fresh at audit time
 - **Traefik 3.7.13**: ahead of all known 2026 advisories (3.7.3 batch etc.); no mTLS/HTTP3 in use.
@@ -80,25 +92,30 @@ All require an authenticated (non-admin) account → single-user instance = low 
 - **Ollama (until 2026-11-04)**: was patched vs GGUF advisories (memory-leak <0.17.1; CVE-2026-86289 needs loading a crafted model) and bound to loopback — the *trust-the-model-source* warning carries over to llama.cpp/GGUF usage in [[ideas/Translaitor]].
 - **Vaultwarden 1.37.4, PostgreSQL 16.15, Grafana 13.0.11, nginx, podman 5.8.9, kernel 7.3.0**: no unpatched published advisories found at audit; nixpkgs pin is 24 h old, so backports are current *as of the pin* — which decays until the next `nix flake update`.
 
-### P3 (new 2026-11-04, **bind partially remediated same day**) — local LLM runtime (llama.cpp, replaced Ollama)
-Commit `6ef7e41` swapped Ollama for `services.llama-cpp` initially bound to **`0.0.0.0:8080` with no authentication** — containers and the Netbird mesh could reach it freely. **Fixed in `d5340e3` (same day): rebound `127.0.0.1`, loopback-only.** ✓
-Remaining pre-conditions for whenever the (purposely stopped) unit is re-enabled:
-- `modelsPreset` is a **removed option in newer nixpkgs** — the next `nix flake update` breaks evaluation until migrated to per-model `services.llama-cpp.<name>`;
-- server-side context was never verified (`-c` absent vs Hermes' 64000 default) and tool-calling was never smoke-tested on this endpoint;
-- note the fallback inversion in `d5340e3`: local LFM3 is now the **fallback** for Hermes — a broken local unit only degrades silently when the cloud provider is down, so if that path is ever needed in anger, verify it actually serves first.
+### P3 (2026-11-04, updated same day) — local LLM runtime (llama.cpp, replaced Ollama)
+Bind issue **closed**: unit re-enabled after `d5340e3`, live probe confirms `127.0.0.1:8080` ✓.
+**New finding from `/props` + `/v1/models` (2026-11-04)**: the router runs but **no model is loaded**
+(`status: unloaded`), and Hermes' fallback `default = "LiquidAI/LFM3-1.7B-GGUF:Q6_K"` matches a
+*cache-derived* entry, **not the `modelsPreset` alias `LFM3-1.7B`** — on demand, the router would
+lazily fetch/switch via HF rather than use the provisioned preset. Consequence: the offline-safety-net
+fallback likely fails exactly when it's needed (no network = no lazy fetch). **Fix**: set Hermes
+`model.default` (fallback entry) to the preset alias `LFM3-1.7B`, and smoke-test loading it once.
+Context-trap cleared: router reports `context_length: 262144` ≥ Hermes' 64000 assumption.
+Still open from before: `modelsPreset` is a **removed option in newer nixpkgs** — next `nix flake
+update` past the removal breaks evaluation; migrate to per-model `services.llama-cpp.<name>`.
 
 ## Action list
 
-- [ ] P1: Authentik container → ≥ 2026.8.2 (`sys/containers/authentik.nix`, pull + restart stack) — **full upgrade + rollback runbook: [[docs/erebos/tutorials]] §7** (target 2026.8.5, latest community release verified 2026-11-04)
-- [ ] P1: Immich → ≥ 3.3.0 and **delete** `permittedInsecurePackages = [ "immich-2.7.5" ]` from `flake.nix`
+- [ ] P1: Authentik container → ≥ 2026.8.2 (target 2026.8.5; `sys/containers/authentik.nix`) — **re-verified 2026-11-04: still 2026.8.1**; **full upgrade + rollback runbook: [[docs/erebos/tutorials]] §7**
+- [ ] P1: Immich → ≥ 3.3.0 and **delete** `permittedInsecurePackages = [ "immich-2.7.5" ]` from `flake.nix` — **re-verified 2026-11-04: still 2.7.5 running** (host bind improved in `b1b690e`, version untouched)
 - [x] ~~P1: restore Authentik middleware (or Netbird-only bind) on the n8n router~~ — **corrected**: n8n is not internet-forwarded (owner), built-in auth chosen because SSO is paid; residual actions:
 - [ ] Enable MFA on the n8n owner account; treat n8n updates like an exposed service; confirm LAN/VPN boundary is acceptable
 - [ ] P2: verify `richdocumentscode` app absent in Nextcloud (KEV-listed, actively exploited)
 - [ ] P2: track Jellyfin fix (>12.4) via `nix flake update`
-- [ ] P2: re-bind Prometheus/Loki/Alertmanager (+ Jellyfin) to loopback; re-check `ss -ltn` after
+- [x] ~~P2: re-bind Prometheus (+Immich) to loopback~~ — done `b1b690e`, live-verified 2026-11-04; [ ] finish: Alertmanager 9093, Loki 3100, Jellyfin 8096 still on `*`
 - [ ] Systemic: keep a manual patch cadence — `autoUpgrade` removed (`6ef7e41`); `nix flake update` + `nix run .#apply` on a schedule (weekly?); [[todo/scheduled-security-audit]] is the reminder mechanism
-- [x] ~~llama.cpp bind 0.0.0.0 → 127.0.0.1~~ — done in `d5340e3` (2026-11-04). Remaining checklist if the stopped unit is re-enabled: verify server-side `n_ctx` vs Hermes `context_length`, smoke-test tool calling, migrate off removed `modelsPreset` option at next flake update
-- [ ] Next audit run: confirm the 2026-11-04 `nix flake update` + rebuild actually advanced Authentik/Immich versions past their P1 fixes
+- [x] ~~llama.cpp bind~~ — `127.0.0.1` ✓ (live `ss`). Remaining: **set Hermes fallback `model.default` to preset alias `LFM3-1.7B`** (currently targets unloaded cache id; offline fallback likely broken), migrate off removed `modelsPreset` option at next flake update
+- [x] ~~Next audit run: version-probe Authentik/Immich~~ — done 2026-11-04: **both still unremediated** (see P1 rows)
 - [ ] Optional: run `nix-audit-info`/`vulnix` against the system to catch store-level flagged packages automatically
 
 ## References
@@ -125,3 +142,4 @@ Remaining pre-conditions for whenever the (purposely stopped) unit is re-enabled
 - **2026-10-26 (same day, corrected)** — n8n finding downgraded P1→P3: **not internet-forwarded** (owner-confirmed); original in-host test misled by NAT hairpinning (200 from inside ≠ public reachability). Built-in owner auth is deliberate (n8n SSO is paid). Residual: enable MFA on owner, keep update cadence high, LAN/VPN boundary is the wall.
 - **2026-11-04** — Delta from commit `6ef7e41` (no full re-inventory): Ollama → llama-cpp 0.8.0 with **new unauthenticated `0.0.0.0:8080` bind** (P3 above); `system.autoUpgrade` removed → manual flake-update cadence (pins advanced same day — Authentik/Immich remediation **not yet verified by version probe**); n8n now from `pkgs-unstable`; `hermes.age` access tightened to 0400. P1/P2 status: unchanged pending next inventory. *(Same day, owner correction: llama-cpp unit **purposely stopped** — absence of :8080 is intended, not a silent service death; do not re-flag in future runs. A todo was briefly filed for it and removed per lifecycle.)*
 - **2026-11-04 (later, `d5340e3`)** — Bind P3 **remediated**: llama.cpp rebound to `127.0.0.1` ✓. Hermes topology inverted: OpenRouter primary, local LFM3 fallback ("fallback to local inference"). Audit→fix turnaround: ~1 h.
+- **2026-11-04 (live re-check run)** — Full-ish re-inventory as requested. **Key finding: the two P1s are NOT fixed** — repo HEAD still `authentikVersion = "2026.8.1"` and running Immich still `immich-2.7.5` (+ `permittedInsecurePackages`): image/Nix pins don't move on `nix flake update`, likely the misunderstanding; runbook in [[docs/erebos/tutorials]] §7. **Fixed:** Prometheus+Immich binds now loopback (live `ss` ✓, commit `b1b690e`), llama-cpp active on loopback, kernel 7.3.0→7.3.1, system rebuild `26.05.20261104.994bb33`. **New:** llama-cpp fallback id mismatch — router up but no model loaded, Hermes targets cache id not preset alias (offline safety-net likely broken). **Still open:** Alertmanager 9093 / Loki 3100 / Jellyfin 8096 binds; Jellyfin >12.4; `richdocumentscode` verify; n8n owner MFA.
