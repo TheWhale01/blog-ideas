@@ -10,7 +10,7 @@ tags: [meta, index]
 
 > Content catalog. Every wiki page listed under its type with a one-line summary.
 > Read this first to find relevant pages for any query.
-> Last updated: 2026-11-07 | Total pages: 33
+> Last updated: 2026-11-07 | Total pages: 34
 
 ## Concepts
 
@@ -30,7 +30,8 @@ tags: [meta, index]
 ## Todo
 > Improvements/fixes for things already implemented on Erebos (new services go in Ideas).
 - [[todo/index]] – Hub: all backlog items by priority
-- [[todo/monitoring-alerting]] – Alerting LIVE ✅ (journal-verified event IDs into ops room, 2026-11-07); open: rebuild deleted rules, rotate leaked webhook secret, loopback binds
+- [[todo/monitoring-alerting]] – Alerting LIVE ✅ · 9-rule set deployed & owner-confirmed (artifacts: todo/alert-rules.yml + .test.yml); open: rotate leaked webhook secret, loopback binds
+- [[todo/issues-room-readonly]] – Not started · bot-only writes in the issues room; v12 creator-PL caveat decides approach
 - [[todo/backups]] – Critical · respecified: vaultwarden/immich/nextcloud only (PG dumps + /data trees), target = strategos (Pi)
 - [[todo/age-keys-to-strategos]] – High · agenix identity keys have no offline copy; passphrase-archive onto strategos + round-trip decrypt drill
 - [[todo/terraform-workflow]] – Medium · remote state + locking, CI drift-check

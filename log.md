@@ -573,3 +573,7 @@ tags: [meta, log]
 - Owner: "everything works fine" — rules deployed + delivery visually confirmed. Pipeline: LIVE, end of a long debug.
 - 'Alert link' is utils.js FALLBACK when ALERT_LINKS unset → suppress via null-config env entry (no patch); documented in docs/erebos/services.md.
 - Open tail: webhook secret rotation (leaked, unrotated), loopback binds AM/bridge/Loki, odin display-name rename.
+
+## 2026-11-07 — todo filed: issues-room read-only (bot-only writes)
+
+- New todo/issues-room-readonly.md: events_default→50 + @erebot PL 50 via Element roles & permissions; v12 twist documented — room creator's PL is infinite/immutable, so silencing ALL users incl. owner requires the bot to be the creator (recreate option (b)) else creator-as-exception (a). Wired: todo hub (new Low section), root index (+count 34), cross-link from monitoring-alerting. Pages 33→34.

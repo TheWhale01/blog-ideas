@@ -237,6 +237,7 @@ regex if you want them paged).
       `ServiceOffline` + disk rule with the ineffective `unit-include` premise). Consequence:
 - [x] ~~Rule coverage is now ZERO~~ → RESOLVED 2026-11-07 night: 9-rule set (below, attached as
       `todo/alert-rules.yml`) deployed, promtool-validated, owner-confirmed working end-to-end.
+- [ ] Room hygiene follow-up: make the issues room bot-writable-only → [[todo/issues-room-readonly]]
 - [ ] Rotate the leaked webhook secret + remove it from git: currently committed plaintext in the
       **public** repo (`prometheus.nix` receiver URL) and *working* — anyone can forge alerts. New
       secret lives agenix-only; build the URL from a gitignored local file
