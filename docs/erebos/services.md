@@ -222,6 +222,8 @@ The **Hermes Agent** (this assistant — "Odin") runs as a systemd service via t
   (`6ef7e41` had it the other way around that same day). Keys in `secrets/shared/hermes.age`,
   `0400`, owner = hermes service user (access tightened in `6ef7e41`).
 - Matrix gateway: `require_mention = true`, `allowed_users = ["@whale:matrix.thewhale.fr"]` — the agent DM room.
+  Agent account `@odin:matrix.thewhale.fr`; display name **Odin** since 2026-11-07 (profile endpoint verified;
+  matches the git-author identity of this assistant — see [[docs/erebos/secrets]] for `odin.age`/appservice wiring).
 - Secrets: `environmentFiles = [ config.age.secrets.hermes.path ]` (`secrets/shared/hermes.age`).
 - The `hades` user is member of the `hermes` group (added in `configuration.nix`, 2026-10-15) to manage the agent's state.
 - Alertmanager Matrix room updated to the dedicated ops room in the same commit.

@@ -586,3 +586,7 @@ tags: [meta, log]
 
 - `85c5ebe` rotated webhook secret: exactly the envsubst recipe — new `secrets/shared/prometheus.age` (KEY=VALUE, owner vars.prometheus.user, 0400) as alertmanager environmentFile; URL now placeholder; bridge .age re-encrypted; 9-rule set + vars.prometheus.user also landed here. Store hygiene verified live (0 occurrences old secret; EnvironmentFiles=/run/agenix/prometheus). **agenix runtime dir = /run/agenix**, not /run/secrets — corrected across todo/monitoring-alerting, secrets.md, tutorials runbook.
 - `6973308` disko: prod /dev/sdd, stage /dev/vda (role-correct swap). docs/erebos/index + architecture already reflected the sdd fix; audit P2 leak finding stripped from open body (resolved, lives in Audit log); rotation todo closed; ALERT_LINKS suppression + loopback binds remain open.
+
+## 2026-11-07 — odin display name applied: odin → Odin
+
+- Owner changed it; verified live via profile endpoint (displayname=Odin). Recorded in docs/erebos/services.md Hermes section. Last open chat-tracked item from the alerting thread closed.
