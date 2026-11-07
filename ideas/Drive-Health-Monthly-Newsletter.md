@@ -32,9 +32,9 @@ The "array" — the actual physical inventory, verified 2026-11-07:
 | `sda` | WDC WD20EARX (2 TB, Green) | |
 | `sdb` | WDC WD6400AAKS (640 GB) | |
 | `sdc` | WDC WD10EZEX (1 TB) | |
-| `sdd` | Kingston SA400S3 (SATA SSD) | |
+| `sdd` | Kingston SA400S3 (SATA SSD) | **root: ESP + btrfs** (disko `nixos` disk, corrected `6973308`) |
 | `sde` | WDC WD1001FALS (1 TB Black) | |
-| `sdf` | Seagate ST8000DM004 (8 TB BarraCuda) | likely `/data` backend |
+| `sdf` | Seagate ST8000DM004 (8 TB BarraCuda) | likely `/data` (VG `whale`) — verify with `pvs` |
 
 No mdraid/ZFS — redundancy does not exist; SMART-driven early replacement is the *only* failure
 strategy, which makes this idea more load-bearing than it looks. Two of these drives (the 640 GB
@@ -95,17 +95,15 @@ Erebos (bare metal) ── smartctl_exporter (:9633, new) + node_exporter (:9100
 
 ## Remaining open questions (no longer gating — sizing questions)
 
-1. **Which sdX is which role**: the physical mapping of the six disks (root btrfs on which?, whale VG
-   on which — likely `sdf` the 8 TB) is worth recording once, see [[todo/disko-prod-device-paths]].
-2. Newsletter content depth: pure SMART digest, or include filesystem usage + backup-job status too
+1. Newsletter content depth: pure SMART digest, or include filesystem usage + backup-job status too
    (a true "state of the drives AND their data" monthly)?
-3. Recipient/route: personal inbox via Resend (token reuse) — confirm the from-address policy
+2. Recipient/route: personal inbox via Resend (token reuse) — confirm the from-address policy
    (`authentik-no-reply@thewhale.fr` exists; a dedicated `odin@` might be cleaner).
 
 ## Tasks
 
 - [ ] Enable `services.prometheus.exporters.smartctl` (localhost bind) + scrape job + `services.smartd` self-tests in `sys/services/monitoring/`
-- [ ] Reconcile prod device paths ([[todo/disko-prod-device-paths]]) before trusting any disk-role claims
+- [ ] Finish the disk-role map (`sudo pvs` → which disk hosts VG `whale`; identify sda/sdb/sdc/sde roles) and optionally move disko to stable `/dev/disk/by-id/ata-…` paths (root is now correctly `/dev/sdd` per `6973308`)
 - [ ] Build the Grafana disk-health dashboard (tiles per `/sys/block` disk, thresholds colored)
 - [ ] Hermes monthly cron digest: Prometheus queries → green/yellow/red rubric → Resend email + vault archive
 - [ ] Immediate Alertmanager rules via [[todo/monitoring-alerting]] (`smartctl_health`, sector growth, temp)

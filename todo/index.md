@@ -19,7 +19,6 @@ sources: []
 
 ## High
 - [[todo/age-keys-to-strategos]] — Not started · agenix identity keys have NO offline copy today; passphrase-archive onto strategos + round-trip drill
-- [[todo/disko-prod-device-paths]] — Not started · prod.nix says /dev/vda but machine is bare metal (sdX×6); reinstall footgun; map disk roles
 
 ## Medium
 - [[todo/terraform-workflow]] — Partial · remote state + locking, CI drift-check plan, `nix run .#plan`

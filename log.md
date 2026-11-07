@@ -13,6 +13,16 @@ tags: [meta, log]
 > Actions: ingest, update, query, lint, create, archive, delete
 > When this file exceeds 500 entries, rotate: rename to log-YYYY.md, start fresh.
 
+## [2026-11-07] delete | todo/disko-prod-device-paths — root path fixed by owner
+- Commit `6973308 "fixing drives names"`: prod root `/dev/vda` → **`/dev/sdd`** (the Kingston SA400S3
+  SSD — root-on-SSD finally matches hardware; whale--nas-data entry unchanged) → footgun closed, todo
+  deleted per lifecycle
+- Durable facts folded: architecture §5 rewrites the disk-layout truth (sdd=Kingston root, ESP+btrfs),
+  docs/erebos/index prod line corrected; drive-health idea inventory updated (sdd role confirmed,
+  sdf-as-whale-VG still "verify with pvs"); residual preference (full role map + optional by-id paths)
+  absorbed into the newsletter idea's task list — no orphan links (grep-verified)
+- 33 pages
+
 ## [2026-11-07] update | Owner correction: prod is BARE METAL — drive-health unblocked, new todo
 - Owner: "Erebos prod is not a VM" (stage is — and stage is deliberately out of newsletter scope).
   Verified live from the container view: `systemd-detect-virt` none, Ryzen 5 5600, DMI generic board,
