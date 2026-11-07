@@ -165,7 +165,7 @@ Each is enabled in Nix and reverse-proxied through Traefik on its own subdomain.
 | n8n | Workflow automation UI (`n8n.thewhale.fr`) — pinned to `pkgs-unstable` since commit `6ef7e41` (fresher release channel than the stable pin) |
 | monitoring/ | Prometheus + Alertmanager + Grafana + Loki + Promtail + matrix-alertmanager bridge |
 
-#### Alerting pipeline — CONFIGURED 2026-11-07, delivery still UNVERIFIED (see [[todo/monitoring-alerting]])
+#### Alerting pipeline — LIVE ✅ (server-verified 2026-11-07 via event IDs in bridge journal)
 
 Prometheus rules → Alertmanager (`:9093`) → **matrix-alertmanager 0.9.0** (`:3004`, webhook with
 `?secret=` query auth) → Matrix room `!C-EIAS89vRQV7k6yUk34TTqXDro5S3Xwx_sJidUW3Lk` (ops room) as

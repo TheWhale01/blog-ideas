@@ -14,7 +14,7 @@ sources: []
 > One file per item, ordered by impact. Statuses are mirrored here; details live in each file.
 
 ## Critical
-- [[todo/monitoring-alerting]] — In progress · config+membership+token+secret ALL verified good, yet NO message has ever arrived — bridge suspected of ACKing AM while dropping sends (journal since 20:26 is the missing witness); rules deleted for rebuild; leaked secret still unrotated
+- [[todo/monitoring-alerting]] — In progress · delivery ✅ SERVER-VERIFIED (journal: 6 sends → 200 + event IDs); open = owner's eyes confirm right room + rebuild rules (coverage currently zero) + rotate leaked secret + loopback binds
 - [[todo/backups]] — Not started · respec'd: only vaultwarden/immich/nextcloud (PG dumps + /data trees) → Borg/Restic over SSH to strategos
 
 ## High

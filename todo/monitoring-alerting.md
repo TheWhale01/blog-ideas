@@ -89,15 +89,12 @@ Synthetic end-to-end test fired 2026-11-07 (alert `WikiPipelineTest` injected vi
       `matrixRooms` (room ID must be copied from Element — chat/log text mangles `+/=` as `_`).
       ⚠️ silence/fix the queued ServiceOffline spam BEFORE the bot joins, it lands instantly.
       Versions observed: matrix-alertmanager 0.9.0 (js-sdk), Synapse 1.164.2.
-- [ ] **Delivery NOT actually live — status corrected after owner chat 2026-11-07:**
-      `790c16a` fixed config shape (right room ID, direct :8008, AS wiring) and @erebot IS now a
-      room member, token+secret proven valid (403-on-behalf-of-auth vs 401) — **but no message has
-      ever arrived** (owner's "works fine" was an assumption about my test; mine never arrived).
-      Suspected failure-eating chain: bridge ACKs-but-drops — DISPROVED by source read below
-      (500 IS returned on send failure; AM retries). Remaining suspects: power levels on the ops
-      room (403 "permission to send"), stale token vs file, or successful sends going unseen.
-      Needs: `sudo journalctl -u matrix-alertmanager --since 20:26` (what did it do on AM's delivery
-      attempt of `OdinReTest`?) + one fresh named alert observed live in both room and journal.
+- [x] **DELIVERY VERIFIED AT SERVER LEVEL 2026-11-07 21:22–21:44 (journal)**: join → 200, six
+      `PUT /send/m.room.message` → all 200 with event IDs (`$f6x-4VPN…` etc.) — every retry of my
+      three probe alerts (`OdinReTest`/`OdinLiveTest`/`OdinJournalProbe`) was ACCEPTED INTO THE ROOM.
+      AM's 5-min retry backoff behaved exactly as the source read predicted. If owner still sees no
+      messages, the discrepancy is purely which room is being looked at (navigate by exact ID via
+      matrix.to) — membership confirmed, sends confirmed.
 - [x] Source read (0.9.0 store copy, nixpkgs-patched — durable knowledge for this stack):
       · webhook secret IS enforced in-app: `routes.js` checks `?secret=` OR Basic-auth password vs
         `APP_ALERTMANAGER_SECRET` env (403 without/with-wrong secret — probed live ✓). NOTE: upstream

@@ -553,3 +553,7 @@ tags: [meta, log]
 - 790c16a also DELETED both alert rules for a from-scratch rebuild → zero coverage today; docs/todo corrected (pipeline = CONFIGURED, not LIVE).
 
 - Source read of the nixpkgs-patched 0.9.0 store copy: secret enforced in-app (query OR Basic-auth; upstream lacks the patch); send failures return 500 (AM retries — my ACK-and-drop theory disproved); ensureInRoom has an upstream misplaced-parens cache bug (benign). Journal since 21:00 is the missing witness — owner runbook issued; suspects now: room power levels for sends, or unseen successful sends.
+
+## 2026-11-07 (late evening) — pipeline CONFIRMED WORKING by journal evidence
+
+- Bridge journal 21:22-21:44: join 200 + six /send PUTs all 200 with event IDs — all three probe alerts delivered into !C-EIAS89…; AM 5-min retry backoff as predicted from source read. Mystery narrowed to client-side room identity (matrix.to by-ID link provided to owner). Services.md: pipeline = LIVE.
