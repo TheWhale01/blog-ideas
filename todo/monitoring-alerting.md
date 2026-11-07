@@ -69,10 +69,18 @@ Synthetic end-to-end test fired 2026-11-07 (alert `WikiPipelineTest` injected vi
       ```
       ⚠️ must hit **localhost:8008 (Synapse direct)** — Traefik's `mas-compat` router proxies all
       public `/login` to MAS, which rejects `m.login.application_service`. Token → `agenix -e`
-      into `secrets/shared/matrix/erebot.age` → rebuild → invite bot to alerts room.
-      AS virtual users have no profile row until they set one — explains the earlier 404 probe;
-      display name can be PUT with the new token.
-      (.env PermissionDenied warning = cosmetic; run from a neutral cwd)
+      into `secrets/shared/matrix/erebot.age` → rebuild. AS virtual users have no profile row
+      until they set one — explains the earlier 404 probe; display name can be PUT with the new
+      token. (The `.env PermissionDenied` warning during mas-cli runs = cosmetic; cwd unreadable
+      to the mas user.)
+      NOTE on as_token ≠ access token: per spec, `as_token` is only valid on AS-API endpoints
+      (login, namespace queries) — Synapse accepting it on arbitrary client endpoints is an
+      unguaranteed implementation detail; always mint the syt_ token first.
+- [ ] Room membership: the bridge is **jaywink/matrix-alertmanager** (confirmed via nixpkgs
+      `pkgs/by-name/ma/matrix-alertmanager` — NOT matrix-webhook as earlier assumed). Its README:
+      "Automatic joining of configured rooms. **Private rooms require an invite**." → ensure the
+      target room ID is in `matrixRooms` (prometheus.nix) and invite @erebot (Element) if private;
+      `systemctl restart matrix-alertmanager` and it joins on startup — no manual /join call needed
 - [ ] Then re-test: inject via `http://127.0.0.1:9093/api/v2/alerts` (curl in the chat thread), expect
       message in the alerts room within ~40 s
 - [ ] ⚠️ **Fix rule spam before enabling delivery**: live AM currently holds firing `ServiceOffline`
