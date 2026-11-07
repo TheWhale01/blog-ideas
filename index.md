@@ -10,7 +10,7 @@ tags: [meta, index]
 
 > Content catalog. Every wiki page listed under its type with a one-line summary.
 > Read this first to find relevant pages for any query.
-> Last updated: 2026-11-04 | Total pages: 30
+> Last updated: 2026-11-07 | Total pages: 31
 
 ## Concepts
 
@@ -24,6 +24,7 @@ tags: [meta, index]
 - [[ideas/Fail2ban]] – Log-based IP banning for SSH and web services, journald/nftables integration on NixOS
 - [[ideas/Chezmoi-Pontos]] – Declarative dotfiles for the pontos laptop (Fedora) with chezmoi + age, wipe-and-recover story
 - [[ideas/Quickshell-Notification-Client]] – Catppuccin notification daemon as a quickconf module, built on quickshell's Quickshell.Services.Notifications
+- [[ideas/CVE-Now-MCP]] – Give Odin structured CVE lookups via cve.now's free hosted MCP server (no auth; `get_vulnerability`/`list_feed`/`check_stack` incl. flake.lock) feeding [[todo/scheduled-security-audit]]
 
 ## Todo
 > Improvements/fixes for things already implemented on Erebos (new services go in Ideas).
@@ -38,7 +39,7 @@ tags: [meta, index]
 - [[todo/initrd-systemd-stage1-migration]] – High · scripted-initrd opt-out in configuration.nix triggers the 26.05 deprecation warning; one-line removal + boot test before 26.11 (2026-11-30) deletes it
 
 ## Queries
-- [[queries/security-audit]] – Living security audit of Erebos (**re-check 2026-11-07: P1 Authentik RESOLVED at 2026.8.5; P1 Immich 2.7.5 sole open P1**; binds loopbacked for Prometheus/Immich/llama.cpp, Alertmanager/Loki/Jellyfin open; llama fallback id-mismatch found); maintained by [[todo/scheduled-security-audit]]
+- [[queries/security-audit]] – Living security audit of Erebos, **open findings only** (re-check 2026-11-07): P1 Immich 2.7.5 sole open P1; P2 Jellyfin/KEV-verify/binds; P3 llama.cpp drift; maintained by [[todo/scheduled-security-audit]], future CVE lookups via [[ideas/CVE-Now-MCP]]
 
 ## Documentation
 

@@ -13,6 +13,20 @@ tags: [meta, log]
 > Actions: ingest, update, query, lint, create, archive, delete
 > When this file exceeds 500 entries, rotate: rename to log-YYYY.md, start fresh.
 
+## [2026-11-07] update + create | Audit → open-findings-only; idea: Odin + cve.now MCP
+- [[queries/security-audit]] **stripped of resolved findings** (owner convention, now encoded in
+  [[todo/scheduled-security-audit]] steps 2+4 and the page header): deleted the RESOLVED Authentik P1
+  section, the retracted n8n P3 correction, the Ollama-era bullet, and all [x] action rows; remaining
+  sections rewritten state-only (P2 binds = Alertmanager/Loki/Jellyfin only; P3 llama.cpp = the two
+  live config drifts). Audit log + git keep the history — Immich is visibly the sole open P1
+- Added [[ideas/CVE-Now-MCP]]: connect Odin to cve.now's free hosted MCP server
+  (https://mcp.cve.now/mcp, streamable HTTP, **no auth — handshake + tools/list verified live from
+  Erebos today**); 5 read-only tools; key fit = `check_stack` accepts **flake.lock** (deterministic
+  SCA over the pinned system deps) + feeds for the scheduled audit's advisory step; Hermes config
+  sketch (settings.mcp_servers), injection-surface & egress caveats, 90-day coverage warning, 5
+  curl-verified references
+- index.md: new idea line, Queries line refreshed, 31 pages
+
 ## [2026-11-07] update | Audit correction: P1 Authentik RESOLVED — owner was right, raw-CDN lied
 - Challenge-driven re-verification found `8d47326 "upgrading authentik"` (Nov 6, on main): 2026.8.1 → **2026.8.5**,
   double-confirmed live (unit-script image tag + contents API). P1 CLOSED in [[queries/security-audit]]
