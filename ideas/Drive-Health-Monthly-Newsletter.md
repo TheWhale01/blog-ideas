@@ -27,18 +27,22 @@ its virtual disks are portable by design.)
 
 The "array" — the actual physical inventory, verified 2026-11-07:
 
-| Device | Disk | Role hint |
+| Device | Disk | Role (pvs-verified 2026-11-07) |
 |---|---|---|
-| `sda` | WDC WD20EARX (2 TB, Green) | |
-| `sdb` | WDC WD6400AAKS (640 GB) | |
-| `sdc` | WDC WD10EZEX (1 TB) | |
-| `sdd` | Kingston SA400S3 (SATA SSD) | **root: ESP + btrfs** (disko `nixos` disk, corrected `6973308`) |
-| `sde` | WDC WD1001FALS (1 TB Black) | |
-| `sdf` | Seagate ST8000DM004 (8 TB BarraCuda) | likely `/data` (VG `whale`) — verify with `pvs` |
+| `sda` | WDC WD20EARX (2 TB, Green) | PV of `whale-nas` (<1.82 t) |
+| `sdb` | WDC WD6400AAKS (640 GB, ~2009-era) | PV of `whale-nas` via `sdb3` (595 g) — ⚠️ oldest member |
+| `sdc` | WDC WD10EZEX (1 TB) | PV of `whale-nas` via `sdc1` |
+| `sdd` | Kingston SA400S3 (SATA SSD) | **root: ESP + btrfs** (disko `nixos` disk, corrected `6973308`) — only disk outside the pool |
+| `sde` | WDC WD1001FALS (1 TB Black, ~2011-era) | PV of `whale-nas` via `sde1` — ⚠️ old |
+| `sdf` | Seagate ST8000DM004 (8 TB BarraCuda) | PV of `whale-nas` via `sdf1` (7.28 t) — SMR drive ⚠️ |
 
-No mdraid/ZFS — redundancy does not exist; SMART-driven early replacement is the *only* failure
-strategy, which makes this idea more load-bearing than it looks. Two of these drives (the 640 GB
-AAKS, the 2011-era 1001FALS) are old enough that power-on hours alone may decide the first swap.
+**No mdraid, no ZFS — and `/data` is a linear LVM pool across five disks with ~0 free extents:**
+one failure domain, zero redundancy, and no spare room to pvmove around a dying member. The pool's
+availability is the *product* of its five members' health (plus the two ancient ones are likely to
+set the pace) — this is precisely the math the newsletter exists to watch. SMART-driven early
+replacement is the **only** failure strategy; add the SMR caveat (BarraCuda 8 TB: unsuitable for
+heavy random-write workloads; worth checking `smartctl` wear/idle-cick counts monthly) and note the
+VG-full condition implies any replacement = add a new disk first, then pvmove off the old one.
 
 ```
 Erebos (bare metal) ── smartctl_exporter (:9633, new) + node_exporter (:9100, exists)
@@ -103,7 +107,8 @@ Erebos (bare metal) ── smartctl_exporter (:9633, new) + node_exporter (:9100
 ## Tasks
 
 - [ ] Enable `services.prometheus.exporters.smartctl` (localhost bind) + scrape job + `services.smartd` self-tests in `sys/services/monitoring/`
-- [ ] Finish the disk-role map (`sudo pvs` → which disk hosts VG `whale`; identify sda/sdb/sdc/sde roles) and optionally move disko to stable `/dev/disk/by-id/ata-…` paths (root is now correctly `/dev/sdd` per `6973308`)
+- [ ] Optional: move disko to stable `/dev/disk/by-id/ata-…` paths (root `sdd` + whale-nas member layout now fully mapped via `pvs`)
+- [ ] Check `sdb1/sdb2` — the 640 GB has two partitions before `sdb3`; identify leftovers, don't confuse the disk map
 - [ ] Build the Grafana disk-health dashboard (tiles per `/sys/block` disk, thresholds colored)
 - [ ] Hermes monthly cron digest: Prometheus queries → green/yellow/red rubric → Resend email + vault archive
 - [ ] Immediate Alertmanager rules via [[todo/monitoring-alerting]] (`smartctl_health`, sector growth, temp)

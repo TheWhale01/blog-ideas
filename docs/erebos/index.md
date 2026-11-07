@@ -167,7 +167,7 @@ Secret categories:
 **Prod (`prod.nix`):**
 
 - `disk /dev/sdd` (Kingston SA400S3 SSD — root; corrected from stale `/dev/vda` in `6973308`, 2026-11-07; see [[docs/erebos/architecture]] §5): GPT, 512 MB EFI system partition (`/boot`, vfat) + btrfs root on remaining space.
-- `data /dev/mapper/whale--nas-data`: LVM volume group, ext4 on `/data` with `noatime`.
+- `data /dev/mapper/whale--nas-data`: VG `whale-nas` — linear pool over five PVs (sda, sdb3, sdc1, sde1, sdf1 ≈ 10.6 TiB, fully allocated), ext4 on `/data` with `noatime`; details in [[docs/erebos/architecture]] §5.
 
 The LVM data volume is activated at boot automatically by systemd stage-1 (`boot.initrd.services.lvm`, default-on since `034cd93`/`5f41664` removed the scripted opt-out and the old `vgchange` post-device hook).
 

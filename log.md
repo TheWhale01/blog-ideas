@@ -13,6 +13,18 @@ tags: [meta, log]
 > Actions: ingest, update, query, lint, create, archive, delete
 > When this file exceeds 500 entries, rotate: rename to log-YYYY.md, start fresh.
 
+## [2026-11-07] update | pvs ground truth: /data is a 5-disk LVM pool, fully allocated
+- Owner ran `sudo pvs`: VG is **`whale-nas`** (mapper `whale--nas-data`) spanning **5 PVs** — sda
+  (WD20EARX 1.82t), **sdb3** (640 GB ~2009 disk!), sdc1 + sde1 (2× ~931g WD), sdf1 (8t SMR BarraCuda)
+  ≈ 10.6 TiB, **PFree ≈ 4 MiB (full)**; only root SSD sdd outside the pool
+- Reframed risk language everywhere: architecture §5 + backup posture + drive-health inventory table
+  (roles now pvs-verified; ⚠ marks: oldest members sdb/sde likely set the failure pace; sdf is SMR —
+  workload caveat; VG-full ⇒ replacement needs new disk first, then pvmove)
+- Drive-health idea urgency sharpened: the newsletter watches a 5-member single failure domain with
+  zero parity — pool availability = product of its members' health; tasks updated (sdb1/sdb2 leftover
+  partitions flagged for identification; by-id option retained)
+- docs/erebos/index data row updated; 33 pages; corrected my earlier "plain LVM/single disk" phrasing
+
 ## [2026-11-07] delete | todo/disko-prod-device-paths — root path fixed by owner
 - Commit `6973308 "fixing drives names"`: prod root `/dev/vda` → **`/dev/sdd`** (the Kingston SA400S3
   SSD — root-on-SSD finally matches hardware; whale--nas-data entry unchanged) → footgun closed, todo
