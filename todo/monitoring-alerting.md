@@ -239,9 +239,30 @@ regex if you want them paged).
       `todo/alert-rules.yml`) deployed, promtool-validated, owner-confirmed working end-to-end.
 - [ ] Room hygiene follow-up: make the issues room bot-writable-only → [[todo/issues-room-readonly]]
 - [ ] Rotate the leaked webhook secret + remove it from git: currently committed plaintext in the
-      **public** repo (`prometheus.nix` receiver URL) and *working* — anyone can forge alerts. New
-      secret lives agenix-only; build the URL from a gitignored local file
-      (`sys/secrets.local.nix`, 0600, optional import)
+      **public** repo (`prometheus.nix` receiver URL) and *working* — anyone can forge alerts.
+      **Agenix-only recipe (verified against pinned alertmanager module `93fb760`)** — module has
+      native `environmentFile` + envsubst (config store copy keeps only `$PLACEHOLDERS`; substitution
+      happens in preStart into PrivateTmp, PID1 reads the EnvironmentFile as root so `0400` agenix
+      files & DynamicUser coexist fine):
+      1. New secret file `secrets/shared/matrix/alertmanager-webhook-env.age` (add to `sys/secrets.nix`,
+         root-owned) whose content is **KEY=VALUE** form: `MATRIX_ALERTMANAGER_WEBHOOK=<new-random>`,
+         generated once: `openssl rand -hex 16`. The bridge keeps needing the **raw-value** form in
+         `alertmanager-webhook.age` (`secretFile` → LoadCredential `$(cat)`), so BOTH files carry the
+         same value — same secret, two shapes (standard agenix practice).
+      2. `prometheus.nix`:
+         ```nix
+         services.prometheus.alertmanager.environmentFile =
+           config.age.secrets.alertmanager-webhook-env.path;
+         # receiver URL — placeholder only, $VAR never contains other $ in this config
+         url = "http://127.0.0.1:${toString config.services.matrix-alertmanager.port}/alerts?secret=$MATRIX_ALERTMANAGER_WEBHOOK";
+         ```
+      3. Old plaintext line disappears; git history still has the old value → rotation is what
+         actually remediates.
+      4. Verify: after apply, `grep -r 'tDx' $(ls -t /nix/store/*-alertmanager.yml | head -1)` must
+         find nothing (only `$MATRIX_ALERTMANAGER_WEBHOOK`); fire Tier-2 test alert → arrives;
+         `journalctl -u alertmanager` free of config errors. NOTE: envsubst eats ALL `$VAR` — AM config
+         must stay free of literal `$` (escape as `$$` if ever needed; Go-template `{{ }}` unaffected).
+      5. Same pass: bind AM/bridge/Loki loopback (todo-11 tail), since file is being edited anyway.
 - [ ] Bind loopback (closes audit P2 remainder): AM 9093, bridge 3004, Loki 3100 — live `ss` still `*`
 - [ ] Expand rules beyond systemd state
 - [ ] Loki LogQL error panels

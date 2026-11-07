@@ -577,3 +577,7 @@ tags: [meta, log]
 ## 2026-11-07 — todo filed: issues-room read-only (bot-only writes)
 
 - New todo/issues-room-readonly.md: events_default→50 + @erebot PL 50 via Element roles & permissions; v12 twist documented — room creator's PL is infinite/immutable, so silencing ALL users incl. owner requires the bot to be the creator (recreate option (b)) else creator-as-exception (a). Wired: todo hub (new Low section), root index (+count 34), cross-link from monitoring-alerting. Pages 33→34.
+
+## 2026-11-07 — secret-in-agenix design for Alertmanager webhook (envsubst route)
+
+- Pinned alertmanager module inspected: environmentFile option + preStart envsubst into PrivateTmp — store copy holds only $PLACEHOLDER; PID1 reads EnvironmentFile as root (compatible with agenix 0400 + DynamicUser). Recipe recorded in todo/monitoring-alerting.md rotation item: KEY=VALUE env secret file for AM + raw secret file for bridge (same value, two shapes); replaces the earlier 'secrets.local.nix' idea.
