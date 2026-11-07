@@ -50,6 +50,18 @@ Synthetic end-to-end test fired 2026-11-07 (alert `WikiPipelineTest` injected vi
       output → `sudo agenix -e` into `secrets/shared/matrix/erebot.age` as a single line → rebuild →
       invite `@erebot:matrix.thewhale.fr` to room `!FVqWRrn1…` in Element — matrix-webhook
       auto-joins invites → re-fire test alert)
+- [x] ~~create via MAS~~ **blocked 2026-11-07**: `manage register-user --yes erebot` →
+      `Error: Username not available on homeserver` — Synapse reports the localpart taken: an
+      **`@erebot` exists as a Synapse-LOCAL user outside MAS** (likely from the original webhook
+      setup via the registration shared secret — also explains the 500 at delivery: old/invalid
+      token in erebot.age for an account MAS doesn't own). Verify:
+      `sudo -u postgres psql -d matrix-synapse -Atc "SELECT name,deactivated,is_guest FROM users WHERE name LIKE '%erebot%';"`
+- [ ] Choose remediation route: **A** keep @erebot, mint fresh token via Synapse admin API
+      (`POST /_synapse/admin/v1/users/@erebot:matrix.thewhale.fr/login`, needs admin token;
+      reactivate first if deactivated) → agenix → rebuild; or **B** rename receiver to a free
+      localpart (e.g. `alertbot`) across prometheus.nix + matrixRooms + secrets.nix + new age file,
+      then MAS register-user + issue-compatibility-token (keeps MAS as single identity store)
+      (.env PermissionDenied warning = cosmetic; run from a neutral cwd)
 - [ ] Then re-test: inject via `http://127.0.0.1:9093/api/v2/alerts` (curl in the chat thread), expect
       message in the alerts room within ~40 s
 - [ ] ⚠️ **Fix rule spam before enabling delivery**: live AM currently holds firing `ServiceOffline`
