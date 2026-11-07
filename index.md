@@ -30,7 +30,7 @@ tags: [meta, index]
 ## Todo
 > Improvements/fixes for things already implemented on Erebos (new services go in Ideas).
 - [[todo/index]] – Hub: all backlog items by priority
-- [[todo/monitoring-alerting]] – In progress · pipeline healthy end-to-end except room membership (journalctl: M_FORBIDDEN @erebot not in !C-EIAS89… room); invite + rule-spam guard = last steps
+- [[todo/monitoring-alerting]] – Alerting LIVE ✅ (journal-verified event IDs into ops room, 2026-11-07); open: rebuild deleted rules, rotate leaked webhook secret, loopback binds
 - [[todo/backups]] – Critical · respecified: vaultwarden/immich/nextcloud only (PG dumps + /data trees), target = strategos (Pi)
 - [[todo/age-keys-to-strategos]] – High · agenix identity keys have no offline copy; passphrase-archive onto strategos + round-trip decrypt drill
 - [[todo/terraform-workflow]] – Medium · remote state + locking, CI drift-check
