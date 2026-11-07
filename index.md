@@ -30,8 +30,8 @@ tags: [meta, index]
 > Improvements/fixes for things already implemented on Erebos (new services go in Ideas).
 - [[todo/index]] – Hub: all backlog items by priority
 - [[todo/monitoring-alerting]] – Critical · Alertmanager, Prometheus rules, Loki queries, Grafana→Matrix
-- [[todo/backups]] – Critical · respecified: vaultwarden/immich/nextcloud only (PG dumps + /data trees), target = Raspberry Pi
-- [[todo/age-keys-to-rpi]] – High · agenix identity keys have no offline copy; passphrase-archive onto the Pi + round-trip decrypt drill
+- [[todo/backups]] – Critical · respecified: vaultwarden/immich/nextcloud only (PG dumps + /data trees), target = strategos (Pi)
+- [[todo/age-keys-to-strategos]] – High · agenix identity keys have no offline copy; passphrase-archive onto strategos + round-trip decrypt drill
 - [[todo/terraform-workflow]] – Medium · remote state + locking, CI drift-check
 - [[todo/authentik-policy-revalidation]] – Medium · username re-check at login (feasible) + forced password rotation on policy change (retroactive check impossible — hashes)
 - [[todo/scheduled-security-audit]] – Medium · weekly Hermes cron job re-auditing Erebos and updating [[queries/security-audit]]

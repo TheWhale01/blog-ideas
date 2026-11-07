@@ -15,10 +15,10 @@ sources: []
 
 ## Critical
 - [[todo/monitoring-alerting]] — Not started · Alertmanager + Prometheus rules + Loki queries + Grafana→Matrix routing
-- [[todo/backups]] — Not started · respec'd: only vaultwarden/immich/nextcloud (PG dumps + /data trees) → Borg/Restic to the Raspberry Pi
+- [[todo/backups]] — Not started · respec'd: only vaultwarden/immich/nextcloud (PG dumps + /data trees) → Borg/Restic over SSH to strategos
 
 ## High
-- [[todo/age-keys-to-rpi]] — Not started · agenix identity keys have NO offline copy today; passphrase-archive onto the Pi + round-trip drill
+- [[todo/age-keys-to-strategos]] — Not started · agenix identity keys have NO offline copy today; passphrase-archive onto strategos + round-trip drill
 
 ## Medium
 - [[todo/terraform-workflow]] — Partial · remote state + locking, CI drift-check plan, `nix run .#plan`

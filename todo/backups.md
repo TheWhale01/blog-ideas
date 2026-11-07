@@ -29,12 +29,12 @@ What MUST be in any backup set (for the three in-scope services):
 2. **`/data/Immich`** (photo/video originals + thumbs)
 3. **`/data/nextcloud`** (user files, data directory)
 4. `/var/lib/vaultwarden` if it holds non-DB state (push/sends config; the credentials live in PG)
-5. The agenix identity keys → covered separately by [[todo/age-keys-to-rpi]] (different mechanism)
+5. The agenix identity keys → covered separately by [[todo/age-keys-to-strategos]] (different mechanism)
 
 ## Design decisions left open
 
 - [ ] Tool: BorgBackup (dedup, NixOS `services.borgbackup` module) vs Restic — lean Borg
-- [ ] **Remote target: the Raspberry Pi NixOS box on the same LAN** (receives borg via SSH) — it is
+- [ ] **Remote target: strategos** (Raspberry Pi, same LAN — [repo](https://github.com/TheWhale01/strategos), aarch64, nixpkgs 25.11 stable; sshd already up with authorized keys, receives borg over SSH) — it is
       off-box but not off-site: acceptable for accidental-deletion/first-order disk failure; document
       that a total-fire loss of both boxes is uncovered by design
 - [ ] Retention: start 7 daily / 4 weekly / 12 monthly
@@ -44,5 +44,5 @@ What MUST be in any backup set (for the three in-scope services):
 ## Related
 
 - [[docs/erebos/architecture]] — §5 Backup posture (facts mirrored there)
-- [[todo/age-keys-to-rpi]] — the companion key-material backup
+- [[todo/age-keys-to-strategos]] — the companion key-material backup
 - [[todo/monitoring-alerting]] — should alert on failed backup jobs once it exists

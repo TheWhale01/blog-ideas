@@ -91,4 +91,4 @@ rotation means coordinated regeneration on both issuer and consumer sides for ma
 single-admin box. Quarterly-rotation work was explicitly dropped. What remains true and cheap:
 recipients are still broad (`hades` + services), and there is **no offline backup of the
 age identity keys** — losing them makes every `.age` file unrecoverable. **Planned fix (2026-11-07):
-back the identity keys up to the owner's Raspberry Pi (NixOS, same LAN)** → [[todo/age-keys-to-rpi]].
+back the identity keys up to **strategos**, the owner's Raspberry Pi (NixOS, same LAN)** → [[todo/age-keys-to-strategos]].

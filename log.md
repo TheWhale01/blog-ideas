@@ -13,6 +13,18 @@ tags: [meta, log]
 > Actions: ingest, update, query, lint, create, archive, delete
 > When this file exceeds 500 entries, rotate: rename to log-YYYY.md, start fresh.
 
+## [2026-11-07] update | strategos identified: Raspberry Pi config repo integrated
+- Owner shared https://github.com/TheWhale01/strategos (verified 200): the Pi is **strategos** — aarch64
+  NixOS flake pinning nixpkgs release-25.11 stable, user `athena`, shares nixos-modules input with
+  Erebos; readme still lists the fleet (erebos/pontos/olympos configs once lived here, now only
+  strategos remains in sys/); last pushed 2026-10-12
+- Relevant facts folded: sshd up with authorized keys (borg + key-transfer channel exists today);
+  NetworkManager/DHCP → jobs must pin static lease or strategos.local; **no agenix on it** → the
+  Pi-as-agenix-recipient option needs setup, reinforcing the passphrase-archive recommendation
+- todo/age-keys-to-rpi → renamed **todo/age-keys-to-strategos** (git mv, all refs repointed: backups,
+  secrets, architecture, both hubs, root index); prose updated across docs
+- log.md entry; model corrected mid-edit (repo never says Pi 4 — dropped the invented spec)
+
 ## [2026-11-07] create | Backup spec answered → todo/backups reborn + todo/age-keys-to-rpi
 - Owner answered the three architecture questions; facts now govern scope:
   (1) `/data` NOT redundant — `whale--nas-data` is a stale VG name from a previous NAS build, plain

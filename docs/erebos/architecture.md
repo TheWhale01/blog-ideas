@@ -83,9 +83,10 @@ redundant** — `whale--nas-data` is a legacy VG name from a previous, separate 
 done); it is plain LVM on this server, so disk death loses it. Only three services hold
 backup-worthy data: **vaultwarden, immich, nextcloud** → PG logical dumps of their three databases +
 `/data/Immich` + `/data/nextcloud`; everything else is explicitly out of scope. The agenix identity
-keys have **no offline copy today** — planned onto the owner's Raspberry Pi (NixOS, same LAN), which
+keys have **no offline copy today** — planned onto **strategos** (the owner's Raspberry Pi, NixOS, same
+LAN; [repo](https://github.com/TheWhale01/strategos)), which
 is also the intended remote target for the data backups. Tracked in [[todo/backups]] and
-[[todo/age-keys-to-rpi]].
+[[todo/age-keys-to-strategos]].
 
 ### 6. Terraform / OpenTofu (terranix)
 

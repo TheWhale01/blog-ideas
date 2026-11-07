@@ -1,5 +1,5 @@
 ---
-title: Backup agenix identity keys to the Raspberry Pi
+title: Backup agenix identity keys to strategos
 created: 2026-11-07
 updated: 2026-11-07
 type: todo
@@ -7,7 +7,7 @@ tags: [erebos, todo, security, infrastructure]
 sources: ["owner decision 2026-11-07"]
 ---
 
-# Backup agenix identity keys to the Raspberry Pi
+# Backup agenix identity keys to strategos (Raspberry Pi)
 
 - **Status**: Not started
 - **Priority**: High
@@ -22,8 +22,11 @@ highest-severity latent risk on Erebos: silent until the day it isn't.
 
 ## Target
 
-The owner's **Raspberry Pi running NixOS on the same LAN** (second machine of the fleet, distinct
-from Erebos and from pontos). Keys backed up there.
+**strategos** — the owner's Raspberry Pi, aarch64 NixOS, same LAN ([config repo](https://github.com/TheWhale01/strategos): flake pinning `nixpkgs release-25.11` stable, user `athena`,
+shares the `nixos-modules` input with Erebos). Current state relevant to this task: **SSH server up
+with `athena` authorized keys** (transfer channel exists today), firewall enabled, NetworkManager +
+DHCP (pin a static lease or use `strategos.local` mDNS so Erebos' job targets a stable address),
+**no agenix on it yet** — option 2 below would require adding it.
 
 ## Design options (pick before implementing)
 
@@ -52,3 +55,4 @@ from Erebos and from pontos). Keys backed up there.
 
 - [[docs/erebos/secrets]] — rotation posture; this closes its "key-loss cliff" caveat
 - [[todo/backups]] — same Pi doubles as the backup target for the 3 sensitive services
+- **strategos config** — https://github.com/TheWhale01/strategos
