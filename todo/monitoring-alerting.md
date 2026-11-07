@@ -38,8 +38,10 @@ Synthetic end-to-end test fired 2026-11-07 (alert `WikiPipelineTest` injected vi
       same answer; positive controls @whale/@odin resolved fine). The webhook secret itself is valid
       (bridge accepted POSTs without 401). `manage register-user` below resolves both cases: it
       errors cleanly if the user already exists, and the token issuance then fixes the dead-token case.
-- [ ] **Create the bot in MAS** (NOT Authentik — Matrix users live in MAS; verified binary:
-      `systemctl show mas -p ExecStart` → mas-cli 1.28.0):
+- [x] ~~Create the bot in MAS~~ (attempted; superseded — @erebot turned out to be an **appservice**
+      user, see the route-A resolution below. MAS recipe kept for reference/other bots — NOT
+      Authentik, Matrix users live in MAS; binary from `systemctl show mas -p ExecStart` →
+      mas-cli 1.28.0):
       ```bash
       MAS=/nix/store/4m2bp2m0rpiy96vfa3xiv3iyw2scgmk5-matrix-authentication-service-1.28.0/bin/mas-cli
       CFG="--config /run/secrets/mas --config /nix/store/0xlj62hlal43kzq5810kbwv629kgsj5d-mas-config.yaml"
