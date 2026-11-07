@@ -581,3 +581,8 @@ tags: [meta, log]
 ## 2026-11-07 — secret-in-agenix design for Alertmanager webhook (envsubst route)
 
 - Pinned alertmanager module inspected: environmentFile option + preStart envsubst into PrivateTmp — store copy holds only $PLACEHOLDER; PID1 reads EnvironmentFile as root (compatible with agenix 0400 + DynamicUser). Recipe recorded in todo/monitoring-alerting.md rotation item: KEY=VALUE env secret file for AM + raw secret file for bridge (same value, two shapes); replaces the earlier 'secrets.local.nix' idea.
+
+## 2026-11-07 (sync) — commits 85c5ebe + 6973308 ingested
+
+- `85c5ebe` rotated webhook secret: exactly the envsubst recipe — new `secrets/shared/prometheus.age` (KEY=VALUE, owner vars.prometheus.user, 0400) as alertmanager environmentFile; URL now placeholder; bridge .age re-encrypted; 9-rule set + vars.prometheus.user also landed here. Store hygiene verified live (0 occurrences old secret; EnvironmentFiles=/run/agenix/prometheus). **agenix runtime dir = /run/agenix**, not /run/secrets — corrected across todo/monitoring-alerting, secrets.md, tutorials runbook.
+- `6973308` disko: prod /dev/sdd, stage /dev/vda (role-correct swap). docs/erebos/index + architecture already reflected the sdd fix; audit P2 leak finding stripped from open body (resolved, lives in Audit log); rotation todo closed; ALERT_LINKS suppression + loopback binds remain open.

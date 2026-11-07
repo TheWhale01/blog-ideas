@@ -14,7 +14,7 @@ sources: []
 > One file per item, ordered by impact. Statuses are mirrored here; details live in each file.
 
 ## Critical
-- [[todo/monitoring-alerting]] — Core DONE (9 rules live, delivery owner-confirmed); open: rotate leaked webhook secret + loopback binds + Alert-link suppression snippet apply
+- [[todo/monitoring-alerting]] — Core DONE (9 rules live, delivery confirmed, webhook secret rotated agenix-only in `85c5ebe`); open: loopback binds, Alert-link suppression, Loki panels
 - [[todo/backups]] — Not started · respec'd: only vaultwarden/immich/nextcloud (PG dumps + /data trees) → Borg/Restic over SSH to strategos
 
 ## High

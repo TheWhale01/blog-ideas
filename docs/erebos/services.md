@@ -180,10 +180,9 @@ Config shape worth remembering:
 - Bridge **auto-joins `matrixRooms` at startup**; private rooms require an invite first (upstream README).
 - Failed sends return 500 to Alertmanager (which retries); join is attempted on every send
   (upstream cache-check bug makes it unconditional — benign). Monitor the unit journal.
-- ⚠️ The webhook secret value is still committed plaintext in `prometheus.nix`. The (nixpkgs-patched)
-  app DOES enforce it — via `?secret=` query or Basic-auth password vs `APP_ALERTMANAGER_SECRET` —
-  so the risk is precisely that the enforced value is public: repo-reader + LAN reach = forged alerts.
-  Rotation pending; consider moving from query string to Basic-auth header while fixing (both supported).
+- ✅ Webhook secret is now **agenix-only** (`85c5ebe`): `prometheus.age` (KEY=VALUE) feeds Alertmanager
+  via `environmentFile` + module envsubst; store config holds just `$MATRIX_ALERT_WEBHOOK_SECRET`;
+  bridge holds the raw twin. Git history retains the old value — voided by the rotation itself.
 - Message formatting (source: utils.js `formatAlert`): built-in "Alert link" (→ `generatorURL`) is a
   FALLBACK that fires only when `ALERT_LINKS` is unset. Suppress without patching via
   `systemd.services.matrix-alertmanager.serviceConfig.Environment = [ "ALERT_LINKS=Alerts:{annotations.matrixNoLink}" ];`

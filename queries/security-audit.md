@@ -59,16 +59,10 @@ All require an authenticated (non-admin) account → single-user instance = low 
 - Nextcloud 35.0.2: searched advisories affect 29–33.x — no known unpatched NC-35 advisory at audit time; keep the image fresh (it auto-updates daily via the update-containers service).
 
 ### P2 — Unauthenticated internal services still on all interfaces (lateral movement surface)
-**2026-11-07 update (post-`790c16a`):** Prometheus (`:9090`) & node_exporter (`:9100`) now bind
-`127.0.0.1` ✓ — but live `ss` **still shows `*:9093` (Alertmanager), `*:3004` (bridge), `*:3100`
-(Loki)**. And the webhook secret **remains plaintext-committed in the public repo — reconfirmed
-present in `790c16a` (2026-11-07 20:26)** despite the pipeline now being LIVE (anyone can forge
-alerts into the ops room). Rotation is now the top-priority item of this finding.
-⚠️ **New exposure (2026-11-07):** the matrix-alertmanager webhook secret is committed **in plaintext
-in the public repo** (`sys/services/monitoring/prometheus.nix`, receiver URL query string), and the
-bridge listens on all interfaces — anyone on the LAN *or anyone who reads the repo* can forge alerts
-into the Matrix room (noise/phishing vector; not data exfil). Rotate the secret, keep it agenix-only,
-bind `alertmanager`/`matrix-alertmanager`/`loki` loopback.
+**2026-11-07 (post-`85c5ebe`):** Prometheus (`:9090`) & node_exporter (`:9100`) bind `127.0.0.1` ✓;
+live `ss` **still shows `*:9093` (Alertmanager), `*:3004` (bridge), `*:3100` (Loki)**.
+(The webhook-secret plaintext leak formerly folded into this finding was **remediated same day** —
+see Audit log; secrets now agenix-only via envsubst placeholders, old value rotated.)
 `podman0` is a trusted interface, so any compromised container is a guest: it can **post silences to
 Alertmanager** (blinding alerting) and **read all logs via Loki**.
 **Fix**: bind Alertmanager + Loki (+bridge) to `127.0.0.1` in `sys/services/monitoring/*`, Jellyfin
@@ -95,7 +89,7 @@ Alertmanager** (blinding alerting) and **read all logs via Loki**.
 - [ ] n8n: enable MFA on the owner account; keep n8n updates urgent (auth→RCE advisories all year); LAN/VPN boundary is the wall
 - [ ] P2: verify `richdocumentscode` app absent in Nextcloud (KEV-listed, actively exploited)
 - [ ] P2: track Jellyfin fix (>12.4) via `nix flake update`
-- [ ] P2: bind Alertmanager 9093, Loki 3100, matrix-alertmanager 3004, Jellyfin 8096 to loopback; **rotate the matrix-alertmanager webhook secret** (plaintext in public repo) and keep it agenix-only
+- [ ] P2: bind Alertmanager 9093, Loki 3100, matrix-alertmanager 3004, Jellyfin 8096 to loopback
 - [ ] P3: llama.cpp — align Hermes fallback `model.default` to preset alias `LFM3-1.7B` + smoke-test load; migrate off removed `modelsPreset` option at next flake update
 - [ ] Systemic: keep a manual patch cadence — `nix flake update` + `nix run .#apply` on a schedule (weekly?); [[todo/scheduled-security-audit]] is the reminder mechanism
 - [ ] Optional: run `nix-audit-info`/`vulnix` against the system to catch store-level flagged packages automatically
@@ -126,3 +120,4 @@ Alertmanager** (blinding alerting) and **read all logs via Loki**.
 - **2026-11-04 (later, `d5340e3`)** — Bind P3 **remediated**: llama.cpp rebound to `127.0.0.1` ✓. Hermes topology inverted: OpenRouter primary, local LFM3 fallback ("fallback to local inference"). Audit→fix turnaround: ~1 h.
 - **2026-11-04 (live re-check run)** — Full-ish re-inventory as requested. **Key finding: the two P1s are NOT fixed** — repo HEAD still `authentikVersion = "2026.8.1"` and running Immich still `2.7.5` (+ `permittedInsecurePackages`): image/Nix pins don't move on `nix flake update`, likely the misunderstanding; runbook in [[docs/erebos/tutorials]] §7. **Fixed:** Prometheus+Immich binds now loopback (live `ss` ✓, commit `b1b690e`), llama-cpp active on loopback, kernel 7.3.0→7.3.1, system rebuild `26.05.20261104.994bb33`. **New:** llama-cpp fallback id mismatch — router up but no model loaded, Hermes targets cache id not preset alias (offline safety-net likely broken). **Still open:** Alertmanager 9093 / Loki 3100 / Jellyfin 8096 binds; Jellyfin >12.4; `richdocumentscode` verify; n8n owner MFA.
 - **2026-11-07 (correction + follow-up run)** — Owner challenged the Authentik verdict; they were right for *today*: `8d47326 "upgrading authentik"` (Nov 6) moved main → **2026.8.5** and the live unit pulls that image. The Nov 4 "NOT remediated" call was true at the time (commit didn't exist yet), but a follow-up check was then mis-confirmed by a **stale `raw.githubusercontent.com` CDN blob** — corrected methodology: contents/commits API + live unit ExecStart are the sources of truth. P1 Authentik **CLOSED**; Immich re-probed via contents API + live store path: still 2.7.5 + `permittedInsecurePackages` — **sole open P1**.
+- **2026-11-07** — Alerting day. **Remediated:** matrix-alertmanager webhook plaintext leak (owner commit `85c5ebe`): value rotated, now agenix-only — KEY-VALUE file feeds Alertmanager via module envsubst `environmentFile`, store config verified to hold only `` placeholder (grep count of old value = 0); bridge holds raw twin; old value lingers in git history but is voided. Prometheus+node_exporter binds → loopback ✓ (earlier: `b1b690e`/prometheus.nix). 9-rule alert set deployed & live. Also: initrd systemd stage-1 completed (`5f41664`/`034cd93`, verified live), Authentik 2026.8.5 confirmed earlier today, disko device paths corrected (`6973308` prod=/dev/sdd, stage=/dev/vda). **Still open:** binds AM :9093 / bridge :3004 / Loki :3100 (live ss `*`) + Jellyfin 8096; Immich P1; Jellyfin P2; KEV verify P2.

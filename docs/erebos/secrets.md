@@ -55,6 +55,7 @@ The authoritative map lives in `sys/secrets.nix`. Key entries:
 | `age.secrets.grafana-secret` | `secrets/shared/grafana-secret.age` | grafana: | 0400 |
 | `age.secrets.transmission` | `secrets/shared/transmission.age` | hades:users | 0400 |
 | `age.secrets.matrix-alertmanager-webhook` | `secrets/shared/matrix/alertmanager-webhook.age` | hades:users | 0400 |
+| `age.secrets.prometheus` | `secrets/shared/prometheus.age` | `vars.prometheus.user` | 0400 — Alertmanager `environmentFile` (KEY=VALUE `MATRIX_ALERT_WEBHOOK_SECRET=…`), envsubst-injected; rotated pair of the bridge's raw webhook secret (`85c5ebe`) |
 | `age.secrets.erebot` | `secrets/shared/matrix/erebot.age` | hades:users | 0400 |
 | `age.secrets.livekit` | `secrets/shared/matrix/livekit.age` | hades:users | 0400 |
 | `age.secrets.actualbudget` | `secrets/{env}/actualbudget.age` | hades:users | 0400 |
@@ -81,7 +82,11 @@ The authoritative map lives in `sys/secrets.nix`. Key entries:
   **@erebot, an appservice-owned user** (registered through `matrix-appservice.age`); re-mint via
   `m.login.application_service` against Synapse on `:8008`, never via MAS (see
   [[todo/monitoring-alerting]]). `secretFile = age.secrets.matrix-alertmanager-webhook` — the
-  receiver-auth query secret (⚠️ its current value is leaked in the public repo; rotation pending).
+  receiver-auth query secret (raw value; rotated in `85c5ebe`, no longer in git/store).
+- **Alertmanager**: `services.prometheus.alertmanager.environmentFile = age.secrets.prometheus.path`
+  — the **same webhook secret in KEY=VALUE form**; module envsubst substitutes `$MATRIX_ALERT_WEBHOOK_SECRET`
+  into the receiver URL at preStart (store copy keeps only the placeholder). agenix runtime files live
+  under **`/run/agenix/<name>`** (verified via unit EnvironmentFiles), not `/run/secrets`.
 - **Containers**: `environmentFiles = [config.age.secrets.<name>.path]`.
 - **Systemd units**: `environmentFile = config.age.secrets.<name>.path`.
 - **NixOS modules** reference them as `config.age.secrets.<name>.path`.

@@ -30,7 +30,7 @@ tags: [meta, index]
 ## Todo
 > Improvements/fixes for things already implemented on Erebos (new services go in Ideas).
 - [[todo/index]] – Hub: all backlog items by priority
-- [[todo/monitoring-alerting]] – Alerting LIVE ✅ · 9-rule set deployed & owner-confirmed (artifacts: todo/alert-rules.yml + .test.yml); open: rotate leaked webhook secret, loopback binds
+- [[todo/monitoring-alerting]] – Alerting LIVE ✅ · 9 rules deployed, webhook secret rotated + agenix-only (`85c5ebe`); open: loopback binds, Alert-link suppression
 - [[todo/issues-room-readonly]] – Not started · bot-only writes in the issues room; v12 creator-PL caveat decides approach
 - [[todo/backups]] – Critical · respecified: vaultwarden/immich/nextcloud only (PG dumps + /data trees), target = strategos (Pi)
 - [[todo/age-keys-to-strategos]] – High · agenix identity keys have no offline copy; passphrase-archive onto strategos + round-trip decrypt drill

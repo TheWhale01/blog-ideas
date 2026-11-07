@@ -118,13 +118,13 @@ off-hours. Reference: [official upgrade docs](https://docs.goauthentik.io/instal
 5. **Run the schema migration as a one-shot** — the server container does **not** auto-migrate:
    ```bash
    sudo podman run --rm --network=podman \
-     --env-file /run/secrets/authentik --env-file /run/secrets/authentik-smtp \
+     --env-file /run/agenix/authentik --env-file /run/agenix/authentik-smtp \
      -e AUTHENTIK_POSTGRESQL__HOST=host.containers.internal \
      -e AUTHENTIK_POSTGRESQL__PORT=5432 -e AUTHENTIK_POSTGRESQL__USER=authentik \
      -e AUTHENTIK_POSTGRESQL__NAME=authentik \
      ghcr.io/goauthentik/server:2026.8.5 migrate
    ```
-   (If the agenix secret paths differ from `/run/secrets/…`, check `config.age.secrets.authentik.path`;
+   (agenix runtime dir verified **/run/agenix/…** (2026-11-07, via alertmanager unit `EnvironmentFiles=/run/agenix/prometheus`); confirm any name with `config.age.secrets.authentik.path`;
    `--network=podman` gives both container-name DNS and `host.containers.internal`.)
 6. **Declare + apply the bump:** set `authentikVersion = "2026.8.5"` in `sys/containers/authentik.nix`,
    commit, `nix run .#apply`.
