@@ -89,14 +89,35 @@ Synthetic end-to-end test fired 2026-11-07 (alert `WikiPipelineTest` injected vi
       `matrixRooms` (room ID must be copied from Element — chat/log text mangles `+/=` as `_`).
       ⚠️ silence/fix the queued ServiceOffline spam BEFORE the bot joins, it lands instantly.
       Versions observed: matrix-alertmanager 0.9.0 (js-sdk), Synapse 1.164.2.
-- [ ] Then re-test: inject via `http://127.0.0.1:9093/api/v2/alerts` (curl in the chat thread), expect
-      message in the alerts room within ~40 s
-- [ ] ⚠️ **Fix rule spam before enabling delivery**: live AM currently holds firing `ServiceOffline`
-      alerts for `systemd-update-done.service` (oneshot), `poweroff.target` (target) and
-      `virtlxcd-admin.socket` (socket) — the `unit-include` regex in node_exporter extraFlags is not
-      filtering as intended, and the rule expression ignores unit type. Fix:
-      `expr: node_systemd_unit_state{name=~".+\\.service", type!~"oneshot|oneshot-reload", state="active"} == 0`
-      (and audit why `--collector.systemd.unit-include` isn't effective in the running node_exporter)
+- [ ] **Delivery NOT actually live — status corrected after owner chat 2026-11-07:**
+      `790c16a` fixed config shape (right room ID, direct :8008, AS wiring) and @erebot IS now a
+      room member, token+secret proven valid (403-on-behalf-of-auth vs 401) — **but no message has
+      ever arrived** (owner's "works fine" was an assumption about my test; mine never arrived).
+      Suspected failure-eating chain: bridge ACKs-but-drops — DISPROVED by source read below
+      (500 IS returned on send failure; AM retries). Remaining suspects: power levels on the ops
+      room (403 "permission to send"), stale token vs file, or successful sends going unseen.
+      Needs: `sudo journalctl -u matrix-alertmanager --since 20:26` (what did it do on AM's delivery
+      attempt of `OdinReTest`?) + one fresh named alert observed live in both room and journal.
+- [x] Source read (0.9.0 store copy, nixpkgs-patched — durable knowledge for this stack):
+      · webhook secret IS enforced in-app: `routes.js` checks `?secret=` OR Basic-auth password vs
+        `APP_ALERTMANAGER_SECRET` env (403 without/with-wrong secret — probed live ✓). NOTE: upstream
+        0.9.0 lacks this; the store build is patched by nixpkgs. Basic-auth form enables
+        header-based delivery once the URL is fixed
+      · send errors DO return 500 to Alertmanager (`res.status(500)` in routes.js) — so AM retries;
+        earlier "ACKs-but-drops" theory wrong
+      · upstream bug in client.js: `joinedRoomsCache.indexOf(roomId === -1)` — misplaced parens make
+        the cache check vacuous → ensureInRoom always attempts join (benign: join-as-member = no-op)
+      · payload contract: top-level `receiver` field maps via MATRIX_ROOMS entries
+        `<receiver>/<roomId>` (`lastIndexOf('/')`); env seen live: MATRIX_USER=@erebot:matrix.thewhale.fr,
+        homeserver direct :8008; unit restarted 21:22:20 after apply, NRestarts 0
+      · failed direct probes: minimal payload → "no rooms configured" (no receiver field); bad
+        envelope → 400; correct envelope → whatever the Matrix send returns
+- [x] ~~Fix rule spam~~ — resolved by `790c16a` **deleting both alert rules** (−31 lines: the
+      `ServiceOffline` + disk rule with the ineffective `unit-include` premise). Consequence:
+- [ ] **Rule coverage is now ZERO** — rebuild rules properly with the unit-type guard
+      (`node_systemd_unit_state{name=~".+\\.service", type!~"oneshot.*", state="active"} == 0`)
+      plus disk >85 %, sustained CPU, free memory, target-missing, SMART later
+      (via [[ideas/Drive-Health-Monthly-Newsletter]])
 - [ ] Rotate the leaked webhook secret + remove it from git: currently committed plaintext in the
       **public** repo (`prometheus.nix` receiver URL) and *working* — anyone can forge alerts. New
       secret lives agenix-only; build the URL from a gitignored local file

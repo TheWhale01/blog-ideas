@@ -59,8 +59,11 @@ All require an authenticated (non-admin) account → single-user instance = low 
 - Nextcloud 35.0.2: searched advisories affect 29–33.x — no known unpatched NC-35 advisory at audit time; keep the image fresh (it auto-updates daily via the update-containers service).
 
 ### P2 — Unauthenticated internal services still on all interfaces (lateral movement surface)
-Verified live `ss -ltn` 2026-11-07: **Alertmanager `*:9093`, Loki `*:3100`, Jellyfin `0.0.0.0:8096`** —
-plus the alert bridge `matrix-alertmanager` `*:3004`.
+**2026-11-07 update (post-`790c16a`):** Prometheus (`:9090`) & node_exporter (`:9100`) now bind
+`127.0.0.1` ✓ — but live `ss` **still shows `*:9093` (Alertmanager), `*:3004` (bridge), `*:3100`
+(Loki)**. And the webhook secret **remains plaintext-committed in the public repo — reconfirmed
+present in `790c16a` (2026-11-07 20:26)** despite the pipeline now being LIVE (anyone can forge
+alerts into the ops room). Rotation is now the top-priority item of this finding.
 ⚠️ **New exposure (2026-11-07):** the matrix-alertmanager webhook secret is committed **in plaintext
 in the public repo** (`sys/services/monitoring/prometheus.nix`, receiver URL query string), and the
 bridge listens on all interfaces — anyone on the LAN *or anyone who reads the repo* can forge alerts

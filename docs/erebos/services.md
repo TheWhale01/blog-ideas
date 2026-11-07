@@ -163,7 +163,27 @@ Each is enabled in Nix and reverse-proxied through Traefik on its own subdomain.
 | Service | Role |
 |---|---|
 | n8n | Workflow automation UI (`n8n.thewhale.fr`) — pinned to `pkgs-unstable` since commit `6ef7e41` (fresher release channel than the stable pin) |
-| monitoring/ | Prometheus + Grafana + Loki + Promtail |
+| monitoring/ | Prometheus + Alertmanager + Grafana + Loki + Promtail + matrix-alertmanager bridge |
+
+#### Alerting pipeline — CONFIGURED 2026-11-07, delivery still UNVERIFIED (see [[todo/monitoring-alerting]])
+
+Prometheus rules → Alertmanager (`:9093`) → **matrix-alertmanager 0.9.0** (`:3004`, webhook with
+`?secret=` query auth) → Matrix room `!C-EIAS89vRQV7k6yUk34TTqXDro5S3Xwx_sJidUW3Lk` (ops room) as
+**@erebot** — an **appservice** user (`matrix-appservice.age` registration; NOT a MAS user, MAS can
+never claim it). No alert rules currently exist (deleted in `790c16a` for a from-scratch rebuild).
+Config shape worth remembering:
+- `matrixUser`/receiver are derived from one knob: `route.receiver = "erebot"`.
+- `homeserverUrl = http://127.0.0.1:8008` — **direct to Synapse**; the public hostname's
+  `mas-compat` Traefik router only matters for `/login` but direct is cleaner.
+- Token: `tokenFile = age.secrets.erebot` — minted via `m.login.application_service` + as_token
+  (one-time, never expires; recipe in [[todo/monitoring-alerting]]).
+- Bridge **auto-joins `matrixRooms` at startup**; private rooms require an invite first (upstream README).
+- Failed sends return 500 to Alertmanager (which retries); join is attempted on every send
+  (upstream cache-check bug makes it unconditional — benign). Monitor the unit journal.
+- ⚠️ The webhook secret value is still committed plaintext in `prometheus.nix`. The (nixpkgs-patched)
+  app DOES enforce it — via `?secret=` query or Basic-auth password vs `APP_ALERTMANAGER_SECRET` —
+  so the risk is precisely that the enforced value is public: repo-reader + LAN reach = forged alerts.
+  Rotation pending; consider moving from query string to Basic-auth header while fixing (both supported).
 
 ### `sys/services/llamacpp.nix` — Local LLM (replaced Ollama, 2026-11-04)
 

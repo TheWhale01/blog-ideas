@@ -545,3 +545,11 @@ tags: [meta, log]
 - Proves the rest of the chain healthy: fresh AS-minted token VALID (403-on-send, not 401), webhook secret OK, Alertmanager routing OK. Failed events dropped, not retried (`clearing queue`).
 - Remaining: invite @erebot (or repoint matrixRooms; copy ID from Element, chat text mangles +/=), silence/fix ServiceOffline spam BEFORE joining, then end-to-end test; then secret rotation + loopback binds.
 - todo/monitoring-alerting, todo/index, index updated.
+
+## 2026-11-07 (evening) — 'works fine' was a false positive; bridge source read
+
+- Owner's 'it works' = assumed my test alert had arrived; NOTHING has ever arrived despite: correct room ID in config, @erebot now a room MEMBER, valid AS token (403-class errors prove auth passes), working secret gate (403 probed without secret), unit restarted 21:22 post-apply.
+
+- 790c16a also DELETED both alert rules for a from-scratch rebuild → zero coverage today; docs/todo corrected (pipeline = CONFIGURED, not LIVE).
+
+- Source read of the nixpkgs-patched 0.9.0 store copy: secret enforced in-app (query OR Basic-auth; upstream lacks the patch); send failures return 500 (AM retries — my ACK-and-drop theory disproved); ensureInRoom has an upstream misplaced-parens cache bug (benign). Journal since 21:00 is the missing witness — owner runbook issued; suspects now: room power levels for sends, or unseen successful sends.
