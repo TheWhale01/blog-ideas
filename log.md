@@ -567,3 +567,9 @@ tags: [meta, log]
 
 - Discovered promtool in prometheus 3.12.0 derivation's -cli store output. check rules: 9 OK; test rules SUCCESS across 6 scenarios (timing boundary +5m/+30m, noise-regression for oneshot/target/socket, whitelist for llama-cpp, real 13.1 % /data silent, target-down).
 - Attached todo/alert-rules.yml + todo/alert-rules.test.yml to the vault; todo page gained 'Verified & attached artifacts' section with rerun command.
+
+## 2026-11-07 (final) — alerting operational; Alert-link suppression found
+
+- Owner: "everything works fine" — rules deployed + delivery visually confirmed. Pipeline: LIVE, end of a long debug.
+- 'Alert link' is utils.js FALLBACK when ALERT_LINKS unset → suppress via null-config env entry (no patch); documented in docs/erebos/services.md.
+- Open tail: webhook secret rotation (leaked, unrotated), loopback binds AM/bridge/Loki, odin display-name rename.

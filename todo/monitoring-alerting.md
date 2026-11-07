@@ -235,10 +235,8 @@ regex if you want them paged).
         envelope → 400; correct envelope → whatever the Matrix send returns
 - [x] ~~Fix rule spam~~ — resolved by `790c16a` **deleting both alert rules** (−31 lines: the
       `ServiceOffline` + disk rule with the ineffective `unit-include` premise). Consequence:
-- [ ] **Rule coverage is now ZERO** — rebuild rules properly with the unit-type guard
-      (`node_systemd_unit_state{name=~".+\\.service", type!~"oneshot.*", state="active"} == 0`)
-      plus disk >85 %, sustained CPU, free memory, target-missing, SMART later
-      (via [[ideas/Drive-Health-Monthly-Newsletter]])
+- [x] ~~Rule coverage is now ZERO~~ → RESOLVED 2026-11-07 night: 9-rule set (below, attached as
+      `todo/alert-rules.yml`) deployed, promtool-validated, owner-confirmed working end-to-end.
 - [ ] Rotate the leaked webhook secret + remove it from git: currently committed plaintext in the
       **public** repo (`prometheus.nix` receiver URL) and *working* — anyone can forge alerts. New
       secret lives agenix-only; build the URL from a gitignored local file

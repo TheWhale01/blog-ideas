@@ -184,6 +184,13 @@ Config shape worth remembering:
   app DOES enforce it — via `?secret=` query or Basic-auth password vs `APP_ALERTMANAGER_SECRET` —
   so the risk is precisely that the enforced value is public: repo-reader + LAN reach = forged alerts.
   Rotation pending; consider moving from query string to Basic-auth header while fixing (both supported).
+- Message formatting (source: utils.js `formatAlert`): built-in "Alert link" (→ `generatorURL`) is a
+  FALLBACK that fires only when `ALERT_LINKS` is unset. Suppress without patching via
+  `systemd.services.matrix-alertmanager.serviceConfig.Environment = [ "ALERT_LINKS=Alerts:{annotations.matrixNoLink}" ];`
+  — set-but-empty-resolving env var makes the fallback unreachable and the fake entry silently skips
+  (single-annotation rule, utils.js:101). Real use: `Name:url|Name2:{generatorURL}` with
+  `{labels.x}`/`{annotations.x}` interpolation. `services.matrix-alertmanager.mention = true`
+  prefixes '@room' pings (module-supported option, default off).
 
 ### `sys/services/llamacpp.nix` — Local LLM (replaced Ollama, 2026-11-04)
 
