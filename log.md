@@ -13,6 +13,21 @@ tags: [meta, log]
 > Actions: ingest, update, query, lint, create, archive, delete
 > When this file exceeds 500 entries, rotate: rename to log-YYYY.md, start fresh.
 
+## [2026-11-07] create | Drive-Health-Monthly-Newsletter idea (researched)
+- Owner asked: monthly drive-state email + always-viewable source; "make all the research on if this
+  is feasible" → [[ideas/Drive-Health-Monthly-Newsletter]] with verdict **feasible, one gating fact**
+- Research findings: (1) **Erebos is a VM → SMART never crosses virtio** — collection MUST run on the
+  physical disk host; (2) Grafana scheduled PDF/email reports = **Enterprise-only** (OSS gap) → digest
+  needs DIY: recommended **Hermes monthly cron** (same mechanism as [[todo/scheduled-security-audit]])
+  querying Prometheus HTTP API + Resend (creds already on-box); n8n workflow = alt; (3) collection =
+  prometheus-community **smartctl_exporter** via NixOS module `services.prometheus.exporters.smartctl`
+  (+ node_exporter mdstat; NVMe/SSD caveats documented); (4) **Alertmanager tripwire mandatory** — a
+  SMART-FAILED mid-month must not wait for a newsletter; (5) [Scrutiny](https://github.com/AnalogJ/scrutiny)
+  documented as all-in-one alternative if the host isn't NixOS
+- Open question posed to owner: identity of the physical host (OS? array tech? disks passthrough or
+  LVM/mdraid/ZFS?) — determines deployment path
+- 6 curl-verified references (1 dead 404 plugin repo dropped); index 33 pages
+
 ## [2026-11-07] create | docs/strategos/: full documentation tree for the Pi + olympos/pontos purged
 - New machine entity layer per amended [[HERMES]] (`docs/<machine>/`): **docs/strategos/{index,
   services,reference}.md**, built from a fresh read of sys/ @ main (2026-11-07): Pi 3B+ aarch64,
