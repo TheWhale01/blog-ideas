@@ -29,21 +29,28 @@ Synthetic end-to-end test fired 2026-11-07 (alert `WikiPipelineTest` injected vi
 
 ## Remaining work
 
-- [ ] ⚠️ **Rotate the leaked webhook secret + remove it from git**: the query-string secret is
-      committed in plaintext in a **public** repo (prometheus.nix `webhook_configs.url`). Anyone can
-      forge alerts into the room. New secret must not return to the repo: keep it agenix-only and
-      build the URL from a gitignored local file (e.g. `sys/secrets.local.nix`, mode 0600, imported
-      optionally) — acceptable on-box (store is local-readable) vs global-public today
-- [ ] Bind loopback (closes audit P2 remainder): `alertmanager.listenAddress = "127.0.0.1"` …
-      live `ss` shows `*:9093`, `*:3004`, `*:3100` (Loki) still all-interfaces
-- [ ] Expand rules beyond systemd state: disk >85 % (`/` btrfs + `/data`), sustained CPU, free mem,
-      `node_xfs`/filesystem read-only remount, Prometheus target-missing; SMART rules later via
-      [[ideas/Drive-Health-Monthly-Newsletter]]
-- [ ] Loki LogQL error panels (Traefik 5xx, Nextcloud) — still to do
-- [ ] Noise guard: daily `update-containers` restarts all `podman-*` — rules must ignore transient
-      restarts (`for: 5m` or dependency-aware inhibit) — owner decision 2026-11-07, [[docs/erebos/containers]]
-- [ ] Confirm Grafana path: current design is Prometheus-native rules → AM → Matrix; Grafana unified
-      alerting is **optional**, don't run two alert brains
+- [x] ~~Fire one synthetic alert end-to-end~~ attempted 2026-11-07 — **pipeline is BROKEN at the
+      bridge→Matrix leg**: direct bridge POST with the correct webhook envelope (`receiver: erebot`)
+      returns `{"result":"error"}` + HTTP 500, i.e. the room for `erebot` IS matched but the Matrix
+      send fails. Prime suspects: (a) `@erebot` not joined to room `!FVqWRrn1hvNO8Ykzs3xEdSP00B3mokJ7Ad38LkqNL0Y`
+      (note: configured room ≠ the Odin DM room — alerts go to a separate room), (b) dead/expired
+      access token in `erebot.age`. Diagnose: `sudo journalctl -u matrix-alertmanager -n 50`
+      (expect `M_UNKNOWN_TOKEN` / 403), then re-login + `agenix -e` the token file if needed.
+      The webhook **secret** itself is confirmed working (bridge accepted our POST without 401).
+- [ ] ⚠️ **Fix rule spam before enabling delivery**: live AM currently holds firing `ServiceOffline`
+      alerts for `systemd-update-done.service` (oneshot), `poweroff.target` (target) and
+      `virtlxcd-admin.socket` (socket) — the `unit-include` regex in node_exporter extraFlags is not
+      filtering as intended, and the rule expression ignores unit type. Fix:
+      `expr: node_systemd_unit_state{name=~".+\\.service", type!~"oneshot|oneshot-reload", state="active"} == 0`
+      (and audit why `--collector.systemd.unit-include` isn't effective in the running node_exporter)
+- [ ] Rotate the leaked webhook secret + remove it from git: currently committed plaintext in the
+      **public** repo (`prometheus.nix` receiver URL) and *working* — anyone can forge alerts. New
+      secret lives agenix-only; build the URL from a gitignored local file
+      (`sys/secrets.local.nix`, 0600, optional import)
+- [ ] Bind loopback (closes audit P2 remainder): AM 9093, bridge 3004, Loki 3100 — live `ss` still `*`
+- [ ] Expand rules beyond systemd state
+- [ ] Loki LogQL error panels
+- [ ] Noise guard + confirm single alert brain (Grafana unified alerting stays optional)
 
 ## Related
 
