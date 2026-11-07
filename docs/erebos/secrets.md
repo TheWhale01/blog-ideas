@@ -77,6 +77,11 @@ The authoritative map lives in `sys/secrets.nix`. Key entries:
 ## How Secrets Are Used
 
 - **Traefik**: `environmentFile = config.age.secrets.traefik.path` (daemon env).
+- **matrix-alertmanager bridge**: `tokenFile = age.secrets.erebot` — the Matrix access token of
+  **@erebot, an appservice-owned user** (registered through `matrix-appservice.age`); re-mint via
+  `m.login.application_service` against Synapse on `:8008`, never via MAS (see
+  [[todo/monitoring-alerting]]). `secretFile = age.secrets.matrix-alertmanager-webhook` — the
+  receiver-auth query secret (⚠️ its current value is leaked in the public repo; rotation pending).
 - **Containers**: `environmentFiles = [config.age.secrets.<name>.path]`.
 - **Systemd units**: `environmentFile = config.age.secrets.<name>.path`.
 - **NixOS modules** reference them as `config.age.secrets.<name>.path`.

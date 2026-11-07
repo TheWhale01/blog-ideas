@@ -56,11 +56,22 @@ Synthetic end-to-end test fired 2026-11-07 (alert `WikiPipelineTest` injected vi
       setup via the registration shared secret — also explains the 500 at delivery: old/invalid
       token in erebot.age for an account MAS doesn't own). Verify:
       `sudo -u postgres psql -d matrix-synapse -Atc "SELECT name,deactivated,is_guest FROM users WHERE name LIKE '%erebot%';"`
-- [ ] Choose remediation route: **A** keep @erebot, mint fresh token via Synapse admin API
-      (`POST /_synapse/admin/v1/users/@erebot:matrix.thewhale.fr/login`, needs admin token;
-      reactivate first if deactivated) → agenix → rebuild; or **B** rename receiver to a free
-      localpart (e.g. `alertbot`) across prometheus.nix + matrixRooms + secrets.nix + new age file,
-      then MAS register-user + issue-compatibility-token (keeps MAS as single identity store)
+- [x] ~~Choose remediation route~~ → **A, via the appservice** (owner confirmed 2026-11-07:
+      `@erebot` exists **as an application-service user**, registered through
+      `secrets/${env}/matrix/appservice.age` → `/run/secrets/matrix-appservice`). MAS is not in the
+      picture for this account at all — and can't be (exclusive AS namespace reserves the localpart).
+      Fresh-token recipe (no admin, no MAS):
+      ```bash
+      sudo cat /run/secrets/matrix-appservice            # as_token
+      curl -X POST http://127.0.0.1:8008/_matrix/client/v3/login \
+        -H "Authorization: Bearer <as_token>" -H 'Content-Type: application/json' \
+        -d '{"type":"m.login.application_service","identifier":{"type":"server","user":"erebot"}}'
+      ```
+      ⚠️ must hit **localhost:8008 (Synapse direct)** — Traefik's `mas-compat` router proxies all
+      public `/login` to MAS, which rejects `m.login.application_service`. Token → `agenix -e`
+      into `secrets/shared/matrix/erebot.age` → rebuild → invite bot to alerts room.
+      AS virtual users have no profile row until they set one — explains the earlier 404 probe;
+      display name can be PUT with the new token.
       (.env PermissionDenied warning = cosmetic; run from a neutral cwd)
 - [ ] Then re-test: inject via `http://127.0.0.1:9093/api/v2/alerts` (curl in the chat thread), expect
       message in the alerts room within ~40 s
