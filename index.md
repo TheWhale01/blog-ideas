@@ -38,7 +38,7 @@ tags: [meta, index]
 - [[todo/initrd-systemd-stage1-migration]] – High · scripted-initrd opt-out in configuration.nix triggers the 26.05 deprecation warning; one-line removal + boot test before 26.11 (2026-11-30) deletes it
 
 ## Queries
-- [[queries/security-audit]] – Living security audit of Erebos (**live re-check 2026-11-04**: P1 Authentik 2026.8.1 + Immich 2.7.5 verified still unremediated; Prometheus/Immich/llama.cpp binds now loopback ✓; Alertmanager/Loki/Jellyfin binds still open; llama fallback id-mismatch found); maintained by [[todo/scheduled-security-audit]]
+- [[queries/security-audit]] – Living security audit of Erebos (**re-check 2026-11-07: P1 Authentik RESOLVED at 2026.8.5; P1 Immich 2.7.5 sole open P1**; binds loopbacked for Prometheus/Immich/llama.cpp, Alertmanager/Loki/Jellyfin open; llama fallback id-mismatch found); maintained by [[todo/scheduled-security-audit]]
 
 ## Documentation
 

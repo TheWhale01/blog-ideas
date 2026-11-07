@@ -35,7 +35,7 @@ Traefik routes: `nextcloud.thewhale.fr` and `nextcloud-office.thewhale.fr`.
 
 ### `sys/containers/authentik.nix`
 
-Authentik 2026.8.1, multi-process:
+Authentik **2026.8.5** (upgraded 2026-11-06, commit `8d47326` — was 2026.8.1; see [[queries/security-audit]] P1), multi-process:
 
 | Container | Cmd | Ports | Notes |
 |---|---|---|---|

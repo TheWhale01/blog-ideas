@@ -67,7 +67,7 @@ Authentik OIDC identity provider — the heart of the auth layer.
 
 Containers:
 
-- `authentik` (`ghcr.io/goauthentik/server:2026.8.1`) on `9000` (metrics `9300`).
+- `authentik` (`ghcr.io/goauthentik/server:2026.8.5`) on `9000` (metrics `9300`).
 - `authentik-worker` (same image, cmd `worker`).
 - `authentik-ldap` on `3389` (cmd `ldap`).
 - `authentik-proxy` on `9444` (/ `9000` internal).

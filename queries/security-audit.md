@@ -1,7 +1,7 @@
 ---
 title: Erebos Security Audit
 created: 2026-10-26
-updated: 2026-11-04
+updated: 2026-11-07
 type: query
 tags: [erebos, nixos, security, analysis]
 sources: [live service inventory (2026-10-26), vendor advisories — see References]
@@ -12,7 +12,7 @@ confidence: high
 
 > Living document, refreshed by the scheduled audit job ([[todo/scheduled-security-audit]]).
 > Newest findings first; per-run history in the Audit log at the bottom.
-> Last re-check: **2026-11-04** (live: `ss -ltn`, unit ExecStarts, repo HEAD `b1b690e`, `/props` probe) — base inventory 2026-10-26.
+> Last re-check: **2026-11-07** (contents API + live units + `ss -ltn`) — base inventory 2026-10-26. **P1 status: Authentik resolved; Immich remains.**
 
 Point-in-time security audit of Erebos: live version inventory (systemd units, Nix store paths, running service APIs) cross-checked against published advisories as of **2026-10-26**.
 
@@ -21,7 +21,7 @@ Point-in-time security audit of Erebos: live version inventory (systemd units, N
 | Component | Running version | Exposure |
 |---|---|---|
 | Traefik | 3.7.13 | public :80/:443 |
-| Authentik | 2026.8.1 (container) | public (IdP for everything) |
+| Authentik | **2026.8.5** (container; was 2026.8.1 — upgraded `8d47326` 2026-11-06, verified live via unit image + contents API) | public (IdP for everything) |
 | Immich | 2.7.5 (server + machine-learning units) | public via Traefik |
 | n8n | 2.39.6 | LAN/VPN only (owner-confirmed 2026-10-26 — router does not forward it; **not** public); built-in owner auth by design — Authentik SSO is paid-only in n8n |
 | Nextcloud | 35.0.2 + Collabora `collabora/code` container | public |
@@ -38,11 +38,12 @@ Point-in-time security audit of Erebos: live version inventory (systemd units, N
 
 ## Findings by risk
 
-### P1 — Authentik 2026.8.1 sits exactly in the affected range of the September batch
-**Re-checked 2026-11-04: NOT remediated.** `authentikVersion = "2026.8.1"` still at repo HEAD — the image
-tag is pinned in your own Nix, so `nix flake update` never advances it (this is the misunderstanding to
-avoid: a rebuild/reboot does not update Authentik). **Runbook ready: [[docs/erebos/tutorials]] §7**,
-target **2026.8.5** (latest community release, verified on ghcr + GitHub Releases).
+### P1 — ~~Authentik 2026.8.1 sits exactly in the affected range of the September batch~~ **RESOLVED 2026-11-06**
+**Remediated:** commit `8d47326` bumped `authentikVersion` → **2026.8.5**; verified 2026-11-07 two ways —
+the running unit pulls `ghcr.io/goauthentik/server:2026.8.5` and `main` declares it (contents API).
+*Methodology scar tissue:* a same-day check via `raw.githubusercontent.com` reported "still 2026.8.1" —
+that CDN served a stale blob even with cache-busting. **Repo truth = GitHub contents/commits API +
+live unit ExecStart images, never raw.githubusercontent.** Original finding kept for the record:
 Advisories published 2026-09-09 list affected `<= 2026.8.1`, patched in **2026.8.2**:
 - **GHSA-qgqp-xh8r-v73r** (CVE-2026-94606, 8.9 High): **MFA bypass via recipient override** in the email authenticator — attacker knowing a password gets the OTP code sent to *their* address → full account takeover of the IdP = every SSO app. Only exploitable if the **email authenticator** is enrolled during a flow — if you use only TOTP/WebAuthn the exposure drops, but this is the front door; do not rely on that.
 - **GHSA-h6c5-mpvq-j4jc** (High): privilege escalation via delegated group/user management.
@@ -106,8 +107,8 @@ update` past the removal breaks evaluation; migrate to per-model `services.llama
 
 ## Action list
 
-- [ ] P1: Authentik container → ≥ 2026.8.2 (target 2026.8.5; `sys/containers/authentik.nix`) — **re-verified 2026-11-04: still 2026.8.1**; **full upgrade + rollback runbook: [[docs/erebos/tutorials]] §7**
-- [ ] P1: Immich → ≥ 3.3.0 and **delete** `permittedInsecurePackages = [ "immich-2.7.5" ]` from `flake.nix` — **re-verified 2026-11-04: still 2.7.5 running** (host bind improved in `b1b690e`, version untouched)
+- [x] ~~P1: Authentik container → ≥ 2026.8.2~~ — **DONE `8d47326` (2026-11-06): running 2026.8.5**, verified via contents API + live unit image (runbook: [[docs/erebos/tutorials]] §7)
+- [ ] P1: Immich → ≥ 3.3.0 and **delete** `permittedInsecurePackages = [ "immich-2.7.5" ]` from `flake.nix` — **re-verified 2026-11-07: still 2.7.5** (contents API + live ExecStart store path; now the last open P1)
 - [x] ~~P1: restore Authentik middleware (or Netbird-only bind) on the n8n router~~ — **corrected**: n8n is not internet-forwarded (owner), built-in auth chosen because SSO is paid; residual actions:
 - [ ] Enable MFA on the n8n owner account; treat n8n updates like an exposed service; confirm LAN/VPN boundary is acceptable
 - [ ] P2: verify `richdocumentscode` app absent in Nextcloud (KEV-listed, actively exploited)
@@ -142,4 +143,5 @@ update` past the removal breaks evaluation; migrate to per-model `services.llama
 - **2026-10-26 (same day, corrected)** — n8n finding downgraded P1→P3: **not internet-forwarded** (owner-confirmed); original in-host test misled by NAT hairpinning (200 from inside ≠ public reachability). Built-in owner auth is deliberate (n8n SSO is paid). Residual: enable MFA on owner, keep update cadence high, LAN/VPN boundary is the wall.
 - **2026-11-04** — Delta from commit `6ef7e41` (no full re-inventory): Ollama → llama-cpp 0.8.0 with **new unauthenticated `0.0.0.0:8080` bind** (P3 above); `system.autoUpgrade` removed → manual flake-update cadence (pins advanced same day — Authentik/Immich remediation **not yet verified by version probe**); n8n now from `pkgs-unstable`; `hermes.age` access tightened to 0400. P1/P2 status: unchanged pending next inventory. *(Same day, owner correction: llama-cpp unit **purposely stopped** — absence of :8080 is intended, not a silent service death; do not re-flag in future runs. A todo was briefly filed for it and removed per lifecycle.)*
 - **2026-11-04 (later, `d5340e3`)** — Bind P3 **remediated**: llama.cpp rebound to `127.0.0.1` ✓. Hermes topology inverted: OpenRouter primary, local LFM3 fallback ("fallback to local inference"). Audit→fix turnaround: ~1 h.
-- **2026-11-04 (live re-check run)** — Full-ish re-inventory as requested. **Key finding: the two P1s are NOT fixed** — repo HEAD still `authentikVersion = "2026.8.1"` and running Immich still `immich-2.7.5` (+ `permittedInsecurePackages`): image/Nix pins don't move on `nix flake update`, likely the misunderstanding; runbook in [[docs/erebos/tutorials]] §7. **Fixed:** Prometheus+Immich binds now loopback (live `ss` ✓, commit `b1b690e`), llama-cpp active on loopback, kernel 7.3.0→7.3.1, system rebuild `26.05.20261104.994bb33`. **New:** llama-cpp fallback id mismatch — router up but no model loaded, Hermes targets cache id not preset alias (offline safety-net likely broken). **Still open:** Alertmanager 9093 / Loki 3100 / Jellyfin 8096 binds; Jellyfin >12.4; `richdocumentscode` verify; n8n owner MFA.
+- **2026-11-04 (live re-check run)** — Full-ish re-inventory as requested. **Key finding: the two P1s are NOT fixed** — repo HEAD still `authentikVersion = "2026.8.1"` and running Immich still `2.7.5` (+ `permittedInsecurePackages`): image/Nix pins don't move on `nix flake update`, likely the misunderstanding; runbook in [[docs/erebos/tutorials]] §7. **Fixed:** Prometheus+Immich binds now loopback (live `ss` ✓, commit `b1b690e`), llama-cpp active on loopback, kernel 7.3.0→7.3.1, system rebuild `26.05.20261104.994bb33`. **New:** llama-cpp fallback id mismatch — router up but no model loaded, Hermes targets cache id not preset alias (offline safety-net likely broken). **Still open:** Alertmanager 9093 / Loki 3100 / Jellyfin 8096 binds; Jellyfin >12.4; `richdocumentscode` verify; n8n owner MFA.
+- **2026-11-07 (correction + follow-up run)** — Owner challenged the Authentik verdict; they were right for *today*: `8d47326 "upgrading authentik"` (Nov 6) moved main → **2026.8.5** and the live unit pulls that image. The Nov 4 "NOT remediated" call was true at the time (commit didn't exist yet), but a follow-up check was then mis-confirmed by a **stale `raw.githubusercontent.com` CDN blob** — corrected methodology: contents/commits API + live unit ExecStart are the sources of truth. P1 Authentik **CLOSED**; Immich re-probed via contents API + live store path: still 2.7.5 + `permittedInsecurePackages` — **sole open P1**.

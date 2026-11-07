@@ -13,6 +13,18 @@ tags: [meta, log]
 > Actions: ingest, update, query, lint, create, archive, delete
 > When this file exceeds 500 entries, rotate: rename to log-YYYY.md, start fresh.
 
+## [2026-11-07] update | Audit correction: P1 Authentik RESOLVED — owner was right, raw-CDN lied
+- Challenge-driven re-verification found `8d47326 "upgrading authentik"` (Nov 6, on main): 2026.8.1 → **2026.8.5**,
+  double-confirmed live (unit-script image tag + contents API). P1 CLOSED in [[queries/security-audit]]
+  (banner, inventory row, action list ticked, audit log entry)
+- My 2026-11-04 "still 2026.8.1 at HEAD" check was correct for its date, but a later same-week re-check
+  got a **stale raw.githubusercontent.com blob** (cache-busting ineffective) — logged as scar tissue
+- New permanent methodology rule in [[todo/scheduled-security-audit]]: GitHub **contents/commits API +
+  live unit ExecStart** are the repo/runtime sources of truth; never raw.githubusercontent
+- docs updated (containers.md + services.md Authentik version refs); Immich remains **sole open P1**
+  (2.7.5 + permittedInsecurePackages, re-probed via contents API + store path); note: main also has
+  `0564649` immich client_secret rotation (2026-11-07) — no doc surface (secret names unchanged)
+
 ## [2026-11-04] query | Security audit live re-check run (procedure of the future cron job)
 - Requested "update the audit" → ran the [[todo/scheduled-security-audit]] procedure manually:
   commits since sync (`b1b690e` immich+prometheus loopback binds), repo HEAD pins, unit ExecStarts,
