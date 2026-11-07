@@ -27,6 +27,112 @@ healthy (`/-/healthy` = OK):
 Synthetic end-to-end test fired 2026-11-07 (alert `WikiPipelineTest` injected via AM API, visible in
 `/api/v2/alerts`) — **awaiting owner confirmation it rendered in the Matrix room**.
 
+## Proposed replacement rules (dry-run validated against live Prometheus 2026-11-07)
+
+Findings that shaped them: (1) node_exporter `type` label = **StartType**
+(`oneshot|simple|notify|dbus|exec|notify-reload|system`), NOT unit class → guard =
+`name=~".+\\.service"` + `type!~"oneshot.*"` (kills all 3 historic false-positive classes);
+(2) `state="active" == 0` unfiltered fires today (69 active units + legit-stopped ones) →
+offline rule is WHITELIST-based; (3) `/data` at 13.1 % free → thresholds 10 %/5 % (validated
+silent); (4) `llama-cpp` deliberately NOT watched (owner-stopped service).
+Paste into `services.prometheus.rules = [ '' ... '' ];` (same shape as the pre-`790c16a` file):
+
+```yaml
+groups:
+- name: systemd_services
+  rules:
+  - alert: ServiceCrashed
+    expr: node_systemd_unit_state{name=~".+\\.service",state="failed"} == 1
+    for: 1m
+    labels:
+      severity: critical
+    annotations:
+      summary: "Service crashed: {{ $labels.name }}"
+      description: "{{ $labels.name }} entered failed state on {{ $labels.instance }}."
+  - alert: ServiceOffline
+    expr: node_systemd_unit_state{name=~"(matrix-synapse|mas|matrix-alertmanager|prometheus|prometheus-node-exporter|alertmanager|grafana|loki|alloy|traefik|nginx|postgresql|redis-immich|immich-server|vaultwarden|n8n|jellyfin|hermes-agent|netbird|sshd|podman-authentik.*|podman-nextcloud).*\\.service",type!~"oneshot.*",state="active"} == 0
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "Service offline: {{ $labels.name }}"
+      description: "Watched service {{ $labels.name }} not active for 5m on {{ $labels.instance }} (covers daily update-containers restarts)."
+- name: host_resources
+  rules:
+  - alert: DiskSpaceLow
+    expr: node_filesystem_avail_bytes{mountpoint=~"/|/data",fstype!~"tmpfs|overlay|ramfs"} / node_filesystem_size_bytes{mountpoint=~"/|/data"} < 0.10
+    for: 30m
+    labels:
+      severity: warning
+    annotations:
+      summary: "Disk low on {{ $labels.mountpoint }} ({{ $value | humanizePercentage }} free)"
+  - alert: DiskSpaceCritical
+    expr: node_filesystem_avail_bytes{mountpoint=~"/|/data",fstype!~"tmpfs|overlay|ramfs"} / node_filesystem_size_bytes{mountpoint=~"/|/data"} < 0.05
+    for: 10m
+    labels:
+      severity: critical
+    annotations:
+      summary: "Disk CRITICAL on {{ $labels.mountpoint }} ({{ $value | humanizePercentage }} free)"
+  - alert: FilesystemReadOnly
+    expr: node_filesystem_readonly{fstype!~"tmpfs|overlay|ramfs"} == 1
+    for: 5m
+    labels:
+      severity: critical
+    annotations:
+      summary: "{{ $labels.mountpoint }} remounted READ-ONLY (device: {{ $labels.device }})"
+  - alert: MemoryLow
+    expr: node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes < 0.10
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "Available memory <10% on {{ $labels.instance }}"
+  - alert: CPUSaturated
+    expr: 1 - avg(rate(node_cpu_seconds_total{mode="idle"}[5m])) > 0.90
+    for: 15m
+    labels:
+      severity: warning
+    annotations:
+      summary: "CPU >90% sustained 15m on {{ $labels.instance }}"
+  - alert: HostRebooted
+    expr: changes(node_boot_time_seconds[10m]) > 0
+    labels:
+      severity: info
+    annotations:
+      summary: "{{ $labels.instance }} rebooted"
+- name: monitoring_self
+  rules:
+  - alert: ScrapeTargetDown
+    expr: up == 0
+    for: 5m
+    labels:
+      severity: critical
+    annotations:
+      summary: "Prometheus cannot scrape {{ $labels.job }} ({{ $labels.instance }})"
+```
+
+Covers: crashes, 25 watched long-running services, root+data disk, read-only fs remount
+(LVM pool watcher), memory, CPU, reboots (audit trail), monitoring-brain blindness.
+Not (yet): SMART (→ [[ideas/Drive-Health-Monthly-Newsletter]]), container health beyond
+unit state, `livekit`/`homepage-dashboard`/`seerr`/arr-stack (not whitelisted — add to the
+regex if you want them paged).
+
+## Room version v12 — what it changes for this pipeline (research, 2026-11-07)
+
+- Spec v1.16 "Project Hydra" version; fixes CVE-2025-49090 / CVE-2025-54315; Synapse **default since
+  1.162** (ours 1.164.2 → new rooms are v12 automatically).
+- **Room IDs lose the `:server_name` component** — v12 ID = hash of the create event. `!C-EIAS89…`
+  is exactly that shape. ⇒ Permalink/matrix.to links with a `:matrix.thewhale.fr` SUFFIX are WRONG
+  for v12 rooms (that's why the by-ID link failed to show anything). Correct:
+  `https://matrix.to/#/!C-EIAS89vRQV7k6yUk34TTqXDro5S3Xwx_sJidUW3Lk` — no suffix.
+- **Upgrading a room to v12 creates a NEW room ID** (tombstone + predecessor). If the ops room was
+  upgraded AFTER 790c16a, the bridge posts into the old dead room: journal shows send 200s into
+  !C-EIAS89… while the user watches the new room → the exact "delivered but unseen" signature.
+  ⇒ VERIFY in Element: room settings → advanced → compare live room ID with config value.
+- Creators get infinite immutable power level (bot unaffected); state resolution v2.1; Synapse
+  had v12 edge-case bugs (room-ID collisions, 3pid invites) fixed by 1.162 — 1.164.2 is post-fix.
+- **Not affected**: the bridge's join/send worked fine with the bare-ID form (journal proves 200s).
+
 ## Remaining work
 
 - [x] ~~Fire one synthetic alert end-to-end~~ attempted 2026-11-07 — **pipeline is BROKEN at the

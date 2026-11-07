@@ -557,3 +557,8 @@ tags: [meta, log]
 ## 2026-11-07 (late evening) — pipeline CONFIRMED WORKING by journal evidence
 
 - Bridge journal 21:22-21:44: join 200 + six /send PUTs all 200 with event IDs — all three probe alerts delivered into !C-EIAS89…; AM 5-min retry backoff as predicted from source read. Mystery narrowed to client-side room identity (matrix.to by-ID link provided to owner). Services.md: pipeline = LIVE.
+
+## 2026-11-07 (night) — v12 research + replacement ruleset designed & dry-run validated
+
+- Room v12 (spec v1.16, Project Hydra; Synapse default since 1.162): room IDs drop the :server component (create-event hash); matrix.to links with a suffix are invalid for v12 rooms — the by-ID link I sent was malformed, that likely hid the confirmed-delivered alerts; version upgrade ⇒ NEW room ID (tombstone) — verify live room ID vs config.
+- New 9-rule set (3 groups) designed from live evidence: StartType-label discovery, whitelist-based ServiceOffline (69-unit reality), 10%/5% disk thresholds vs live 13.1% /data, readonly-fs & target-down & reboot watchers; llama-cpp intentionally unwatched. YAML validated parseable; full block in 'Proposed replacement rules'.
