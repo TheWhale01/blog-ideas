@@ -17,10 +17,12 @@ The former `/home/hades/code/blog-ideas` copy is not authoritative; the two conv
 GitHub remote. Obsidian should point at the `$WIKI_PATH` checkout.
 
 ## Conventions
-- File names: `docs/`, `todo/`, `queries/`, `raw/`, `comparisons/`, `concepts/` use lowercase +
-  hyphens (e.g., `nixos-configuration.md`). `ideas/` uses Title-Case-with-hyphens
-  (e.g., `Cloudflare-Tunnel-SSH.md`) — historical decision: idea filenames are stable blog
-  permalinks, renaming them would break published URLs (amended 2026-10-26).
+- File names: lowercase + hyphens (kebab-case) in **every** folder including `ideas/`
+  (e.g., `nixos-configuration.md`, `github-pr-governance.md`). The Title-Case exception for
+  `ideas/` (amended 2026-10-26, blog permalinks) was **retired by owner decision 2026-11-09**:
+  the blog builder publishes each filename lowercased, so renaming MUST be the exact lowercase
+  transform of the current name (e.g., `CleanYourTV.md → cleanyourtv.md`, not `clean-your-tv.md`)
+  to keep every permalink intact.
 - Every wiki page starts with YAML frontmatter (see below)
 - Use `[[wikilinks]]` to link between pages (minimum 2 outbound links per page)
 - When updating a page, always bump the `updated` date

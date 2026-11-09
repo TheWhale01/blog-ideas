@@ -36,7 +36,7 @@ Delivery verified twice: server-side (journal event IDs) and client-side (owner'
 - [ ] **Noise guard soak** — after ~1 week, confirm daily `update-containers` restarts stay absorbed
       by `for: 5m` (no storm in the room); keep Grafana unified alerting OFF: single alert brain.
 - [ ] **Issues room read-only** (bot-only writes) → [[todo/issues-room-readonly]]
-- [ ] Later: SMART rules → [[ideas/Drive-Health-Monthly-Newsletter]]; `livekit`/`homepage-dashboard`/
+- [ ] Later: SMART rules → [[ideas/drive-health-monthly-newsletter]]; `livekit`/`homepage-dashboard`/
       seerr/arr-stack are deliberately NOT in the ServiceOffline whitelist — add to the regex in
       `todo/alert-rules.yml` if you want them paged.
 
@@ -89,4 +89,4 @@ Slimmed 2026-11-07 at owner request: the page shows the remainder at a glance.
 
 - [[docs/erebos/services]] — pipeline description, maintenance recipes, gotchas
 - [[queries/security-audit]] — P2 binds (open); webhook-leak finding (resolved)
-- [[ideas/Drive-Health-Monthly-Newsletter]] — future SMART source into this pipeline
+- [[ideas/drive-health-monthly-newsletter]] — future SMART source into this pipeline

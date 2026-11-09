@@ -65,7 +65,7 @@ completion will guide you).
 
 ## Related
 
-- [[ideas/Chezmoi-Pontos]] — same machine; notification daemon config would also live in the dotfiles repo
+- [[ideas/chezmoi-pontos]] — same machine; notification daemon config would also live in the dotfiles repo
 - [[index]] — this vault
 
 ## External references

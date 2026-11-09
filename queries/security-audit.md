@@ -72,7 +72,7 @@ Alertmanager** (blinding alerting) and **read all logs via Loki**.
 - **Traefik 3.7.13**: ahead of all known 2026 advisories (3.7.3 batch etc.); no mTLS/HTTP3 in use.
 - **Synapse 1.163.2**: ahead of fixes for PYSEC-2026 CPU-starvation (1.152.1), federation depth (1.127.1), thumbnails/Ghostscript (1.120.1).
 - **Vaultwarden 1.37.4, PostgreSQL 16.15, Grafana 13.0.11, nginx, podman 5.8.9, kernel 7.3.1**: no unpatched published advisories found; backports current *as of the flake pin* — which decays until the next `nix flake update`.
-- **GGUF caveat** (carries over from the Ollama-era finding): model files can themselves be exploit vectors (memory-leak <0.17.1; CVE-2026-86289 needed a crafted GGUF) — only pull models from trusted sources ([[ideas/Translaitor]] and the LFM3 preset).
+- **GGUF caveat** (carries over from the Ollama-era finding): model files can themselves be exploit vectors (memory-leak <0.17.1; CVE-2026-86289 needed a crafted GGUF) — only pull models from trusted sources ([[ideas/translaitor]] and the LFM3 preset).
 
 ### P3 — llama.cpp runtime: two open config drifts
 1. **Hermes' fallback points at the wrong model id**: `default = "LiquidAI/LFM3-1.7B-GGUF:Q6_K"` matches

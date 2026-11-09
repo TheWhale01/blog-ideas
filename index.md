@@ -17,18 +17,18 @@ tags: [meta, index]
 ## Comparisons
 
 ## Ideas
-- [[ideas/Deezify]] – Spotify/Deezer Jam-like feature for cross-platform music sharing
-- [[ideas/Remote-Gaming-Server]] – Self-hosted cloud gaming with Sunshine/Apollo on Linux
-- [[ideas/Translaitor]] – AI-powered book translator using Gemini API or local LLM (TranslateGemma)
-- [[ideas/Cloudflare-Tunnel-SSH]] – Secure SSH access via Cloudflare Tunnel without opening port 22
-- [[ideas/Fail2ban]] – Log-based IP banning for SSH and web services, journald/nftables integration on NixOS
-- [[ideas/Intrusion-Detection]] – See attempts + know if they succeeded: journal→Loki pipeline (currently dark!), ruler alerts, authentik ground truth, auditd, NixOS drift trio, tamper-resistant evidence
-- [[ideas/CleanYourTV]] – Wireless-ADB debloat for Android/Google TVs (reversible disable + clean launcher) → ideal Jellyfin thin client; typosquat warnings
-- [[ideas/Chezmoi-Pontos]] – Declarative dotfiles for the pontos laptop (Fedora) with chezmoi + age, wipe-and-recover story
-- [[ideas/Quickshell-Notification-Client]] – Catppuccin notification daemon as a quickconf module, built on quickshell's Quickshell.Services.Notifications
-- [[ideas/CVE-Now-MCP]] – Give Odin structured CVE lookups via cve.now's free hosted MCP server (no auth; `get_vulnerability`/`list_feed`/`check_stack` incl. flake.lock) feeding [[todo/scheduled-security-audit]]
-- [[ideas/GitHub-PR-Governance]] – Protect `main` on erebos (PR-required, 0 approvals — agent PRs carry the owner's identity) + agent authors PRs & addresses reviews; owner sole merger/deployer. Filed 2026-11-09, deliberately NOT implemented
-- [[ideas/Drive-Health-Monthly-Newsletter]] – Unblocked: prod is bare metal (6 ATA disks, Ryzen 5 5600) → smartctl_exporter + smartd locally → Prometheus/Grafana live view + Hermes monthly cron digest via Resend
+- [[ideas/deezify]] – Spotify/Deezer Jam-like feature for cross-platform music sharing
+- [[ideas/remote-gaming-server]] – Self-hosted cloud gaming with Sunshine/Apollo on Linux
+- [[ideas/translaitor]] – AI-powered book translator using Gemini API or local LLM (TranslateGemma)
+- [[ideas/cloudflare-tunnel-ssh]] – Secure SSH access via Cloudflare Tunnel without opening port 22
+- [[ideas/fail2ban]] – Log-based IP banning for SSH and web services, journald/nftables integration on NixOS
+- [[ideas/intrusion-detection]] – See attempts + know if they succeeded: journal→Loki pipeline (currently dark!), ruler alerts, authentik ground truth, auditd, NixOS drift trio, tamper-resistant evidence
+- [[ideas/cleanyourtv]] – Wireless-ADB debloat for Android/Google TVs (reversible disable + clean launcher) → ideal Jellyfin thin client; typosquat warnings
+- [[ideas/chezmoi-pontos]] – Declarative dotfiles for the pontos laptop (Fedora) with chezmoi + age, wipe-and-recover story
+- [[ideas/quickshell-notification-client]] – Catppuccin notification daemon as a quickconf module, built on quickshell's Quickshell.Services.Notifications
+- [[ideas/cve-now-mcp]] – Give Odin structured CVE lookups via cve.now's free hosted MCP server (no auth; `get_vulnerability`/`list_feed`/`check_stack` incl. flake.lock) feeding [[todo/scheduled-security-audit]]
+- [[ideas/github-pr-governance]] – Protect `main` on erebos (PR-required, 0 approvals — agent PRs carry the owner's identity) + agent authors PRs & addresses reviews; owner sole merger/deployer. Filed 2026-11-09, deliberately NOT implemented
+- [[ideas/drive-health-monthly-newsletter]] – Unblocked: prod is bare metal (6 ATA disks, Ryzen 5 5600) → smartctl_exporter + smartd locally → Prometheus/Grafana live view + Hermes monthly cron digest via Resend
 
 ## Todo
 > Changes to existing config/code on Erebos (build-from-scratch items — incl. new workflows/pipelines — go in Ideas).
@@ -42,7 +42,7 @@ tags: [meta, index]
 - [[todo/scheduled-security-audit]] – Medium · weekly Hermes cron job re-auditing Erebos and updating [[queries/security-audit]]
 
 ## Queries
-- [[queries/security-audit]] – Living security audit of Erebos, **open findings only** (re-check 2026-11-07): P1 Immich 2.7.5 sole open P1; P2 Jellyfin/KEV-verify/binds; P3 llama.cpp drift; maintained by [[todo/scheduled-security-audit]], future CVE lookups via [[ideas/CVE-Now-MCP]]
+- [[queries/security-audit]] – Living security audit of Erebos, **open findings only** (re-check 2026-11-07): P1 Immich 2.7.5 sole open P1; P2 Jellyfin/KEV-verify/binds; P3 llama.cpp drift; maintained by [[todo/scheduled-security-audit]], future CVE lookups via [[ideas/cve-now-mcp]]
 
 ## Documentation
 

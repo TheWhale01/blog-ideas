@@ -17,7 +17,7 @@ sources: [https://github.com/fail2ban/fail2ban]
 
 - **Public attack surface**: Erebos exposes TCP 80/443 to the whole internet and SSH on port 22. Even with `PasswordAuthentication = false` (see [[docs/erebos/services]]), sshd still gets a constant stream of brute-force probing — fail2ban suppresses the noise, saves log volume, and stops attacker enumeration of valid usernames.
 - **Web services**: Nextcloud, Authentik, Vaultwarden, and the Matrix homeserver all log failed auth events. Repeat offenders can be banned at the edge instead of relying only on app-level rate limits.
-- **Defense in depth**: complements Cloudflare (see [[ideas/Cloudflare-Tunnel-SSH]]) and Netbird — it protects anything reached *directly* on the host IP, where Cloudflare's rules don't apply.
+- **Defense in depth**: complements Cloudflare (see [[ideas/cloudflare-tunnel-ssh]]) and Netbird — it protects anything reached *directly* on the host IP, where Cloudflare's rules don't apply.
 
 ## Realistic expectations
 
@@ -77,10 +77,10 @@ Notes:
 - [ ] Decide firewall backend alignment (iptables vs nftables action)
 - [ ] Implement sshd jail with journald backend + ignoreIP list (podman, gluetun, wt0, LAN)
 - [ ] Prototype one web-facing jail (nextcloud or authentik) with real-client-IP parsing
-- [ ] Re-evaluate the sshd jail once [[ideas/Cloudflare-Tunnel-SSH]] removes public port 22 (may keep as belt-and-suspenders or scope to Netbird-only access)
+- [ ] Re-evaluate the sshd jail once [[ideas/cloudflare-tunnel-ssh]] removes public port 22 (may keep as belt-and-suspenders or scope to Netbird-only access)
 
 ## Related
 
 - [[docs/erebos/services]] — current SSH/firewall posture
-- [[ideas/Cloudflare-Tunnel-SSH]] — complementary network-hiding strategy
+- [[ideas/cloudflare-tunnel-ssh]] — complementary network-hiding strategy
 - [[todo/index]] — security hardening backlog

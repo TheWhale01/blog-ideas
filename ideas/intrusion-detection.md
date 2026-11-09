@@ -86,7 +86,7 @@ That collapses "file integrity monitoring" to a tiny, loud watch-set:
 
 ## Active response (see also existing idea)
 
-- [[ideas/Fail2ban]] already filed → nftables ban actions; pairs with layers 1–3 (its jails need the
+- [[ideas/fail2ban]] already filed → nftables ban actions; pairs with layers 1–3 (its jails need the
   very log streams this idea lights up). Detection first, then banning — a ban is just a loud alert
   if nobody ever saw the attempts.
 
@@ -107,7 +107,7 @@ breaking in *noisy*, which is the entire game at this scale.
 ## Related
 
 - [[todo/monitoring-alerting]] — the alerting brain this feeds
-- [[ideas/Fail2ban]] — active response counterpart
+- [[ideas/fail2ban]] — active response counterpart
 - [[docs/erebos/services]] — current monitoring stack description
 - [[queries/security-audit]] — preconditions (binds, Loki auth)
 - [[todo/backups]] — borg append-only as evidence archive

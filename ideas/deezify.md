@@ -11,5 +11,5 @@ A few months ago I've started a project called [Deezify](https://deezify.thewhal
 
 ## Related
 
-- [[ideas/Translaitor]] – sibling SvelteKit project; shares the "rebuild and document from scratch" pattern
+- [[ideas/translaitor]] – sibling SvelteKit project; shares the "rebuild and document from scratch" pattern
 - [[docs/erebos/index]] – intended deployment target (Traefik/Authentik stack at thewhale.fr)

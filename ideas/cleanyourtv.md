@@ -42,7 +42,7 @@ with a manual path too. TV brands that aren't Android (Samsung/LG/Roku/VIDAA) ge
   (and anything else served from Erebos) — stock launches otherwise shoveload sponsored rows at you
   sourced from the TV's telemetry.
 - Pairs philosophically with the fleet's privacy posture: same instinct as the Netbird/WireGuard
-  choices and [[ideas/Deezify]] — own your media path, minimize vendor cloud.
+  choices and [[ideas/deezify]] — own your media path, minimize vendor cloud.
 
 ## Caveats & security notes (worth knowing before running it)
 
@@ -60,5 +60,5 @@ with a manual path too. TV brands that aren't Android (Samsung/LG/Roku/VIDAA) ge
 ## Related
 
 - [[docs/erebos/services]] — Jellyfin (the client it improves)
-- [[ideas/Deezify]] — same "own the media pipeline" instinct
+- [[ideas/deezify]] — same "own the media pipeline" instinct
 - [[docs/erebos/architecture]] — trusted LAN context (podman0/wt0)
