@@ -18,7 +18,91 @@ The monitoring stack lives in `sys/services/monitoring/` and is composed by `sys
 | `prometheus.nix` | Prometheus | Time-series metrics and alerting rules |
 | `grafana.nix` | Grafana | Dashboards, visualization, alerting UI |
 | `loki.nix` | Loki 3.7.9 | Log aggregation + storage (filesystem chunks; **collector-independent**) |
-| `promtail.nix` | *currently* Alloy | Log shipping — file is fully commented-out Promtail; only `services.alloy.enable = true` with **no settings** → **nothing is being collected, Loki holds zero series** (verified 2026-11-07) |
+| `promtail.nix` | **Alloy** (promtail removed from nixpkgs — EOL, module assertion) | Log shipping. Until 2026-11-09 the file was `enable` with **no config** → Loki zero series. Working collector config below (validated with `alloy validate` against 1.16.0). |
+
+## Log collection — Alloy config (validated 2026-11-09, Alloy 1.16.0)
+
+The module reads config from **`environment.etc."alloy/config.alloy"`** (NOT a `settings` option);
+every `.alloy` file in that dir is a reload-trigger, so switches hot-reload Alloy. The module also
+grants the service the `systemd-journal` supplementary group automatically — no manual group work.
+Replace the contents of `sys/services/monitoring/promtail.nix` with:
+
+```nix
+{ ... }:
+{
+  services.alloy.enable = true;
+
+  environment.etc."alloy/config.alloy".text = ''
+    discovery.relabel "journal" {
+      targets = []
+
+      rule {
+        source_labels = ["__journal__systemd_unit"]
+        target_label  = "unit"
+      }
+    }
+
+    loki.source.journal "system" {
+      path          = "/var/log/journal"
+      max_age       = "12h"
+      labels        = { job = "systemd-journal", host = "erebos" }
+      relabel_rules = discovery.relabel.journal.rules
+      forward_to    = [loki.process.system.receiver]
+    }
+
+    loki.process "system" {
+      forward_to = [loki.write.default.receiver]
+
+      // Traefik JSON access logs -> structured labels (accessLog.format=json is set in traefik.nix)
+      stage.match {
+        selector = "{unit=\\"traefik.service\\"}"
+
+        stage.json {
+          expressions = {
+            status       = "DownstreamStatus",
+            request_path = "request_path",
+            client_ip    = "ClientHost",
+            method       = "RequestMethod",
+          }
+        }
+
+        stage.labels {
+          values = {
+            status       = "",
+            request_path = "",
+            method       = "",
+          }
+        }
+
+        // Optional geoip — requires /var/lib/geoip/GeoLite2-City.mmdb, which does NOT exist today
+        // (the old promtail draft referenced it anyway). Needs a MaxMind license key to provision:
+        // stage.geo_ip {
+        //   db           = "/var/lib/geoip/GeoLite2-City.mmdb"
+        //   source       = "client_ip"
+        //   target_label = "geo_country"
+        // }
+      }
+    }
+
+    loki.write "default" {
+      endpoint {
+        url = "http://127.0.0.1:3100/loki/api/v1/push"
+      }
+    }
+  '';
+}
+```
+
+Notes:
+- `format` is **not** a valid argument on `loki.source.journal` in Alloy 1.16 (a leftover from the
+  promtail draft — `alloy validate` rejects it); journal lines flow as text and `stage.json` parses
+  Traefik's messages fine.
+- Re-validate any edit before applying: `$A validate file.alloy` where
+  `A=/nix/store/*-grafana-alloy-*/bin/alloy` (exit 0 + silence = OK).
+- Once this lands, the retention snippet above finally has something to prune; first load backfills
+  only the last `max_age` (12 h) of journal — expect a burst on first start, quiet after.
+- Queries to smoke-test: `{job="systemd-journal"} |= "Failed password"` (sshd), 
+  `{unit="traefik.service", status=~"5.."}` (edge errors), `{host="erebos"} |~ "error"`.
 
 ## Loki retention — 1 month (paste into `loki.nix`, inside `services.loki.configuration`)
 
