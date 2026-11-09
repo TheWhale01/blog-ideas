@@ -1,7 +1,7 @@
 ---
 title: Erebos Server TODO — Index
 created: 2026-10-22
-updated: 2026-11-07
+updated: 2026-11-09
 type: todo
 tags: [erebos, todo, improvement, meta]
 sources: []
@@ -18,6 +18,7 @@ sources: []
 - [[todo/backups]] — In progress · **Borg decided**; declarative job config ready to paste (2 PG dumps + Nextcloud-SQLite quiet hook) → strategos; git-for-archives answered NO
 
 ## High
+- [[todo/github-pr-governance]] — Not started · protect `main` (PR-required, 0 approvals); agent ships via PRs & acts on reviews; owner merges/deploys — first PR: Alloy River config patch
 - [[todo/age-keys-to-strategos]] — Not started · agenix identity keys have NO offline copy today; passphrase-archive onto strategos + round-trip drill
 
 ## Medium

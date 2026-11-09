@@ -10,7 +10,7 @@ tags: [meta, index]
 
 > Content catalog. Every wiki page listed under its type with a one-line summary.
 > Read this first to find relevant pages for any query.
-> Last updated: 2026-11-07 | Total pages: 36
+> Last updated: 2026-11-09 | Total pages: 37
 
 ## Concepts
 
@@ -32,6 +32,7 @@ tags: [meta, index]
 ## Todo
 > Improvements/fixes for things already implemented on Erebos (new services go in Ideas).
 - [[todo/index]] – Hub: all backlog items by priority
+- [[todo/github-pr-governance]] – Not started · branch-protect `main` + agent PR-only workflow (agent authors PRs & addresses reviews; owner sole merger/deployer); first PR = Alloy River config
 - [[todo/monitoring-alerting]] – Alerting LIVE ✅ · 9 rules deployed, webhook secret rotated + agenix-only (`85c5ebe`); open: loopback binds, Alert-link suppression
 - [[todo/issues-room-readonly]] – Not started · bot-only writes in the issues room; v12 creator-PL caveat decides approach
 - [[todo/backups]] – In progress · Borg chosen; full NixOS job snippet + strategos repo config + sqlite/pg_dump hooks written; weekly Sun 03:30, prune 7d/5w/12m
