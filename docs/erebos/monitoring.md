@@ -2,7 +2,7 @@
 title: Monitoring
 type: reference
 created: 2026-10-15
-updated: 2026-11-07
+updated: 2026-11-09
 tags: [nixos, erebos, monitoring, observability]
 sources: []
 ---
@@ -18,80 +18,41 @@ The monitoring stack lives in `sys/services/monitoring/` and is composed by `sys
 | `prometheus.nix` | Prometheus | Time-series metrics and alerting rules |
 | `grafana.nix` | Grafana | Dashboards, visualization, alerting UI |
 | `loki.nix` | Loki 3.7.9 | Log aggregation + storage (filesystem chunks; **collector-independent**) |
-| `promtail.nix` | **Alloy** (promtail removed from nixpkgs — EOL, module assertion) | Log shipping. Until 2026-11-09 the file was `enable` with **no config** → Loki zero series. Working collector config below (validated with `alloy validate` against 1.16.0). |
+| `alloy.nix` (pending — patch `erebos-alloy.patch`) | **Alloy** (promtail removed from nixpkgs — EOL, module assertion) | Log shipping. Repo file is still `promtail.nix`, `enable`d with **no config** → Loki zero series until the patch is applied. Final collector config: next section (validated with `nix eval` + `alloy validate`/`fmt`). |
 
-## Log collection — Alloy config (validated 2026-11-09, Alloy 1.16.0)
+## Log collection — Alloy config (patch delivered 2026-11-09, validated)
 
-The module reads config from **`environment.etc."alloy/config.alloy"`** (NOT a `settings` option);
-every `.alloy` file in that dir is a reload-trigger, so switches hot-reload Alloy. The module also
-grants the service the `systemd-journal` supplementary group automatically — no manual group work.
-Replace the contents of `sys/services/monitoring/promtail.nix` with:
+The `services.alloy` module (checked through nixpkgs master) has **no `settings` attrset** —
+River is a DSL with no generator, unlike the attrset-driven `matrix-synapse`/`mas` configs.
+The supported Nix-declarative pattern is **`environment.etc."alloy/config.alloy".text`**.
+`services.alloy.configPath` exists but should stay at its default `/etc/alloy` (directory
+mode): the module adds every `environment.etc."alloy/*.alloy"` file to
+`systemd.services.alloy.reloadTriggers`, so `nixos-rebuild switch` **hot-reloads** Alloy.
+Pointing `configPath` at a store path (e.g. `"${pkgs.writeText ...}"`) works but loses reload
+(the module docs call this trade-off out explicitly). The module also grants the service the
+`systemd-journal` supplementary group automatically, and **fails the whole initial load** if a
+referenced file (e.g. the geoip mmdb) is missing — hence the crash-loop warnings below.
 
-```nix
-{ ... }:
-{
-  services.alloy.enable = true;
+The final config lives in the pending patch **`/var/lib/hermes/workspace/erebos-alloy.patch`**
+(`git am` it on a branch; replaces `promtail.nix` with `sys/services/monitoring/alloy.nix`).
+It renders Alloy's River config from Nix the way `mas.nix` renders YAML — values interpolated
+from module options rather than hardcoded:
 
-  environment.etc."alloy/config.alloy".text = ''
-    discovery.relabel "journal" {
-      targets = []
+- `loki.write "default"` push URL ← `config.services.loki.configuration` (currently
+  `http://127.0.0.1:3100/loki/api/v1/push`)
+- journal `host` label ← `config.networking.hostName`
+- pipeline: `loki.source.journal "system"` (`path = "/var/log/journal"`, `max_age = "12h"`) →
+  `discovery.relabel "journal"` promotes `__journal__systemd_unit` → `unit` →
+  `loki.process "system"` (`stage.match` on `{unit="traefik.service"}`: `stage.json` extracts
+  `status`/`request_path`/`client_ip`/`method`, `stage.labels` adds status/request_path/method) →
+  `loki.write`. Geoip `stage.geoip` is included **commented out**: it opens its mmdb at config
+  load and `/var/lib/geoip/GeoLite2-City.mmdb` does not exist today — uncommenting without the
+  file bricks the service (crash loop, verified experimentally with `alloy run`).
 
-      rule {
-        source_labels = ["__journal__systemd_unit"]
-        target_label  = "unit"
-      }
-    }
-
-    loki.source.journal "system" {
-      path          = "/var/log/journal"
-      max_age       = "12h"
-      labels        = { job = "systemd-journal", host = "erebos" }
-      relabel_rules = discovery.relabel.journal.rules
-      forward_to    = [loki.process.system.receiver]
-    }
-
-    loki.process "system" {
-      forward_to = [loki.write.default.receiver]
-
-      // Traefik JSON access logs -> structured labels (accessLog.format=json is set in traefik.nix)
-      stage.match {
-        selector = "{unit=\\"traefik.service\\"}"
-
-        stage.json {
-          expressions = {
-            status       = "DownstreamStatus",
-            request_path = "request_path",
-            client_ip    = "ClientHost",
-            method       = "RequestMethod",
-          }
-        }
-
-        stage.labels {
-          values = {
-            status       = "",
-            request_path = "",
-            method       = "",
-          }
-        }
-
-        // Optional geoip — requires /var/lib/geoip/GeoLite2-City.mmdb, which does NOT exist today
-        // (the old promtail draft referenced it anyway). Needs a MaxMind license key to provision:
-        // stage.geo_ip {
-        //   db           = "/var/lib/geoip/GeoLite2-City.mmdb"
-        //   source       = "client_ip"
-        //   target_label = "geo_country"
-        // }
-      }
-    }
-
-    loki.write "default" {
-      endpoint {
-        url = "http://127.0.0.1:3100/loki/api/v1/push"
-      }
-    }
-  '';
-}
-```
+Validation recipe (what the patch passed): `nix eval` of the rendered text from the actual
+flake config, then `$A validate file.alloy` + `$A fmt` (exit 0 + silence), where
+`A=/nix/store/*-grafana-alloy-*/bin/alloy`; component names must be unique across all
+`/etc/alloy/*.alloy` files.
 
 Notes:
 - `format` is **not** a valid argument on `loki.source.journal` in Alloy 1.16 (a leftover from the
