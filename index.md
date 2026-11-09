@@ -10,7 +10,7 @@ tags: [meta, index]
 
 > Content catalog. Every wiki page listed under its type with a one-line summary.
 > Read this first to find relevant pages for any query.
-> Last updated: 2026-11-07 | Total pages: 35
+> Last updated: 2026-11-07 | Total pages: 36
 
 ## Concepts
 
@@ -23,6 +23,7 @@ tags: [meta, index]
 - [[ideas/Cloudflare-Tunnel-SSH]] – Secure SSH access via Cloudflare Tunnel without opening port 22
 - [[ideas/Fail2ban]] – Log-based IP banning for SSH and web services, journald/nftables integration on NixOS
 - [[ideas/Intrusion-Detection]] – See attempts + know if they succeeded: journal→Loki pipeline (currently dark!), ruler alerts, authentik ground truth, auditd, NixOS drift trio, tamper-resistant evidence
+- [[ideas/CleanYourTV]] – Wireless-ADB debloat for Android/Google TVs (reversible disable + clean launcher) → ideal Jellyfin thin client; typosquat warnings
 - [[ideas/Chezmoi-Pontos]] – Declarative dotfiles for the pontos laptop (Fedora) with chezmoi + age, wipe-and-recover story
 - [[ideas/Quickshell-Notification-Client]] – Catppuccin notification daemon as a quickconf module, built on quickshell's Quickshell.Services.Notifications
 - [[ideas/CVE-Now-MCP]] – Give Odin structured CVE lookups via cve.now's free hosted MCP server (no auth; `get_vulnerability`/`list_feed`/`check_stack` incl. flake.lock) feeding [[todo/scheduled-security-audit]]
