@@ -609,3 +609,8 @@ tags: [meta, log]
   with restricted `borg serve --append-only` authorized key, Pi-3B+ perf note, restore drill,
   failed-job → alerting cross-ref. Git question answered in-page: NO git transport for archives —
   repo stays borg-native; offsite later = second borg repo (Borgbase/storage box), not GitHub.
+
+## 2026-11-07 — idea filed: Intrusion-Detection (current stack = capable but blind)
+
+- Owner asked whether the monitoring stack can reveal intrusion attempts + success. Live assessment: promtail fully commented out, alloy enabled with NO settings (empty graph), Loki label API = zero series — log pipeline dark; ruler unconfigured; Loki `auth_enabled=false` on `*:3100` = attacker-accessible delete button. Prometheus side already holds useful auth signal (authentik metrics scraped).
+- ideas/Intrusion-Detection.md: layered plan in build order (journal→Loki via Alloy loki.source.journal/loki.write or revived promtail+geoip; ruler LogQL incl. sshd fail floods, accepted-session audit cards, pipe-failure anti-tamper alert; authentik login-failure metric rules; auditd surgical watches; NixOS-specific drift advantages — content-addressed store shrinks persistence watch-set to /etc /var /data /new-units + nix store verify + current-system hash gauge; ruler alerts already off-box via Matrix; journald→append-only borg snapshots to strategos; Fail2ban as response phase). Verified doc URLs (Alloy components, Loki ruler/alerts, audit userspace/rules man). Preconditions: P2 binds + Loki auth. Pages 34→35.
