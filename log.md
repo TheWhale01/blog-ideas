@@ -633,3 +633,8 @@ tags: [meta, log]
 ## 2026-11-09 — refile: todo/github-pr-governance → ideas/GitHub-PR-Governance (owner request)
 
 - Owner asked the entry to live in `ideas/`. Renamed per idea-folder permalink convention (Title-Case), frontmatter `type: idea`, restructured to Idea Pages format (problem statement / proposed solution / status / external references), links repointed (todo/index + root index Todo row removed; Ideas row added). Page count unchanged (37). Content gain: rulesets noted as the stronger admin-can't-bypass alternative to classic branch protection; all external URLs curl-verified 2026-11-09. Still deliberately NOT implemented.
+
+## 2026-11-09 — lint: scope rule amended + ideas/ vs todo/ classification audited
+
+- Owner defined the rule: ideas/ = anything built from scratch (services, projects, workflows/pipelines); todo/ = changes to existing config/code. HERMES.md scope rule rewritten as dated amendment (owner decision 2026-11-09); hub headers (todo/index, root index) aligned.
+- Audit of all 20 pages: frontmatter types all match placement. ideas/ (12): all are build-from-scratch items — incl. GitHub-PR-Governance (new pipeline, owner's example) and Intrusion-Detection, Drive-Health (new layered capabilities). todo/ (7): all modify deployed artifacts — monitoring-alerting, backups (borg job into existing flake), age-keys-to-strategos (protect existing keys), authentik-policy-revalidation, issues-room-readonly, terraform-workflow, scheduled-security-audit (borderline: the cron job is new, but it maintains the existing queries/security-audit — kept todo; flag to owner if reclassification desired). No moves needed.

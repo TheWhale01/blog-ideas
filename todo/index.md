@@ -9,8 +9,9 @@ sources: []
 
 # Erebos Server TODO — Index
 
-> Improvements, fixes, and housekeeping for services **already implemented** on Erebos.
-> New services to be added belong in `ideas/` instead (see the scope rule in [[HERMES]]).
+> Improvements, fixes, and housekeeping that change **already-implemented** configuration, code
+> or services on Erebos. Anything that must be set up from scratch — new services **or new
+> workflows/pipelines** — belongs in `ideas/` (see the scope rule in [[HERMES]]).
 > One file per item, ordered by impact. Statuses are mirrored here; details live in each file.
 
 ## Critical

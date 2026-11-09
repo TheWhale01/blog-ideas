@@ -31,7 +31,7 @@ tags: [meta, index]
 - [[ideas/Drive-Health-Monthly-Newsletter]] – Unblocked: prod is bare metal (6 ATA disks, Ryzen 5 5600) → smartctl_exporter + smartd locally → Prometheus/Grafana live view + Hermes monthly cron digest via Resend
 
 ## Todo
-> Improvements/fixes for things already implemented on Erebos (new services go in Ideas).
+> Changes to existing config/code on Erebos (build-from-scratch items — incl. new workflows/pipelines — go in Ideas).
 - [[todo/index]] – Hub: all backlog items by priority
 - [[todo/monitoring-alerting]] – Alerting LIVE ✅ · 9 rules deployed, webhook secret rotated + agenix-only (`85c5ebe`); open: loopback binds, Alert-link suppression
 - [[todo/issues-room-readonly]] – Not started · bot-only writes in the issues room; v12 creator-PL caveat decides approach
