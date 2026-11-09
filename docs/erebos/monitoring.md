@@ -154,6 +154,170 @@ Notes:
 - Queries to smoke-test: `{job="systemd-journal"} |= "Failed password"` (sshd), 
   `{unit="traefik.service", status=~"5.."}` (edge errors), `{host="erebos"} |~ "error"`.
 
+## Attrset-driven River generation (custom `pkgs.formats`-style generator)
+
+Since nixpkgs has no River generator (verified against the pinned rev **and** master as of
+2026-11-09), the Alloy body above can instead be written as pure Nix data and compiled to
+River at eval time — the same authoring model as `mas.nix` (attrset → yaml-format) and synapse's
+`settings`. Two files in `sys/services/monitoring/`:
+
+**`river.nix`** (~75 lines, no dependencies beyond `builtins`):
+
+```nix
+# river.nix — an attrset → River (Grafana Alloy DSL) generator, pkgs.formats-style.
+#
+# Conventions:
+#   - top level: { "loki.write"."default" = BODY; } → loki.write "default" { ... }
+#   - BODY attrset: keys emitted in alphabetical order (River is declarative, so
+#     component argument order doesn't matter — EXCEPT stage.* blocks inside
+#     loki.process, which RUN IN FILE ORDER. For ordered bodies pass a LIST of
+#     single-key attrsets instead — emitted verbatim in list order).
+#   - plain nested attrset  → unlabeled block (  endpoint { ... }  )
+#   - non-empty list of plain attrsets → repeated block ( rule { } rule { } )
+#   - river.list / river.map / river.ref → explicit attribute forms:
+#       list  → key = [ v, v ]      (for lists of strings/refs)
+#       map   → key = { k = v, .. } (River map constructors: labels, expressions, values)
+#       ref   → bare expression passthrough (component references like
+#               discovery.relabel.journal.rules — NOT a quoted string!)
+#   - key "comment" = "text" anywhere → // text line
+rec {
+  ref = v: { __river = "ref"; inherit v; };
+  map = v: { __river = "map"; inherit v; };
+  list = v: { __river = "list"; inherit v; };
+  # body: ordered LIST of single-key attrsets as a block's body (for stage.*
+  # pipelines where file order matters, nested inside a component block)
+  body = v: { __river = "body"; inherit v; };
+
+  isRv = v: builtins.isAttrs v && builtins.hasAttr "__river" v;
+  plain = v: builtins.isAttrs v && !(isRv v);
+
+  indent = n: builtins.concatStringsSep "" (builtins.genList (_: " ") n);
+
+  q = s: ''"${builtins.replaceStrings [ "\\" "\"" ] [ "\\\\" "\\\"" ] s}"'';
+
+  val = v:
+    if isRv v then
+      if v.__river == "ref" then v.v
+      else if v.__river == "map" then mapCtor v.v
+      else if v.__river == "list" then listLit v.v
+      else throw "river: unknown marker"
+    else if builtins.isString v then q v
+    else if builtins.isInt v || builtins.isBool v || builtins.isFloat v then toString v
+    else if builtins.isList v then listLit v
+    else throw "river: unsupported value of type ${builtins.typeOf v}";
+
+  listLit = vs: "[ " + builtins.concatStringsSep ", " (builtins.map val vs) + " ]";
+
+  mapCtor = m:
+    "{ " + builtins.concatStringsSep ", "
+      (builtins.map (k: "${k} = ${val m.${k}}") (builtins.attrNames m))
+    + " }";
+
+  emitAttr = ind: k: v:
+    if k == "comment" then "${indent ind}// ${v}\n"
+    else if isRv v && v.__river == "body" then "${indent ind}${k} {\n${emitOrderedList (ind + 2) v.v}${indent ind}}\n"
+    else if plain v then "${indent ind}${k} {\n${emitBodyLines (ind + 2) v}${indent ind}}\n"
+    else if builtins.isList v && v != [ ] && builtins.all plain v then
+      builtins.concatStringsSep ""
+        (builtins.map (it: "${indent ind}${k} {\n${emitBodyLines (ind + 2) it}${indent ind}}\n") v)
+    else "${indent ind}${k} = ${val v}\n";
+
+  emitBodyLines = ind: m:
+    builtins.concatStringsSep ""
+      (builtins.map (k: emitAttr ind k m.${k}) (builtins.attrNames m));
+
+  # ordered body: list of single-key attrsets, emitted in list order
+  emitOrderedList = ind: items:
+    builtins.concatStringsSep ""
+      (builtins.map (it: builtins.concatStringsSep ""
+        (builtins.map (k: emitAttr ind k it.${k}) (builtins.attrNames it))) items);
+
+  generate = cfg:
+    builtins.concatStringsSep "" (builtins.map (t:
+      builtins.concatStringsSep "" (builtins.map (l:
+        let body = cfg.${t}.${l}; in
+        ''${t} "${l}" {''
+        + "\n"
+        + (if builtins.isList body then emitOrderedList 2 body else emitBodyLines 2 body)
+        + "}\n\n"
+      ) (builtins.attrNames cfg.${t}))
+    ) (builtins.attrNames cfg));
+}
+```
+
+**`alloy.nix`** using it:
+
+```nix
+{ config, ... }:
+let
+  river = import ./river.nix;
+  r = river.ref;
+  mp = river.map;
+  lokiCfg = config.services.loki.configuration;
+
+  alloyRiver = {
+    "loki.write"."default".endpoint.url =
+      "http://${lokiCfg.common.instance_addr}:${toString lokiCfg.server.http_listen_port}/loki/api/v1/push";
+
+    "discovery.relabel"."journal" = {
+      targets = [ ];
+      rule = {
+        source_labels = [ "__journal__systemd_unit" ];
+        target_label = "unit";
+      };
+    };
+
+    "loki.source.journal"."system" = {
+      path = "/var/log/journal";
+      max_age = "12h";
+      labels = mp { job = "systemd-journal"; host = config.networking.hostName; };
+      relabel_rules = r "discovery.relabel.journal.rules";
+      forward_to = [ (r "loki.process.system.receiver") ];
+    };
+
+    # ordered list-body: forward_to -> comment -> stage.match, emitted in list order
+    "loki.process"."system" = [
+      { forward_to = [ (r "loki.write.default.receiver") ]; }
+      { comment = "Traefik JSON access logs -> structured labels (accessLog.format=json in traefik.nix)"; }
+      { "stage.match" = {
+          selector = "{unit=\"traefik.service\"}";
+          "stage.json".expressions = mp {
+            status = "DownstreamStatus"; request_path = "request_path";
+            client_ip = "ClientHost"; method = "RequestMethod";
+          };
+          "stage.labels".values = mp { status = ""; request_path = ""; method = ""; };
+          comment = "geoip: stage.geoip opens its mmdb at config LOAD — file absent on Erebos, crash loop if enabled";
+        };
+      }
+    ];
+  };
+in
+{
+  services.alloy.enable = true;   # configPath stays default /etc/alloy → hot-reload
+  environment.etc."alloy/config.alloy".text = river.generate alloyRiver;
+}
+```
+
+Semantics: plain nested attrsets = unlabeled blocks; non-empty list of attrsets = repeated blocks;
+`river.ref` = bare expression passthrough (component references — never quoted); `river.map` =
+`key = { k = v, … }` constructor; `river.list` forces attribute-list form over block repetition;
+`comment = "…"` emits `// …`. Top-level: `"component.type"."label" = BODY`.
+
+Caveats (honest limits):
+- Attrset bodies emit keys **alphabetically**. River is order-independent for component args, but
+  `stage.*` blocks inside one body RUN IN FILE ORDER — a future `stage.geoip` would sort before
+  `stage.json`. Use list-bodies (or `river.body` for nested blocks) wherever stage order matters.
+- `ref` passes raw text; typos surface only at `alloy validate`/load, not at Nix eval.
+- Keep the validation habit regardless: `nix eval` the rendered text + `alloy validate` + `alloy fmt`.
+
+Test record 2026-11-09: rendered this exact attrset with `nix-instantiate --eval --raw` against
+the generator; `alloy validate` exit 0 (Alloy 1.12.2 from the flake's pinned nixpkgs); output
+differs from the hand-written validated config only cosmetically (component/attr order, inline
+maps); `alloy run` on the generated file → "All Alloy components are healthy."
+Bugs caught while building it: exported `map` marker shadows `builtins.map` inside a `rec` set
+(use `builtins.map` internally), and interpolated function applications need the argument **inside**
+the `${ … }` braces.
+
 ## Loki retention — 1 month (paste into `loki.nix`, inside `services.loki.configuration`)
 
 Loki 3.x needs **both** blocks — the period alone does nothing without an enabled compactor, and
