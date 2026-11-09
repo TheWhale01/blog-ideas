@@ -18,9 +18,9 @@ The monitoring stack lives in `sys/services/monitoring/` and is composed by `sys
 | `prometheus.nix` | Prometheus | Time-series metrics and alerting rules |
 | `grafana.nix` | Grafana | Dashboards, visualization, alerting UI |
 | `loki.nix` | Loki 3.7.9 | Log aggregation + storage (filesystem chunks; **collector-independent**) |
-| `alloy.nix` (pending — patch `erebos-alloy.patch`) | **Alloy** (promtail removed from nixpkgs — EOL, module assertion) | Log shipping. Repo file is still `promtail.nix`, `enable`d with **no config** → Loki zero series until the patch is applied. Final collector config: next section (validated with `nix eval` + `alloy validate`/`fmt`). |
+| `alloy.nix` (module below — apply manually) | **Alloy** (promtail removed from nixpkgs — EOL, module assertion) | Log shipping. Repo file is still `promtail.nix`, `enable`d with **no config** → Loki zero series until the patch is applied. Final collector config: next section (validated with `nix eval` + `alloy validate`/`fmt`). |
 
-## Log collection — Alloy config (patch delivered 2026-11-09, validated)
+## Log collection — Alloy Nix module (validated 2026-11-09; owner applies)
 
 The `services.alloy` module (checked through nixpkgs master) has **no `settings` attrset** —
 River is a DSL with no generator, unlike the attrset-driven `matrix-synapse`/`mas` configs.
@@ -33,10 +33,10 @@ Pointing `configPath` at a store path (e.g. `"${pkgs.writeText ...}"`) works but
 `systemd-journal` supplementary group automatically, and **fails the whole initial load** if a
 referenced file (e.g. the geoip mmdb) is missing — hence the crash-loop warnings below.
 
-The final config lives in the pending patch **`/var/lib/hermes/workspace/erebos-alloy.patch`**
-(`git am` it on a branch; replaces `promtail.nix` with `sys/services/monitoring/alloy.nix`).
-It renders Alloy's River config from Nix the way `mas.nix` renders YAML — values interpolated
-from module options rather than hardcoded:
+The validated module below replaces `sys/services/monitoring/promtail.nix` (rename it to
+`alloy.nix` and repoint `monitoring/default.nix`). Application is **owner-driven** — the agent
+delivers snippets, not changes. It renders Alloy's River config from Nix the way `mas.nix`
+renders YAML — values interpolated from module options rather than hardcoded:
 
 - `loki.write "default"` push URL ← `config.services.loki.configuration` (currently
   `http://127.0.0.1:3100/loki/api/v1/push`)
@@ -49,7 +49,96 @@ from module options rather than hardcoded:
   load and `/var/lib/geoip/GeoLite2-City.mmdb` does not exist today — uncommenting without the
   file bricks the service (crash loop, verified experimentally with `alloy run`).
 
-Validation recipe (what the patch passed): `nix eval` of the rendered text from the actual
+```nix
+{ config, ... }:
+
+let
+  lokiCfg = config.services.loki.configuration;
+in
+{
+  services.alloy = {
+    enable = true;
+    # configPath stays at its default (/etc/alloy, a directory). That is the
+    # reload-capable mode: the module adds every environment.etc."alloy/*.alloy"
+    # file to systemd.services.alloy.reloadTriggers, so nixos-rebuild switch
+    # hot-reloads Alloy (SIGHUP) instead of restarting it. Pointing configPath
+    # at a store path (e.g. "${pkgs.writeText ...}") works but loses reload —
+    # the module docs call this out explicitly.
+  };
+
+  # Alloy speaks River (its own DSL). Even current nixpkgs master has NO
+  # structured `settings` option for services.alloy (unlike matrix-synapse /
+  # the mas.yaml we generate), so environment.etc is the supported way to keep
+  # the config declarative — same spirit as mas.nix, text-rendered instead of
+  # attrset-rendered.
+  environment.etc."alloy/config.alloy".text = ''
+    loki.write "default" {
+      endpoint {
+        url = "http://${lokiCfg.common.instance_addr}:${toString lokiCfg.server.http_listen_port}/loki/api/v1/push"
+      }
+    }
+
+    // Promote __journal__systemd_unit (internal label, dropped by default) to a real `unit` label.
+    discovery.relabel "journal" {
+      targets = []
+
+      rule {
+        source_labels = ["__journal__systemd_unit"]
+        target_label  = "unit"
+      }
+    }
+
+    loki.source.journal "system" {
+      path          = "/var/log/journal"
+      max_age       = "12h"
+      labels = {
+        job  = "systemd-journal",
+        host = "${config.networking.hostName}",
+      }
+      relabel_rules = discovery.relabel.journal.rules
+      forward_to    = [loki.process.system.receiver]
+    }
+
+    loki.process "system" {
+      forward_to = [loki.write.default.receiver]
+
+      // Traefik JSON access logs -> structured labels (accessLog.format=json is set in traefik.nix)
+      stage.match {
+        selector = "{unit=\"traefik.service\"}"
+
+        stage.json {
+          expressions = {
+            status       = "DownstreamStatus",
+            request_path = "request_path",
+            client_ip    = "ClientHost",
+            method       = "RequestMethod",
+          }
+        }
+
+        stage.labels {
+          values = {
+            status       = "",
+            request_path = "",
+            method       = "",
+          }
+        }
+
+        // Optional geoip — requires /var/lib/geoip/GeoLite2-City.mmdb, which does NOT exist today.
+        // stage.geoip opens its DB at config load, so a missing file fails the whole initial load
+        // (crash loop, not just an unhealthy component). Provision it first (MaxMind license key
+        // needed), make it readable by the dynamic alloy user, then uncomment:
+        // stage.geoip {
+        //   source  = "client_ip"
+        //   db      = "/var/lib/geoip/GeoLite2-City.mmdb"
+        //   db_type = "city"
+        // }
+      }
+    }
+  '';
+}
+```
+
+Validation recipe (what this module passed): `nix eval` of the rendered text from the actual
 flake config, then `$A validate file.alloy` + `$A fmt` (exit 0 + silence), where
 `A=/nix/store/*-grafana-alloy-*/bin/alloy`; component names must be unique across all
 `/etc/alloy/*.alloy` files.
