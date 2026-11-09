@@ -28,6 +28,16 @@ with a manual path too. TV brands that aren't Android (Samsung/LG/Roku/VIDAA) ge
 
 ## Homelab fit
 
+- **Owner context (2026-11-07)**: target device is an **Anker Nebula Capsule 3** projector
+  (2 GB RAM, Android 9-based Google TV UI) that runs "very very very slowly" — exactly the device
+  class the project's supported list calls out ("Alwtniet, **Anker Nebula**, BYINTEK, … HY320,
+  Wanbo, XGIMI projectors"). Expected gains: home-screen/app-launch responsiveness (RAM freed),
+  no content-row loading; boot-to-logo unchanged (firmware floor).
+  Notes for that box: Android 9 → first ADB connect may need one-time USB `adb tcpip 5555`
+  (native wireless pairing is Android 11+); **keep** laser-safety/keystone/auto-focus, audio DSP,
+  Widevine, Play services, and Cast receiver if mirroring from phone; reversible `disable-user` +
+  restore script make the projector a safe guinea pig.
+
 - Post-debloat, a clean Android TV is the ideal thin client for **[[docs/erebos/services]] Jellyfin**
   (and anything else served from Erebos) — stock launches otherwise shoveload sponsored rows at you
   sourced from the TV's telemetry.

@@ -618,3 +618,4 @@ tags: [meta, log]
 ## 2026-11-07 — idea filed: CleanYourTV (owner share)
 
 - Android/Google-TV debloat over wireless ADB: backup → pm disable-user bloat/telemetry (reversible, nothing uninstalled) → native Apple-TV-style launcher. Prompt-first (coding-agent workflow), brand-aware. 55k★, created 2026-10, young + vibe-coded caveats noted; official sources = repo + cleanyour.tv only (project itself warns about typosquats/app-store fakes). Homelab angle: clean Jellyfin thin client. URLs curl-verified. Pages 35→36.
+- Owner context added: Anker Nebula Capsule 3 projector (slow 2 GB Android 9 box) is the target — supported-brand list confirms Anker Nebula projectors covered; Android-9 ADB caveat + keep-list (laser safety/keystone/DSP/DRM/Cast) recorded in ideas/CleanYourTV.md.
