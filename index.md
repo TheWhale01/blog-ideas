@@ -32,7 +32,7 @@ tags: [meta, index]
 - [[todo/index]] – Hub: all backlog items by priority
 - [[todo/monitoring-alerting]] – Alerting LIVE ✅ · 9 rules deployed, webhook secret rotated + agenix-only (`85c5ebe`); open: loopback binds, Alert-link suppression
 - [[todo/issues-room-readonly]] – Not started · bot-only writes in the issues room; v12 creator-PL caveat decides approach
-- [[todo/backups]] – Critical · respecified: vaultwarden/immich/nextcloud only (PG dumps + /data trees), target = strategos (Pi)
+- [[todo/backups]] – In progress · Borg chosen; full NixOS job snippet + strategos repo config + sqlite/pg_dump hooks written; weekly Sun 03:30, prune 7d/5w/12m
 - [[todo/age-keys-to-strategos]] – High · agenix identity keys have no offline copy; passphrase-archive onto strategos + round-trip decrypt drill
 - [[todo/terraform-workflow]] – Medium · remote state + locking, CI drift-check
 - [[todo/authentik-policy-revalidation]] – Medium · username re-check at login (feasible) + forced password rotation on policy change (retroactive check impossible — hashes)

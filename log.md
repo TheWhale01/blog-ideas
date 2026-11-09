@@ -598,3 +598,14 @@ tags: [meta, log]
 ## 2026-11-07 — monitoring note restructured (owner request)
 
 - 263-line debug chronicle slimmed to a 100-line remainder-at-a-glance page. Nothing lost: durable knowledge (v12 gotchas, appservice/MAS token recipes, bridge source semantics, promtool -cli location) folded into docs/erebos/services.md 'Maintenance recipes & Matrix gotchas'; rule YAML + tests already attached as todo/alert-rules.yml/.test.yml; incident story remains in this file's git history + today's log entries. Structure now: Current state → What's left (6 open items) → rules workflow → safe re-test drills → history pointer.
+
+## 2026-11-07 — backups: Borg chosen, declarative config written; nextcloud DB correction
+
+- Owner picked Borg. todo/backups.md rewritten: verified topology (vaultwarden+immich = PostgreSQL
+  socket dbs; **nextcloud = SQLite in /data/nextcloud/data**, official image, no external DB — earlier
+  draft wrongly listed a PG dump for it), full `services.borgbackup.jobs` snippet (preHook pg_dump -Fc
+  ×2 + occ maintenance-mode + sqlite .backup into tmpfs /run/borg-dumps, postHook unquiesces; weekly
+  Sun 03:30; prune 7d/5w/12m; agenix borg-backup key + borg-env), strategos `borgbackup.repos` config
+  with restricted `borg serve --append-only` authorized key, Pi-3B+ perf note, restore drill,
+  failed-job → alerting cross-ref. Git question answered in-page: NO git transport for archives —
+  repo stays borg-native; offsite later = second borg repo (Borgbase/storage box), not GitHub.

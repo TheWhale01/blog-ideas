@@ -15,7 +15,7 @@ sources: []
 
 ## Critical
 - [[todo/monitoring-alerting]] — Core DONE (9 rules live, delivery confirmed, webhook secret rotated agenix-only in `85c5ebe`); open: loopback binds, Alert-link suppression, Loki panels
-- [[todo/backups]] — Not started · respec'd: only vaultwarden/immich/nextcloud (PG dumps + /data trees) → Borg/Restic over SSH to strategos
+- [[todo/backups]] — In progress · **Borg decided**; declarative job config ready to paste (2 PG dumps + Nextcloud-SQLite quiet hook) → strategos; git-for-archives answered NO
 
 ## High
 - [[todo/age-keys-to-strategos]] — Not started · agenix identity keys have NO offline copy today; passphrase-archive onto strategos + round-trip drill
