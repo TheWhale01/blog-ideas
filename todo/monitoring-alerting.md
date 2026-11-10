@@ -38,19 +38,16 @@ terranix's 14055 entry removed.
 
 ## What's left
 
-- [ ] **Loki retention NOT applied** — 1-month snippet (compactor + limits_config, both required on
-      3.x) is in [[docs/erebos/monitoring]] but absent from `loki.nix`: disk growth is unbounded.
-- [ ] **Loopback binds (remainder)** — Alertmanager + Loki retention done. Verified findings
-      2026-11-10: `trustedInterfaces` (podman0, **wt0 = Netbird peers!**) accept ALL host ports at
-      the top of the nft input chain ⇒ firewall rules can't fix; bind-level only. Ready-to-apply
-      snippets (binary-verified): [[docs/erebos/monitoring]] "Loopback binds" — loki
-      `http/grpc_listen_address = 127.0.0.1`; bridge via overrideAttrs APP_ADDRESS patch
-      (`node --check`-verified artifact). Jellyfin `:8096` → [[queries/security-audit]].
-- [ ] **Grafana UI cleanup** — 14055 (if it applied before removal) and orphaned authentik 14837
-      (terranix resource was renamed to traefik in `11a4979`; the dashboard itself is now unmanaged)
-      → delete in UI or re-add a managed entry deliberately.
-- [ ] **Alert-link suppression** — one-line `ALERT_LINKS` env entry, not yet applied (unit env
-      verified unset). Snippet: [[docs/erebos/services]] "Maintenance recipes & Matrix gotchas".
+- [x] ~~Loki retention~~ — APPLIED `050df05` (720h; corrected snippet — `max_look_back_period`
+      is gone in Loki 3.x, binary-verified).
+- [~] **Loopback binds** — Alertmanager `9093` ✅ `11a4979`; Loki `3100`+gRPC ✅ `f13b255`
+      (verified snippet). **Bridge `:3004`: owner declined** (2026-11-10) — firewall enabled, no
+      internet forwarding; accepted residual: podman0/wt0 peers could reach :3004 (webhook is
+      secret-gated; worst case alert noise/silence, not data). Snippet stays on file in
+      [[docs/erebos/monitoring]] "Loopback binds" if posture changes. Jellyfin `:8096` → [[queries/security-audit]].
+- [x] ~~Grafana UI cleanup~~ — done by owner manually 2026-11-10 (14055 + orphaned authentik).
+- [ ] **Alert-link suppression** — snippet FINAL + source-verified upstream 0.9.0 + merge-proven
+      on live flake; owner applies: [[docs/erebos/services]] now carries the exact one-liner.
 - [ ] **Noise guard soak** — after ~1 week, confirm daily `update-containers` restarts stay absorbed
       by `for: 5m` (no storm in the room); keep Grafana unified alerting OFF: single alert brain.
 - [ ] **Issues room read-only** (bot-only writes) → [[todo/issues-room-readonly]]

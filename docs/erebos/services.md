@@ -185,7 +185,7 @@ Config shape worth remembering:
   bridge holds the raw twin. Git history retains the old value — voided by the rotation itself.
 - Message formatting (source: utils.js `formatAlert`): built-in "Alert link" (→ `generatorURL`) is a
   FALLBACK that fires only when `ALERT_LINKS` is unset. Suppress without patching via
-  `systemd.services.matrix-alertmanager.serviceConfig.Environment = [ "ALERT_LINKS=Alerts:{annotations.matrixNoLink}" ];`
+  `systemd.services.matrix-alertmanager.environment.ALERT_LINKS = "Alerts:{annotations.matrixNoLink}";` (attrset form — proven on the live flake 2026-11-10 via `extendModules` eval: merges cleanly beside the module's own env keys)
   — set-but-empty-resolving env var makes the fallback unreachable and the fake entry silently skips
   (single-annotation rule, utils.js:101). Real use: `Name:url|Name2:{generatorURL}` with
   `{labels.x}`/`{annotations.x}` interpolation. `services.matrix-alertmanager.mention = true`
