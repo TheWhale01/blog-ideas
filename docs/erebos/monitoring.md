@@ -186,9 +186,12 @@ traefik `stage.labels`. Live label index now carries `geoip_country_name` with b
 (France/Ireland/Norway/Portugal/Singapore/United States). `Access by Country` panel (country-mode
 GeoMap on `sum by (geoip_country_name)(count_over_time(...))`) shows data.
 
-**B — sshd branch (validated 2026-11-10 vs production alloy 1.16.0 binary, `validate` rc=0 on the
-full rendered config; owner applies).** Sibling `stage.match` inside `loki.process "system"` in
-`sys/services/monitoring/alloy.nix`, inserted after the traefik match's closing `}`:
+**B — sshd branch (LIVE since 2026-11-10 evening; owner pushed + rebuilt).** Validated first with
+`alloy validate` rc=0 against the production 1.16.0 binary on the full rendered config. First
+post-deploy entry — the owner's own login from IPv6 `2a02:842a:…` — carries
+`geoip_country_name="France"` in Loki; city decoded as Triel-sur-Seine. Sibling `stage.match`
+inside `loki.process "system"` in `sys/services/monitoring/alloy.nix`, inserted after the traefik
+match's closing `}`:
 
     stage.match {
       selector = "{unit=\"sshd.service\"}"
