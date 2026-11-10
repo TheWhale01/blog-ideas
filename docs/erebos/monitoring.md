@@ -195,6 +195,20 @@ Three layers, no Cloud required:
      expr: increase(loki_write_dropped_entries_total[5m]) > 0
    ```
 
+**Also rejected: dashboard 14055 "Loki stack monitoring (Promtail, Loki)"** (owner asked 2026-11-09):
+JSON inspection shows ~20 of 22 metric panels target the **Loki-Stack Helm chart on Kubernetes**
+(`container_memory_working_set_bytes`, `kube_pod_container_resource_*`, `pod=~"loki.*"`,
+`app_kubernetes_io_name`) plus a dead **promtail** row — they'd all render "No data" on Erebos.
+Usable instead: a `loki` scrape job (currently absent! Loki's self-metrics on `127.0.0.1:3100/metrics`
+are invisible to Prometheus):
+```nix
+{ job_name = "loki";
+  static_configs = [{ targets = [ "127.0.0.1:3100" ]; }]; }
+```
+which feeds the 5 genuine `loki_distributor_lines_received_total` / `loki_ingester_memory_streams` /
+`loki_distributor_bytes_received_total` / append-failures / dropped-samples style panels, alongside
+hand-built LogQL log panels for the actual log views.
+
 Not applicable: the "Alloy Health" integration and the Alloy app tile are **Grafana Cloud**
 features; there is no `grafana-alloy-app` plugin in the OSS catalog (checked grafana.com API —
 NotFound). The built-in Alloy UI (component graph, health, profiling) is best accessed ad hoc:

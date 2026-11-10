@@ -668,3 +668,7 @@ tags: [meta, log]
 ## 2026-11-09 — owner push verified: alloy.nix landed (abc3f49), one transcription bug found
 
 - git fetch + worktree eval: configPath renders to /nix/store/nifg...-config.alloy, alloy validate exit 0 on the built file. Body identical to validated reference except labels: host = "127.0.0.1" (hardcoded) instead of config.networking.hostName → would poison {host="erebos"} queries and collide with future strategos streams. Fix = one line, owner applies. Grafana layer-1 (scrape job 'alloy' 127.0.0.1:12345) NOT in the push (+2 prometheus lines were alertmanager loopback bind [good hardening] + matrix-alertmanager mention=true); dashboards not provisioned yet. Wiki table + review note updated.
+
+## 2026-11-09 — dashboard 14055 evaluated and rejected; gap found: loki not scraped
+
+- Owner asked if grafana.com dashboard 14055 (Loki stack monitoring Promtail/Loki) fits Erebos. Downloaded rev 5 JSON: ~20/22 metric panels are Kubernetes-Helm-specific (cAdvisor container_*, kube_pod_container_resource_*, pod=~loki.*, app_kubernetes_io_name) + a dead promtail row → no data on Erebos. Only the 5 raw loki_* panels would work — and revealed the real gap: prometheus.nix has NO loki scrape job (loki self-metrics on 127.0.0.1:3100/metrics unmonitored). Snippet added to Grafana section: job_name loki → 127.0.0.1:3100, alongside alloy job pending. Recommendation: keep mixin alloy-loki/controller/resources + custom LogQL panels.
