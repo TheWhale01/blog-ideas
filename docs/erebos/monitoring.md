@@ -157,6 +157,48 @@ Notes:
 - Queries to smoke-test: `{job="systemd-journal"} |= "Failed password"` (sshd), 
   `{unit="traefik.service", status=~"5.."}` (edge errors), `{host="erebos"} |~ "error"`.
 
+## Visualising Alloy in Grafana (setup guide, verified 2026-11-09)
+
+Three layers, no Cloud required:
+
+1. **Scrape Alloy's self-metrics.** Alloy's HTTP server (metrics, built-in UI, live debugging)
+   defaults to **127.0.0.1:12345** (verified from `alloy run` docs + a live scrape; the nixpkgs
+   module passes no listen-addr override, so loopback is already the posture). Add to
+   `prometheus.nix` `scrapeConfigs`, matching the existing job style:
+   ```nix
+   { job_name = "alloy";
+     static_configs = [{ targets = [ "127.0.0.1:12345" ]; }]; }
+   ```
+   The existing `ScrapeTargetDown` (`up == 0`) rule then covers collector death automatically.
+2. **Official mixin dashboards (provisioned).** `grafana/alloy` → `operations/alloy-mixin/rendered/dashboards/`
+   ships ready JSON. For this pipeline: `alloy-resources` (CPU/mem/restarts), `alloy-controller`
+   (component health + evaluation time), `alloy-loki` (journal lines read, write latency, dropped
+   entries). All panel exprs use raw exported metric names (spot-checked against a live
+   `alloy 1.12.2 /metrics`: `alloy_component_controller_running_components`,
+   `loki_source_journal_target_lines_total`, `loki_write_request_duration_seconds`,
+   `alloy_build_info`, …) — **no mixin recording rules needed**. Datasource variables are
+   `type=datasource` so they bind to the provisioned Prometheus/Loki at render; `cluster`/`namespace`
+   stay empty on a single node (harmless). Commit the JSONs to the repo and add to `grafana.nix`:
+   ```nix
+   services.grafana.provision.dashboards.settings.providers = [{
+     name = "alloy";
+     options.path = ./grafana-dashboards;   # dir containing the three *.json
+   }];
+   ```
+3. **Optional pipeline alerts** (append to the `monitoring_self` rules group):
+   ```yaml
+   - alert: AlloyConfigLoadFailed
+     expr: alloy_config_last_load_successful == 0
+   - alert: AlloyLogWriteDropping
+     expr: increase(loki_write_dropped_entries_total[5m]) > 0
+   ```
+
+Not applicable: the "Alloy Health" integration and the Alloy app tile are **Grafana Cloud**
+features; there is no `grafana-alloy-app` plugin in the OSS catalog (checked grafana.com API —
+NotFound). The built-in Alloy UI (component graph, health, profiling) is best accessed ad hoc:
+`ssh -L 15000:127.0.0.1:12345 hades@erebos` → http://localhost:15000 — don't expose it through
+Traefik; it has no auth.
+
 ## Attrset-driven River generation (custom `pkgs.formats`-style generator)
 
 > **Status: explored, NOT adopted** (owner chose plain text + store path 2026-11-09).
