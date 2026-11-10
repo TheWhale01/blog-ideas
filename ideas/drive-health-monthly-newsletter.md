@@ -9,6 +9,10 @@ sources: []
 
 # Drive Health Monthly Newsletter
 
+**Status**: 🔴 TRIPWIRE PROVED ITSELF — first smartd boot (2026-11-10 22:12) wall-alerted `sdb`:
+207 pending + 190 uncorrectable sectors (drive ~2009). Pool still reads clean (no kernel I/O errors
+3h window; exporter not yet up — smart.nix unpushed/partial apply). Playbook below.
+
 **Status**: tripwire half DELIVERED + VALIDATED 2026-11-10 (snippets in chat, owner applies);
 newsletter half still queued behind it.
 Validation performed: `eval-config` of the exact snippets against pinned nixpkgs (options all exist,
@@ -38,7 +42,7 @@ The "array" — the actual physical inventory, verified 2026-11-07:
 | Device | Disk | Role (pvs-verified 2026-11-07) |
 |---|---|---|
 | `sda` | WDC WD20EARX (2 TB, Green) | PV of `whale-nas` (<1.82 t) |
-| `sdb` | WDC WD6400AAKS (640 GB, ~2009-era) | PV of `whale-nas` via `sdb3` (595 g) — ⚠️ oldest member |
+| `sdb` | WDC WD6400AAKS (640 GB, ~2009-era) | PV of `whale-nas` via `sdb3` (595 g) — 🔴 **SMART FAILING (2026-11-10): 207 pending + 190 offline-uncorrectable sectors — replacement triggered** |
 | `sdc` | WDC WD10EZEX (1 TB) | PV of `whale-nas` via `sdc1` |
 | `sdd` | Kingston SA400S3 (SATA SSD) | **root: ESP + btrfs** (disko `nixos` disk, corrected `6973308`) — only disk outside the pool |
 | `sde` | WDC WD1001FALS (1 TB Black, ~2011-era) | PV of `whale-nas` via `sde1` — ⚠️ old |
@@ -151,3 +155,29 @@ Erebos (bare metal) ── smartctl_exporter (:9633, new) + node_exporter (:9100
 - **Scrutiny (alternative all-in-one disk UI)** — https://github.com/AnalogJ/scrutiny
 - **Grafana reporting docs (Enterprise-only, hence the DIY mail)** — https://grafana.com/docs/grafana/latest/dashboards/create-reports/
 - **Resend (SMTP/API already used for Authentik mail)** — https://resend.com/docs
+
+## Replacement playbook — sdb (triggered 2026-11-10)
+
+1. **Assess** (host): `sudo smartctl -x /dev/sdb` (Reallocated count? Self-test log?) +
+   `sudo smartctl -t long /dev/sdb` (~1 h; more bad regions surface — informational, drive stays usable during test).
+   `sudo journalctl -k --since '-30 days' | grep -iE "I/O error|medium error|blk_update"` — historical read failures?
+2. **Verify backup NOW** (don't wait for Sunday's borg): run the borg job manually and read its
+   per-file errors — files it cannot read ARE the sectors already dead. This answers "did we lose
+   data yet?" definitively.
+3. **Pool has ~0 free extents** (verified 2026-11-07) ⇒ cannot pvmove off a dying disk without more
+   space: add replacement disk first (any SATA ≥ 1 TB preferred, ≥ 640 GB minimum) →
+   `pvcreate` → `vgextend whale-nas` → `pvmove --background /dev/sdb3` → (if pvmove aborts on an
+   unreadable extent: that file is restored from borg after the move) → `vgreduce whale-nas /dev/sdb3`
+   → `pvremove` → power off the disk.
+4. **Alerts**: `DiskPendingSectors` (warn) + `DiskUncorrectableSectors` (crit) will fire once the
+   exporter runs and rules evaluate — legit noise until sdb is gone; silence in the Alertmanager UI
+   if the 4h repeat gets loud, don't delete the rules.
+5. **Follow-up**: sde (WD1001FALS, ~2011) is the next-priority candidate; power-on hours will show
+   it. The two Greens' spin-down behavior vs SMART temp readings — check after exporter is live.
+
+## Open defect (2026-11-10)
+
+smart.nix not pushed; applied state has smartd running but **prometheus-smartctl-exporter absent**
+(no unit, no :9633, no journal lines) — exporter stanza missing or service failed. Needs:
+`systemctl status prometheus-smartctl-exporter` + push the file; then scrape job + rules + dashboard
+can be validated (17-rule set already promtool-verified pending apply).
