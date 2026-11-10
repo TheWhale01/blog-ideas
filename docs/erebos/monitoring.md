@@ -179,6 +179,72 @@ Notes:
 - Queries to smoke-test: `{job="systemd-journal"} |= "Failed password"` (sshd), 
   `{unit="traefik.service", status=~"5.."}` (edge errors), `{host="erebos"} |~ "error"`.
 
+## SSHD GeoIP pipeline + 17877 dashboard findings (2026-11-10)
+
+**A — traefik country label (owner pushed, LIVE).** `geoip_country_name = ""` added to the
+traefik `stage.labels`. Live label index now carries `geoip_country_name` with bounded values
+(France/Ireland/Norway/Portugal/Singapore/United States). `Access by Country` panel (country-mode
+GeoMap on `sum by (geoip_country_name)(count_over_time(...))`) shows data.
+
+**B — sshd branch (validated 2026-11-10 vs production alloy 1.16.0 binary, `validate` rc=0 on the
+full rendered config; owner applies).** Sibling `stage.match` inside `loki.process "system"` in
+`sys/services/monitoring/alloy.nix`, inserted after the traefik match's closing `}`:
+
+    stage.match {
+      selector = "{unit=\"sshd.service\"}"
+
+      stage.regex {
+        expression = "(?:from|by) (?P<client_ip>[0-9a-fA-F.:]+)"
+      }
+
+      stage.geoip {
+        source  = "client_ip"
+        db      = "/var/lib/geoip/GeoLite2-City.mmdb"
+        db_type = "city"
+      }
+
+      stage.structured_metadata {
+        values = {
+          geo_country = "geoip_country_code",
+          geo_city    = "geoip_city_name",
+        }
+      }
+
+      stage.labels {
+        values = {
+          geoip_country_name = "",
+        }
+      }
+    }
+
+Regex covers `from <IP>` (Accepted/Failed password) and `by <IP>` (Connection closed by <IP>).
+After `nixos-rebuild switch` + alloy restart, verify with a FRESH ssh login — pre-existing entries
+keep their old label sets (labels only apply to newly ingested lines):
+`{unit="sshd.service", geoip_country_name=~".+"}`.
+
+**Semantics findings (source read: grafana/loki `clients/pkg/logentry/stages/geoip.go`):**
+- `stage.geoip` with missing/unparsable source IP is a **no-op — the entry passes through**
+  (process() returns early; Run always forwards). IP-less sshd lines (pam_unix session, bare kex
+  errors) are NOT dropped by the sshd branch. The old crash-loop warning concerned only a missing
+  mmdb at config load.
+- On the running Alloy 1.16.0 the geo fields populate the **extracted map only**: live
+  label-values check shows `geoip_location_latitude/_longitude` and `geoip_city_name` are NOT in
+  the label index; only explicitly promoted fields become labels. No per-coordinate stream
+  explosion on Erebos.
+
+**Dashboard 17877 "GeoIP" anatomy.** It was built for `{job="iptables", geoip_country_name=~".+"}` —
+kernel firewall packet-LOG streams with the country promoted as a LABEL; Erebos emits no such
+stream (NixOS firewall logs nothing). Only "Access by Country" (an aggregation query) can be made
+to work: selector sed to `unit="traefik.service"` + country label (step A, done). The
+"IP Locations"/"Heatmap"/"(SSH)" panels are raw-log **point-layer** GeoMaps needing lat/lon per
+entry, which in Loki means promoting `geoip_location_latitude/longitude` as labels = one stream
+per visitor coordinate, unbounded cardinality — **do not promote**. Replace them with country-mode
+GeoMap/table panels on
+`sum by (geoip_country_name) (count_over_time({unit="traefik.service", geoip_country_name=~".+"}[$__range]))`
+and, after B lands, a twin query on `{unit="sshd.service", geoip_country_name=~".+"}`. A genuine
+attacker world-map needs firewall LOG rules feeding journald (see intrusion-detection idea) —
+different source, same pipeline shape.
+
 ## Visualising Alloy in Grafana (setup guide, verified 2026-11-09)
 
 Three layers, no Cloud required:
