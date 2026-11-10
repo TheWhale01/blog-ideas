@@ -272,10 +272,18 @@ committed; the terraform CLI is just the executor of the generated config. Conte
   the geoip fork is substituted **at Nix-eval time** with
   `builtins.replaceStrings [ "\${DS_LOKI}" ] [ (toString vars.loki.uid) ]` over
   `builtins.readFile ./dashboards/geoip.json`. Both render concrete UIDs into `config_json`.
-- `systemd_journal` resource is COMMENTED OUT: `dashboards/systemd-journal.json` is in the new
-  Grafana unified-dashboard **kind/spec (v2)** format and the terraform provider's `grafana_dashboard`
-  path POSTs the legacy API, which rejects/mangles it ("issue with v2 API" commit note). Open
-  question: keep the journal dashboard manually imported, or convert the JSON to classic schema.
+- `systemd_journal` resource is COMMENTED OUT: the committed `dashboards/systemd-journal.json` is in
+  the new Grafana unified-dashboard **kind/spec (v2)** format (UI export) and the terraform provider's
+  `grafana_dashboard` path POSTs the legacy API → "issue with v2 API" commit note.
+  **Resolution (2026-11-10, delivered, owner applies):** convert the dashboard back to the CLASSIC
+  schema, mirroring the working geoip fork exactly: top-level `__inputs` (name `DS_LOKI`), every panel
+  target + templating var + annotation datasource bound to `{"type":"loki","uid":"${DS_LOKI}"}`,
+  `id/gnetId` null keys, `schemaVersion: 39`, fixed `uid: erebos-journal-logs`. Then the resource line
+  must use the same substitution as geoip:
+  `systemd_journal.config_json = "${builtins.replaceStrings [ "\${DS_LOKI}" ] [ "${toString vars.loki.uid}" ] (builtins.readFile ./dashboards/systemd-journal.json)}";`.
+  Queries verified live before delivery (41 series on the timeseries expr, 55 units via label_values).
+  After apply, DELETE the older manually-imported copy in the UI (random uid) — Terraform manages
+  only the `erebos-journal-logs` uid.
 - Same module also defines the Authentik OAuth2 app/groups for Grafana (pre-existing).
 
 ## Visualising Alloy in Grafana (setup guide, verified 2026-11-09)
