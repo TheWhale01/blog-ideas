@@ -170,6 +170,12 @@ Notes:
   `A=/nix/store/*-grafana-alloy-*/bin/alloy` (exit 0 + silence = OK).
 - Once this lands, the retention snippet above finally has something to prune; first load backfills
   only the last `max_age` (12 h) of journal — expect a burst on first start, quiet after.
+- **CamelCase pitfall (2026-11-10):** Traefik's JSON field names are `RequestPath`, `ClientHost`,
+  `DownstreamStatus`, `RequestMethod`. The live `stage.json` maps `request_path = "request_path"` —
+  a key that does not exist — so `request_path` has silently NEVER been a label in Loki (verified:
+  zero label values, traefik streams = healthy 113/day). Do NOT "fix" the key into `stage.labels`:
+  path-as-label is the unbounded-cardinality anti-pattern. Resolution: delete the dead line; query
+  paths at read time via `| json | RequestPath=~"/remote.php/.*"`.
 - **Params pitfall (2026-11-10):** this Loki build rejects `now`/`-10m` for `start`/`end`
   (`strconv.ParseInt` error) — use RFC3339 or ns-integers:
   `--data-urlencode "start=$(date -u -d '10 min ago' +%FT%TZ)" --data-urlencode "end=$(date -u +%FT%TZ)"`.
