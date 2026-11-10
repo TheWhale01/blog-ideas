@@ -11,6 +11,20 @@ sources: []
 
 The monitoring stack lives in `sys/services/monitoring/` and is composed by `sys/services/monitoring/default.nix`.
 
+## Alloy vs Prometheus — who does what (owner Q 2026-11-09)
+
+Alloy *can* scrape metrics (`prometheus.scrape`), which tempts "drop Prometheus" — but Prometheus
+on Erebos holds three roles, one substitutable at best: **(1) scraper** — Alloy could take it over,
+but Alloy has no TSDB/PromQL: scraped data must remote_write to *something*, so Prometheus (or a
+new Mimir/VM) stays; on a single node this adds a hop, removes nothing. **(2) rule engine** —
+every alert (ServiceCrashed, DiskSpaceLow, ScrapeTargetDown, …) is Prometheus rules → Alertmanager
+→ matrix-alertmanager → @erebot; Alloy evaluates no rules. **(3) Grafana's queryable datasource** —
+all PromQL panels hit the Prometheus API. Current canonical split: Alloy = log pipeline, Prometheus
+= metrics TSDB + rules. The Alloy-as-agent pattern genuinely pays off when the fleet grows: run
+Alloy on strategos scraping journal + node metrics and remote_write/loki.push TO Erebos'
+Prometheus/Loki — Erebos stays the central query/alert/visualize tier, strategos runs no TSDB.
+That's the shape for the Drive-Health (smartctl on bare metal) and multi-host log plans.
+
 ## Components
 
 | File | Tool | Role |

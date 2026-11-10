@@ -690,3 +690,7 @@ tags: [meta, log]
 ## 2026-11-09 — journal-logs v2: removed search filter (highlight pitfall)
 
 - Owner reported full log lines sur-highlighted orange/yellow. Cause: Grafana logs panel highlights the matched substring of filter queries; the bonus regex textbox defaulted to ".*", matching every line end-to-end. Fix v2: dropped the search variable and "|~ \"$search\"" from both panel exprs (selector-only + count_over_time) — selector-only renders unhighlighted, same as Explore browsing. Lesson for any filter-box dashboard: never default a regex filter to .* in a logs panel; use an empty-match trick or omit the feature.
+
+## 2026-11-09 — roles clarified: Alloy ≠ Prometheus replacement (new monitoring.md section)
+
+- Owner asked whether Alloy's scrape capability obsoletes Prometheus. Answer: no — Prometheus holds TSDB+PromQL, rule engine (alert chain to @erebot), and Grafana datasource; Alloy substituting scraping would still remote_write to a store. Documented as 'Alloy vs Prometheus' section in monitoring.md with the future architecting hook: when strategos joins the fleet, Alloy-on-agent + remote_write to Erebos is the right pattern (also for Drive-Health smartctl exporter).
