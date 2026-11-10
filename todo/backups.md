@@ -9,9 +9,38 @@ sources: ["owner spec 2026-11-07; tool decision borg 2026-11-07; paths verified 
 
 # Backups — Borg to strategos
 
-- **Status**: In progress — tool **decided (Borg)**, config below ready to paste
-- **Priority**: Critical
+- **Status**: CORRECTED + FINAL SNIPPETS DELIVERED 2026-11-10 (validated option-by-option against
+  pinned module `b40629e/nixos/modules/services/backup/borgbackup.nix`, 967 lines). Owner applies.
+  The 2026-11-07 draft below was superseded — its option names (`environmentFile`, flat `prune.keep-daily`,
+  `initializeAllRepositories`, `preCheckForCreate`) DO NOT EXIST in this module revision. See CHAT
+  snippets / corrected config here:
+- **Priority**: 🔴 Critical-elevated — sdb dying (see [[ideas/drive-health-monthly-newsletter]] postmortem)
+  and **no backup exists yet**: first borg run = the rescue copy + damage scan.
 - **Parent**: [[todo/index]]
+
+## Corrections vs the 2026-11-07 draft (all module-verified 2026-11-10)
+
+1. `environmentFile` → doesn't exist; secrets go via `environment` attrset:
+   `BORG_PASSCOMMAND = "cat /run/agenix/borg-passphrase"` (passphrase never in store),
+   `BORG_RSH = "ssh -i <agenix key path> -o UserKnownHostsFile=/etc/borgbackup/strategos-known_hosts"`.
+2. Prune: `prune.keep = { daily = 7; weekly = 5; monthly = 12; };` (nested; mkKeepArgs renders `--keep-*`).
+3. Init: `doInit` (default true) auto-`borg init --encryption repokey-blake2` on first run.
+4. Path guards: use a `preHook` `test -d` (no `preCheckForCreate` option).
+5. **strategos repos module prepends the restriction itself**: `authorizedKeys = [ "<bare pubkey>" ]` —
+   do NOT hand-write `command="borg serve…"` prefixes (double-restriction breaks auth).
+6. **Immich DB reality**: `services.immich` module injects `ensureDatabases = ["immich"]` into the
+   HOST postgres (verified: no `immich-database.service` unit exists; `immich-server` + shared
+   `postgresql.service` confirmed via journal). `pg_dump -Fc immich` on the host cluster is correct.
+7. Nextcloud: container bind `/data/nextcloud:/var/www/html` confirmed; DB type = sqlite vs the
+   vestigial pg `nextcloud` db — UNRESOLVED, preHook handles both branches; confirm with
+   `podman exec -u www-data nextcloud php occ config:get database:type`.
+8. **NEW HARD REQUIREMENT**: strategos has ONLY an SD-card root (cloud-image placeholder UUID) —
+   the borg repo needs a dedicated USB disk; SD card is not a backup medium.
+9. `appendFailedSuffix = true`: archives become official only after a fully-successful create —
+   ideal on a dying drive (partial archives stay `.failed` instead of masquerading as backups).
+10. Failure alerting is FREE: job unit reaching `state=failed` is caught by the existing generic
+    `ServiceCrashed` rule — borg WARNINGS (exit 1) are ignored by the module by default; the
+    journal still lists unreadable files = the damage map (`borgbackup-job-… | grep -i error`).
 
 ## Owner-confirmed facts (2026-11-07)
 
