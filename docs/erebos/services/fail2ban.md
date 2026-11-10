@@ -80,10 +80,20 @@ fail2ban-client status sshd            # banned IPs, fail counts
 iptables -nL f2b-sshd; ip6tables -nL f2b-sshd
 journalctl -u fail2ban --since today
 ```
-Loki: `{unit="fail2ban.service"}`; optional GeoIP on bans — clone the sshd `stage.match` in
-[[docs/erebos/monitoring]] to selector `{unit="fail2ban.service"}` with
-`stage.regex { expression = "Ban (?P<client_ip>[0-9a-fA-F.:]+)" }` → geoip → country label
-("countries we banned" map; alert seed for [[ideas/intrusion-detection]]).
+Loki: `{unit="fail2ban.service"}`. The ban-geo pipeline **landed with this same commit** (`9b24091`):
+a `stage.match` on `{unit="fail2ban.service"}` in alloy.nix extracts `Ban <IP>` → geoip →
+`geoip_country_name` label (`Unban` lines don't match the case-sensitive `Ban ` pattern, so un-bans
+never double-count). The geoip dashboard carries a third geomap panel, **"Banned by Country (SSH)"**:
+`sum by (geoip_country_name) (count_over_time({unit="fail2ban.service", geoip_country_name=~".+"}[$__range]))`.
+It shows No data until the FIRST ban happens — expected, not a failure (see semantics above).
+Deterministic end-to-end smoke test (safe, reversible):
+`sudo fail2ban-client set sshd banip 8.8.8.8` → within ~30s the panel gains a United States tile
+(`{unit="fail2ban.service", geoip_country_name="United States"}` in Loki) →
+`sudo fail2ban-client set sshd unbanip 8.8.8.8`.
+Semantics: the panel counts **ban events**, not distinct IPs — a returning offender re-banned
+monthly counts repeatedly; Loki can't distinct-count an unlabeled field, and promoting `client_ip`
+to a label to enable that is the cardinality anti-pattern we avoided. Alert seed for
+[[ideas/intrusion-detection]].
 
 ## Related
 - [[docs/erebos/monitoring]] — journal→Loki pipeline (fail2ban logs ride it)
