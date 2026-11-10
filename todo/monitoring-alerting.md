@@ -11,8 +11,7 @@ sources: ["live inspection + end-to-end owner confirmation 2026-11-07 (erebos 79
 
 - **Status**: Core **complete & owner-confirmed** (2026-11-07, "all tests worked perfectly") —
   this note now tracks only the remainder.
-- **Priority**: High (what's left is hardening + polish; the bind item below is the last open
-  security thread → [[queries/security-audit]])
+- **Priority**: Medium (core + security threads closed; remainder = soak, hygiene, optional alerts)
 - **Parent**: [[todo/index]]
 
 ## Current state (live)
@@ -27,13 +26,16 @@ Promtool unit-tested before deploy, firing correctly, `send_resolved` on. Webhoo
 **Log pipeline now LIVE (was dark since promtail's nixpkgs removal)** — verified on-host 2026-11-09:
 journald → **Alloy** (store-path config via `pkgs.writeText`, `configPath`, `e0f8d57` lineage) →
 Loki :3100 — 217k+ lines received; streams: `{job="systemd-journal", host="erebos", unit=…}`;
-traefik JSON access logs parsed into `status`/`method`/`request_path` labels (+`client_ip` extracted;
-geoip stage parked — no mmdb on host). Prometheus scrape jobs: prometheus, node_exporter,
+traefik JSON access logs parsed into `status`/`method`/`request_path` labels (+`client_ip` extracted);
+**GeoIP LIVE** (`1966884`/`9b24091`): `stage.geoip` on traefik + sshd + fail2ban `Ban <IP>` streams,
+`geoip_country_name` label + `geo_country`/`geo_city` structured metadata; DB auto-refreshed by
+`geoipupdate.timer` (verified active, next run 2026-11-16). Prometheus scrape jobs: prometheus, node_exporter,
 authentik, traefik, **alloy** (12345), **loki** (3100) — last two verified returning series.
 ScrapeTargetDown therefore now auto-covers collector death. Grafana: Prometheus+Loki datasources
 provisioned; terranix-managed dashboards = node_exporter (1860) + traefik (17346); **Journal Logs
-dashboard = repo JSON (`sys/services/monitoring/dashboards/systemd-journal.json`, Grafana 13
-kind/spec) manually imported — owner declined terraform/Nix auto-import for dashboards**;
+dashboard now terraform-provisioned** (`3c69878`, after the v2→classic schema fix — owner confirmed live);
+Grafana-managed dashboards-as-code = node_exporter + traefik (live catalog fetch) + geoip fork +
+systemd-journal fork (`replaceStrings` DS binding);
 terranix's 14055 entry removed.
 
 ## What's left
@@ -46,15 +48,27 @@ terranix's 14055 entry removed.
       secret-gated; worst case alert noise/silence, not data). Snippet stays on file in
       [[docs/erebos/monitoring]] "Loopback binds" if posture changes. Jellyfin `:8096` → [[queries/security-audit]].
 - [x] ~~Grafana UI cleanup~~ — done by owner manually 2026-11-10 (14055 + orphaned authentik).
-- [ ] **Alert-link suppression** — snippet FINAL + source-verified upstream 0.9.0 + merge-proven
-      on live flake; owner applies: [[docs/erebos/services]] now carries the exact one-liner.
+- [x] ~~Alert-link suppression~~ — APPLIED `dc499f2` (link removed from alert message + room
+      mention removed; verified by agent 2026-11-10).
+- [x] ~~GeoIP enrichment~~ — LIVE (`1966884` + fail2ban branch `9b24091`); ban-map panel in fork;
+      smoke test of first ban still worth doing (`fail2ban-client set sshd banip 8.8.8.8` → US tile →
+      `unbanip`) — see [[docs/erebos/services/fail2ban]].
 - [ ] **Noise guard soak** — after ~1 week, confirm daily `update-containers` restarts stay absorbed
       by `for: 5m` (no storm in the room); keep Grafana unified alerting OFF: single alert brain.
 - [ ] **Issues room read-only** (bot-only writes) → [[todo/issues-room-readonly]]
-- [ ] Optional polish: geoip (needs MaxMind-keyed mmdb → uncomment stage), pipeline-health alerts
-      (`alloy_config_last_load_successful`, `loki_write_dropped_entries_total` rules), drop
-      `request_path` from traefik `stage.labels` (high-cardinality vs Loki's index model),
-      `host = "${config.networking.hostName}"` for stage parity.
+- [ ] **Drop `request_path` from traefik `stage.labels`** — STILL OPEN and now the biggest stream
+      multiplier on the host (every URL path of every visitor = a distinct stream). Everything the
+      dashboards need is covered by `unit`/`status`/`method`/country; path filtering works via
+      `| json` / line filters at query time instead.
+- [x] ~~host label parity~~ — resolved by owner hardcoding `host = "erebos"` in the journal source;
+      all journal streams share it (equivalent in effect).
+- [ ] Pipeline-health alerts: `alloy_config_last_load_successful`, `loki_write_dropped_entries_total`
+      rules (cheap insurance that silent log-pipeline death pages you).
+- [ ] Post-apply render check on the geoip fork's duplicate gridPos/`id=7` (API persistence VERIFIED
+      verbatim on throwaway 13.0.12; display-layer reflow unresolved) → [[docs/erebos/monitoring]] pitfall.
+- [ ] fail2ban decisions → [[todo/fail2ban-tuning]]: aggressive-mode upgrade (needs home-IPv6/wt0
+      ignoreIP FIRST — today's ignoreIP does NOT cover the login prefix `2a02:842a:3540:4201::…`),
+      first web jail over traefik JSON lines.
 - [ ] Later: SMART rules → [[ideas/drive-health-monthly-newsletter]]; `livekit`/`homepage-dashboard`/
       seerr/arr-stack are deliberately NOT in the ServiceOffline whitelist — add to the regex in
       `todo/alert-rules.yml` if you want them paged.

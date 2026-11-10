@@ -32,7 +32,7 @@ tags: [meta, index]
 ## Todo
 > Changes to existing config/code on Erebos (build-from-scratch items — incl. new workflows/pipelines — go in Ideas).
 - [[todo/index]] – Hub: all backlog items by priority
-- [[todo/monitoring-alerting]] – Alerting LIVE ✅ · 9 rules deployed, webhook secret rotated + agenix-only (`85c5ebe`); open: loopback binds, Alert-link suppression
+- [[todo/monitoring-alerting]] – Alerting LIVE ✅ · 9 rules ok, alert-links suppressed (`dc499f2`), GeoIP live, journal dashboard terraform'd; open: request_path label drop, pipeline-health rules, noise soak (~Nov 14), ban-map smoke
 - [[todo/issues-room-readonly]] – Not started · bot-only writes in the issues room; v12 creator-PL caveat decides approach
 - [[todo/backups]] – In progress · Borg chosen; full NixOS job snippet + strategos repo config + sqlite/pg_dump hooks written; weekly Sun 03:30, prune 7d/5w/12m
 - [[todo/age-keys-to-strategos]] – High · agenix identity keys have no offline copy; passphrase-archive onto strategos + round-trip decrypt drill
