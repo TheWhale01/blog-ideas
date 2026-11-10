@@ -699,3 +699,9 @@ tags: [meta, log]
 
 - Owner gave the Grafana-13 native (kind/spec, vizConfig 13.0.12) Journal Logs JSON and asked for it as Nix. Produced sys/terraform-suitable journal-logs.nix = a plain attrset mirroring the JSON; wire with config_json = builtins.toJSON (import ./journal-logs.nix). Verified faithful: builtins.toJSON output re-normalized (jq -S) is byte-identical to the owner's export (diff clean).
 - Pattern: any Grafana JSON (incl. new kind/spec format) → Nix attrset → builtins.toJSON — the dashboard becomes editable Nix data (DRY with vars/interpolation), same terranix grafana_dashboard resource. Caveat noted: this exported JSON binds queries by group="loki" with NO explicit panel datasource field — relies on default/explicit binding; if a panel errors after apply, add datasource {name="Loki"} at the query-group level. Owner applies; agent made no repo change.
+
+## 2026-11-10 — state sync: monitoring pipeline after e0f8d57 (dashboards stay manual)
+
+- Repo state confirmed: e0f8d57 keeps sys/services/monitoring/dashboards/systemd-journal.json (Grafana 13 kind/spec) and REMOVED terranix 14055 entries. Owner decision recorded: dashboard import is manual (UI); node_exporter+traefik remain terranix-managed.
+- todo/monitoring-alerting rewritten. LIVE: Alloy→Loki pipeline (217k+ lines verified), scrape jobs incl. alloy+loki (verified returning series), Alertmanager loopback-bound, 9 rules covering the new jobs via ScrapeTargetDown, ServiceOffline whitelist includes alloy.
+- What's left, reprioritized: (1) Loki retention NOT in loki.nix — unbounded disk growth (snippet ready in docs/erebos/monitoring); (2) remaining loopback binds Loki :3100 + bridge :3004 (auth_enabled=false makes :3100 a mutation surface on podman0); (3) Grafana cleanup: 14055 if it ever applied + orphaned authentik 14837; (4) ALERT_LINKS suppression env; (5) 1-week noise soak; optionals: geoip mmdb, pipeline-health alerts, request_path cardinality, host interpolation.

@@ -15,7 +15,7 @@ sources: []
 > One file per item, ordered by impact. Statuses are mirrored here; details live in each file.
 
 ## Critical
-- [[todo/monitoring-alerting]] — Core DONE (9 rules live, delivery confirmed, webhook secret rotated agenix-only in `85c5ebe`); open: loopback binds, Alert-link suppression, Loki panels
+- [[todo/monitoring-alerting]] — Core DONE (9 rules live, delivery confirmed, secret rotated); log pipeline **LIVE** (Alloy→Loki 217k+ lines, alloy+loki scrapes verified); open: Loki retention not applied, loopback binds for Loki/bridge, Grafana cleanup (14055/orphan authentik), ALERT_LINKS, soak
 - [[todo/backups]] — In progress · **Borg decided**; declarative job config ready to paste (2 PG dumps + Nextcloud-SQLite quiet hook) → strategos; git-for-archives answered NO
 
 ## High

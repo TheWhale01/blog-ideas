@@ -1,10 +1,10 @@
 ---
 title: Implement Proper Monitoring & Alerting
 created: 2026-10-15
-updated: 2026-11-07
+updated: 2026-11-10
 type: todo
 tags: [nixos, erebos, todo, improvement, infrastructure]
-sources: ["live inspection + end-to-end owner confirmation 2026-11-07 (erebos 790c16a, 85c5ebe)"]
+sources: ["live inspection + end-to-end owner confirmation 2026-11-07 (erebos 790c16a, 85c5ebe); log-pipeline go-live verified on-host 2026-11-09/10 (erebos abc3f49..e0f8d57)"]
 ---
 
 # Implement Proper Monitoring & Alerting
@@ -17,25 +17,45 @@ sources: ["live inspection + end-to-end owner confirmation 2026-11-07 (erebos 79
 
 ## Current state (live)
 
-Prometheus rules → Alertmanager 0.31.1 → matrix-alertmanager 0.9.0 bridge → ops room as **@erebot**
-(appservice bot). **9 rules / 3 groups**: `systemd_services` (crash catch-all + 25-unit ServiceOffline
-whitelist), `host_resources` (disk 10 %/5 %, read-only-fs canary, memory, CPU, reboot),
-`monitoring_self` (ScrapeTargetDown). Promtool unit-tested before deploy, firing correctly,
-`send_resolved` on. Webhook secret is **agenix-only** (envsubst placeholder, rotated in `85c5ebe`).
-Delivery verified twice: server-side (journal event IDs) and client-side (owner's eyes).
+Prometheus rules → Alertmanager 0.31.1 (**loopback-bound since `11a4979`** ✅) → matrix-alertmanager
+0.9.0 bridge → ops room as **@erebot** (appservice bot). **9 rules / 3 groups**: `systemd_services`
+(crash catch-all + 25-unit ServiceOffline whitelist — includes `alloy`), `host_resources`
+(disk 10 %/5 %, read-only-fs canary, memory, CPU, reboot), `monitoring_self` (ScrapeTargetDown).
+Promtool unit-tested before deploy, firing correctly, `send_resolved` on. Webhook secret is
+**agenix-only** (envsubst placeholder, rotated in `85c5ebe`). Delivery verified twice.
+
+**Log pipeline now LIVE (was dark since promtail's nixpkgs removal)** — verified on-host 2026-11-09:
+journald → **Alloy** (store-path config via `pkgs.writeText`, `configPath`, `e0f8d57` lineage) →
+Loki :3100 — 217k+ lines received; streams: `{job="systemd-journal", host="erebos", unit=…}`;
+traefik JSON access logs parsed into `status`/`method`/`request_path` labels (+`client_ip` extracted;
+geoip stage parked — no mmdb on host). Prometheus scrape jobs: prometheus, node_exporter,
+authentik, traefik, **alloy** (12345), **loki** (3100) — last two verified returning series.
+ScrapeTargetDown therefore now auto-covers collector death. Grafana: Prometheus+Loki datasources
+provisioned; terranix-managed dashboards = node_exporter (1860) + traefik (17346); **Journal Logs
+dashboard = repo JSON (`sys/services/monitoring/dashboards/systemd-journal.json`, Grafana 13
+kind/spec) manually imported — owner declined terraform/Nix auto-import for dashboards**;
+terranix's 14055 entry removed.
 
 ## What's left
 
-- [ ] **Loopback binds** — Alertmanager `:9093`, bridge `:3004`, Loki `:3100` still listen on `*`
-      (live `ss` 2026-11-07). `podman0` is a trusted network ⇒ any container breach could currently
-      silence Alertmanager or read Loki. One `listenAddress = "127.0.0.1"` per service in
-      `sys/services/monitoring/*`. (Jellyfin `:8096` tracked in [[queries/security-audit]].)
+- [ ] **Loki retention NOT applied** — 1-month snippet (compactor + limits_config, both required on
+      3.x) is in [[docs/erebos/monitoring]] but absent from `loki.nix`: disk growth is unbounded.
+- [ ] **Loopback binds (remainder)** — Alertmanager done; **Loki `:3100`** and bridge `:3004` still
+      listen on `*` (live `ss` 2026-11-07). `podman0` is trusted ⇒ container breach could silence
+      the bridge or mutate/delete Loki (auth_enabled=false). Bind via `server.http_listen_address` /
+      `grpc_listen_address` (loki) + module listen option (bridge). Jellyfin `:8096` → [[queries/security-audit]].
+- [ ] **Grafana UI cleanup** — 14055 (if it applied before removal) and orphaned authentik 14837
+      (terranix resource was renamed to traefik in `11a4979`; the dashboard itself is now unmanaged)
+      → delete in UI or re-add a managed entry deliberately.
 - [ ] **Alert-link suppression** — one-line `ALERT_LINKS` env entry, not yet applied (unit env
       verified unset). Snippet: [[docs/erebos/services]] "Maintenance recipes & Matrix gotchas".
-- [ ] **Loki LogQL error panels** (Traefik 5xx, Nextcloud) on the Grafana side.
 - [ ] **Noise guard soak** — after ~1 week, confirm daily `update-containers` restarts stay absorbed
       by `for: 5m` (no storm in the room); keep Grafana unified alerting OFF: single alert brain.
 - [ ] **Issues room read-only** (bot-only writes) → [[todo/issues-room-readonly]]
+- [ ] Optional polish: geoip (needs MaxMind-keyed mmdb → uncomment stage), pipeline-health alerts
+      (`alloy_config_last_load_successful`, `loki_write_dropped_entries_total` rules), drop
+      `request_path` from traefik `stage.labels` (high-cardinality vs Loki's index model),
+      `host = "${config.networking.hostName}"` for stage parity.
 - [ ] Later: SMART rules → [[ideas/drive-health-monthly-newsletter]]; `livekit`/`homepage-dashboard`/
       seerr/arr-stack are deliberately NOT in the ServiceOffline whitelist — add to the regex in
       `todo/alert-rules.yml` if you want them paged.
