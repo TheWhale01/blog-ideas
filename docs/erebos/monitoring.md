@@ -172,7 +172,29 @@ Three layers, no Cloud required:
      static_configs = [{ targets = [ "127.0.0.1:12345" ]; }]; }
    ```
    The existing `ScrapeTargetDown` (`up == 0`) rule then covers collector death automatically.
-2. **Official mixin dashboards (provisioned).** `grafana/alloy` → `operations/alloy-mixin/rendered/dashboards/`
+2. **Dashboards (owner choice: managed via terranix/grafana-provider, not `provision.dashboards`).**
+   `sys/terraform/grafana.nix` `resource.grafana_dashboard.*` — dashboards pulled with `data.http`
+   from grafana.com or `builtins.readFile` of a repo JSON.
+Status after `11a4979`: `alloy` scrape job
+   + `vars.alloy.port` ✅ landed (verified `nix eval`: jobs = prometheus, node_exporter, authentik,
+   traefik, alloy); journal `host` label fixed to `erebos` (hardcoded — on erebos-stage the same
+   config would tag stage logs `host=erebos`; `config.networking.hostName` avoids that); dashboard
+   **14055 added despite k8s-specific verdict** — DS binding works by luck (literal names
+   "Prometheus"/"Loki" == provisioned DS names), but ~20/22 panels stay No-data; the 5 real
+   loki_* panels need the **still-missing loki scrape job**:
+   ```nix
+   { job_name = "loki";
+     static_configs = [{ targets = [ "127.0.0.1:${toString config.services.loki.configuration.server.http_listen_port}" ]; }]; }
+   ```
+   Also in `11a4979`: the `authentik` dashboard resource was **renamed** to `traefik` (14837 →
+   17346) — the previously managed authentik dashboard is now orphaned in Grafana; to keep both,
+   add a second `grafana_dashboard.authentik` entry instead of having renamed. Recommended
+   replacement for 14055: minimal custom `loki-overview.json` (10 panels: distributor
+   lines/bytes, ingester streams + append failures, alloy journal-read + write-dropped, two LogQL
+   log panels; metric names verified against live Alloy /metrics) attached in chat 2026-11-09,
+   wire with `config_json = builtins.readFile ./loki-overview.json;`. Note: UI edits to
+   provider-managed dashboards collide on next `tofu apply`.
+   Original mixin route (`grafana/alloy` → `operations/alloy-mixin/rendered/dashboards/`
    ships ready JSON. For this pipeline: `alloy-resources` (CPU/mem/restarts), `alloy-controller`
    (component health + evaluation time), `alloy-loki` (journal lines read, write latency, dropped
    entries). All panel exprs use raw exported metric names (spot-checked against a live
