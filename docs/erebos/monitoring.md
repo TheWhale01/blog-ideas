@@ -18,7 +18,7 @@ The monitoring stack lives in `sys/services/monitoring/` and is composed by `sys
 | `prometheus.nix` | Prometheus | Time-series metrics and alerting rules |
 | `grafana.nix` | Grafana | Dashboards, visualization, alerting UI |
 | `loki.nix` | Loki 3.7.9 | Log aggregation + storage (filesystem chunks; **collector-independent**) |
-| `alloy.nix` (module below — apply manually) | **Alloy** (promtail removed from nixpkgs — EOL, module assertion) | Log shipping. Repo file is still `promtail.nix`, `enable`d with **no config** → Loki zero series until the patch is applied. Final collector config: next section (validated with `nix eval` + `alloy validate`/`fmt`). |
+| `alloy.nix` (landed `abc3f49`; store-path mode `configPath = pkgs.writeText`) | **Alloy** (promtail removed from nixpkgs — EOL, module assertion) | Log shipping. Repo file is still `promtail.nix`, `enable`d with **no config** → Loki zero series until the patch is applied. Final collector config: next section (validated with `nix eval` + `alloy validate`/`fmt`). |
 
 ## Log collection — Alloy Nix module (validated 2026-11-09; owner applies)
 
@@ -36,9 +36,11 @@ whatever `/etc/alloy/*.alloy` files still exist). The module also grants the ser
 `systemd-journal` supplementary group automatically, and **fails the whole initial load** if a
 referenced file (e.g. the geoip mmdb) is missing — hence the crash-loop warnings below.
 
-The validated module below replaces `sys/services/monitoring/promtail.nix` (rename it to
-`alloy.nix` and repoint `monitoring/default.nix`). Application is **owner-driven** — the agent
-delivers snippets, not changes. It renders Alloy's River config from Nix the way `mas.nix`
+The validated module below landed as `sys/services/monitoring/alloy.nix` in `abc3f49`.
+Application remains **owner-driven** — the agent delivers snippets, not changes.
+**Review note 2026-11-09**: the pushed copy has `host = "127.0.0.1"` in the journal labels
+(transcription slip — should be `host = "${config.networking.hostName}"` → `erebos`); everything
+else is byte-equivalent to the validated config (`alloy validate` OK on the built store file). It renders Alloy's River config from Nix the way `mas.nix`
 renders YAML — values interpolated from module options rather than hardcoded:
 
 - `loki.write "default"` push URL ← `config.services.loki.configuration` (currently

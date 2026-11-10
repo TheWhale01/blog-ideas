@@ -664,3 +664,7 @@ tags: [meta, log]
 ## 2026-11-09 — Alloy in Grafana: scrape + official mixin dashboards + UI (verified path)
 
 - Added 'Visualising Alloy in Grafana' section to docs/erebos/monitoring.md: scrape job alloy 127.0.0.1:12345 (loopback is Alloy's DEFAULT, confirmed from docs + live run); provision grafana/alloy operations/alloy-mixin/rendered/dashboards (resources/controller/loki) — panel metric names spot-checked against live 1.12.2 /metrics (raw exports, no mixin rules dependency); optional ConfigLoadFailed/LogWriteDropping rules; ScrapeTargetDown already covers collector death; Cloud-only Alloy Health/app explicitly excluded (no OSS grafana-alloy-app plugin — API 404); built-in UI via SSH tunnel, no Traefik (unauthed). Dashboards + snippets delivered to owner in chat; owner applies.
+
+## 2026-11-09 — owner push verified: alloy.nix landed (abc3f49), one transcription bug found
+
+- git fetch + worktree eval: configPath renders to /nix/store/nifg...-config.alloy, alloy validate exit 0 on the built file. Body identical to validated reference except labels: host = "127.0.0.1" (hardcoded) instead of config.networking.hostName → would poison {host="erebos"} queries and collide with future strategos streams. Fix = one line, owner applies. Grafana layer-1 (scrape job 'alloy' 127.0.0.1:12345) NOT in the push (+2 prometheus lines were alertmanager loopback bind [good hardening] + matrix-alertmanager mention=true); dashboards not provisioned yet. Wiki table + review note updated.
