@@ -70,8 +70,10 @@ terranix's 14055 entry removed.
       rules (cheap insurance that silent log-pipeline death pages you).
 - [ ] Post-apply render check on the geoip fork's duplicate gridPos/`id=7` (API persistence VERIFIED
       verbatim on throwaway 13.0.12; display-layer reflow unresolved) → [[docs/erebos/monitoring]] pitfall.
-- [ ] drive_health alert group + smartd/exporter snippets delivered (2026-11-10, see
-      [[ideas/drive-health-monthly-newsletter]]) — owner applies; +5 rules → 17 total after deploy.
+- [x] ~~drive_health group~~ LIVE 2026-11-10 ~22:21 (17 rules ok, smartctl scrape up=1).
+      **First strike: sdb confirmed failing** (280 realloc/207 pending/190 uncorrectable, WD health-byte
+      lies PASSED → sector rules caught it) — see [[ideas/drive-health-monthly-newsletter]] postmortem;
+      NOTE: smart.nix/rules still unpushed (prod ahead of repo tip 98a56d4).
 - [ ] fail2ban decisions → [[todo/fail2ban-tuning]]: aggressive-mode upgrade (needs home-IPv6/wt0
       ignoreIP FIRST — today's ignoreIP does NOT cover the login prefix `2a02:842a:3540:4201::…`),
       first web jail over traefik JSON lines.
@@ -90,7 +92,7 @@ against the rendered 12-rule output 2026-11-10).
 ```bash
 PT=$(ls /nix/store/*-prometheus-*-cli/bin/promtool | head -1)
 $PT check rules todo/alert-rules.yml && $PT test rules todo/alert-rules.test.yml   # BEFORE deploy
-curl -s 127.0.0.1:9090/api/v1/rules | grep -o '"health":"[^"]*"' | sort | uniq -c   # AFTER apply (expect 12x ok)
+curl -s 127.0.0.1:9090/api/v1/rules | grep -o '"health":"[^"]*"' | sort | uniq -c   # AFTER apply (expect 17x ok)
 ```
 
 Guard logic — do not regress:

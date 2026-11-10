@@ -181,3 +181,38 @@ smart.nix not pushed; applied state has smartd running but **prometheus-smartctl
 (no unit, no :9633, no journal lines) — exporter stanza missing or service failed. Needs:
 `systemctl status prometheus-smartctl-exporter` + push the file; then scrape job + rules + dashboard
 can be validated (17-rule set already promtool-verified pending apply).
+
+## First-strike postmortem — sdb confirmed dead-on-feet (2026-11-10, first 45 min of the pipeline)
+
+Full fleet read (exporter `9633` up 22:21, 17 rules loaded, up=1):
+
+| disk | POH | realloc | pending | uncorr | verdict |
+|---|---|---|---|---|---|
+| sda WD20EARX | 27,518 h | 0 | 0 | 0 | 🟢 healthy |
+| sdb WD6400AAKS-41H2B0 (Caviar **Blue**) | 39,016 h | **280** (160 events) | **207** | **190** | 🔴 replace now — error log 556 events, latest cluster same LBA |
+| sdc WD10EZEX | 56,074 h | 0 | 0 | 0 | 🟡 oldest runtime, clean — watch, 2nd replacement candidate |
+| sdd Kingston SA400S3 (root) | 19,709 h | 0 | 0 | 0 | 🟢 life-left 67 %, bad-block/program/erase all 0; Nov-9 kernel I/O error = ONE SATA PHY/CRC blip (link, not media) — reseat cable |
+| sde WD1001FALS | 49,847 h | 0 | 0 | 0 | 🟡 old + **UDMA_CRC=41** (flaky cable → fake deaths) — reseat/swap cable €5 |
+| sdf ST8000DM004 8 TB SMR | (packed attr — see note) | 0 | 0 | 0 | 🟢 counters clean; POH via `smartctl -A /dev/sdf` (exporter float mangles Seagate packed attrs — `1.08e16` = garbage) |
+
+**Key lessons (documented as pitfalls):**
+1. **WD health-byte lie:** `smartctl_device_smart_status` reports PASSED (1) for sdb despite everything —
+   older WDs never assert FAILED. `DiskSmartFailing` is decorative on this fleet; the sector-attribute
+   rules + smartd wall are the real tripwires (both fired today within 90 s of first boot). Do not
+   relax the sector rules on the strength of a PASSED.
+2. The 190 Offline_Uncorrectable likely surfaced TODAY because smartd `-o on` started Auto Offline
+   Data Collection (SCT state confirms it executing) — the drive had been hiding them; `-t long`
+   (started 22:25, completes Wed 00:43, 136 min) will enumerate the rest. Check
+   `sudo smartctl -l selftest /dev/sdb` after 00:43 — expect possibly more pending→reallocated churn.
+3. Packed-attribute vendors (Seagate) need `smartctl` CLI truth for POH — exporter float64 loses low bits.
+
+**Actions pending owner (tonight/this week):**
+- [ ] ~22:54: three Matrix alerts expected on sdb (uncorrectable crit + pending + realloc) — acknowledge, silence repeat until resolved.
+- [ ] Run the borg job NOW if deployed (else: this week's data-safety headline is "borg not yet live" —
+      verify what on the pool is actually backed up; immic/nextcloud/vaultwarden are the borg scope,
+      bulk media is single-copy and includes any file living on sdb's dead LBAs).
+- [ ] Order replacement SATA ≥ 1 TB (suggest TWO: sdb now; sde pre-emptive — 50k h + 41 CRC events).
+- [ ] Reseat SATA cables sdd + sde while case open (both show link errors, not media errors).
+- [ ] After 00:43: paste `smartctl -l selftest /dev/sdb` tail → update pending/uncorrectable deltas here.
+- [ ] Push `smart.nix` + `config.nix` rules additions — production is running SMART config that exists
+      only in your working tree right now (repo tip was 98a56d4 at 22:30).
