@@ -682,3 +682,7 @@ tags: [meta, log]
 ## 2026-11-09 — dashboard question: no journal-native pre-made exists (search closed)
 
 - Owner asked for an off-the-shelf journal-only Loki dashboard. Exhaustive check: grafana.com families 12611/18042/24574/20254/13186 all k8s/docker-shaped (variable/expr JSON evidence, incl. hardcoded DS uid); grafana/alloy-scenarios systemd-journal + linux dirs = config only, no dashboards; Alloy Health = Cloud-only. Conclusion recorded in monitoring.md: custom loki-overview.json stays the route; 18042 identified as the mechanically-forkable base (vars → job/host/unit) if community layout desired. Side note: scenarios' config.alloy independently mirrors Erebos' journal pipeline choices.
+
+## 2026-11-09 — journal-logs dashboard built & query-verified (dropdown per application)
+
+- Owner asked for a simple dashboard: application dropdown, empty/All = every app. Built journal-logs.json (uid erebos-journal-logs): Loki var "unit" label_values({job="systemd-journal"}, unit), includeAll+multi, allValue ".*"; stacked timeseries sum by (unit) count_over_time [1m] + logs panel, both honoring a "search" textbox regex var (default .*). Every query executed against a live grafana-loki 3.6.7 (scratch): label API returns unit values; All selector includes unit-less streams (unit=~".*" matches absent label); filtered selector returns only chosen unit. Datasource bound by literal names Prometheus/Loki (same proven mechanism). Terranix: resource.grafana_dashboard.journal_logs.config_json = builtins.readFile ./journal-logs.json.
