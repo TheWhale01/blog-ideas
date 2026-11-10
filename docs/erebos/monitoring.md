@@ -272,10 +272,10 @@ committed; the terraform CLI is just the executor of the generated config. Conte
   the geoip fork is substituted **at Nix-eval time** with
   `builtins.replaceStrings [ "\${DS_LOKI}" ] [ (toString vars.loki.uid) ]` over
   `builtins.readFile ./dashboards/geoip.json`. Both render concrete UIDs into `config_json`.
-- `systemd_journal` resource is COMMENTED OUT: the committed `dashboards/systemd-journal.json` is in
-  the new Grafana unified-dashboard **kind/spec (v2)** format (UI export) and the terraform provider's
+- `systemd_journal` resource was originally COMMENTED OUT: the UI-exported `dashboards/systemd-journal.json`
+  was in the new Grafana unified-dashboard **kind/spec (v2)** format while the terraform provider's
   `grafana_dashboard` path POSTs the legacy API → "issue with v2 API" commit note.
-  **Resolution (2026-11-10, delivered, owner applies):** convert the dashboard back to the CLASSIC
+  **Resolution (2026-11-10, APPLIED — owner confirmed working):** convert the dashboard back to the CLASSIC
   schema, mirroring the working geoip fork exactly: top-level `__inputs` (name `DS_LOKI`), every panel
   target + templating var + annotation datasource bound to `{"type":"loki","uid":"${DS_LOKI}"}`,
   `id/gnetId` null keys, `schemaVersion: 39`, fixed `uid: erebos-journal-logs`. Then the resource line
