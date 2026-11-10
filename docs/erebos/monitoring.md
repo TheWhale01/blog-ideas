@@ -248,6 +248,36 @@ and, after B lands, a twin query on `{unit="sshd.service", geoip_country_name=~"
 attacker world-map needs firewall LOG rules feeding journald (see intrusion-detection idea) —
 different source, same pipeline shape.
 
+**Landed state (commit 1966884 `added GeoIP on traefik and sshd`).** The sshd branch merged exactly
+as delivered. Owner followed the advice above: the vendored fork `sys/terraform/dashboards/geoip.json`
+(title GeoIP, uid `pV2rGDZ4z`) now contains ONLY the two aggregation country-GeoMap panels —
+`sum by (geoip_country_name) (count_over_time({unit="traefik.service", geoip_country_name=~".+"}[$__range]))`
+and its `{unit="sshd.service", ...}` twin ("Access by Country" / "Access by Country (SSH)").
+Live verification 1h after deploy: sshd `France=2, United States=2` (the Vultr prober pool arrived —
+first hostile entry on the SSH map), traefik 11 countries with France≈6.5k (desktop sync).
+
+## Dashboards-as-code: terranix Grafana provisioning (owner-landed 2026-11-10)
+
+`sys/terraform/grafana.nix` is a **terranix** module (Nix → Terraform) — Terraform *files* are never
+committed; the terraform CLI is just the executor of the generated config. Content:
+
+- `provider.grafana` → `https://grafana.<domain>`, auth from agenix identity file
+  `/run/agenix/grafana-terraform` (a Grafana API key secret, `[REDACTED]` here).
+- Catalog dashboards stay fetched LIVE at apply time: `data.http` → grafana.com API downloads of
+  1860 (node exporter) and 17346 (traefik) → `grafana_dashboard` resources. `data.http.geoip` still
+  fetches 17877 but is now **unused** (the resource reads the local fork instead) — dead wiring,
+  remove or re-point deliberately.
+- Datasource-binding trick (kills the `${DS_*}` "Skip import" no-data bug at the root):
+  traefik.json uses terraform's own `replace(..., "$${DS_PROMETHEUS}", vars.prometheus.uid)`;
+  the geoip fork is substituted **at Nix-eval time** with
+  `builtins.replaceStrings [ "\${DS_LOKI}" ] [ (toString vars.loki.uid) ]` over
+  `builtins.readFile ./dashboards/geoip.json`. Both render concrete UIDs into `config_json`.
+- `systemd_journal` resource is COMMENTED OUT: `dashboards/systemd-journal.json` is in the new
+  Grafana unified-dashboard **kind/spec (v2)** format and the terraform provider's `grafana_dashboard`
+  path POSTs the legacy API, which rejects/mangles it ("issue with v2 API" commit note). Open
+  question: keep the journal dashboard manually imported, or convert the JSON to classic schema.
+- Same module also defines the Authentik OAuth2 app/groups for Grafana (pre-existing).
+
 ## Visualising Alloy in Grafana (setup guide, verified 2026-11-09)
 
 Three layers, no Cloud required:
