@@ -694,3 +694,8 @@ tags: [meta, log]
 ## 2026-11-09 — roles clarified: Alloy ≠ Prometheus replacement (new monitoring.md section)
 
 - Owner asked whether Alloy's scrape capability obsoletes Prometheus. Answer: no — Prometheus holds TSDB+PromQL, rule engine (alert chain to @erebot), and Grafana datasource; Alloy substituting scraping would still remote_write to a store. Documented as 'Alloy vs Prometheus' section in monitoring.md with the future architecting hook: when strategos joins the fleet, Alloy-on-agent + remote_write to Erebos is the right pattern (also for Drive-Health smartctl exporter).
+
+## 2026-11-09 — JSON→Nix dashboard conversion pattern (journal-logs kind/spec)
+
+- Owner gave the Grafana-13 native (kind/spec, vizConfig 13.0.12) Journal Logs JSON and asked for it as Nix. Produced sys/terraform-suitable journal-logs.nix = a plain attrset mirroring the JSON; wire with config_json = builtins.toJSON (import ./journal-logs.nix). Verified faithful: builtins.toJSON output re-normalized (jq -S) is byte-identical to the owner's export (diff clean).
+- Pattern: any Grafana JSON (incl. new kind/spec format) → Nix attrset → builtins.toJSON — the dashboard becomes editable Nix data (DRY with vars/interpolation), same terranix grafana_dashboard resource. Caveat noted: this exported JSON binds queries by group="loki" with NO explicit panel datasource field — relies on default/explicit binding; if a panel errors after apply, add datasource {name="Loki"} at the query-group level. Owner applies; agent made no repo change.
