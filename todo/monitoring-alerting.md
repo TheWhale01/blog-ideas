@@ -40,10 +40,12 @@ terranix's 14055 entry removed.
 
 - [ ] **Loki retention NOT applied** — 1-month snippet (compactor + limits_config, both required on
       3.x) is in [[docs/erebos/monitoring]] but absent from `loki.nix`: disk growth is unbounded.
-- [ ] **Loopback binds (remainder)** — Alertmanager done; **Loki `:3100`** and bridge `:3004` still
-      listen on `*` (live `ss` 2026-11-07). `podman0` is trusted ⇒ container breach could silence
-      the bridge or mutate/delete Loki (auth_enabled=false). Bind via `server.http_listen_address` /
-      `grpc_listen_address` (loki) + module listen option (bridge). Jellyfin `:8096` → [[queries/security-audit]].
+- [ ] **Loopback binds (remainder)** — Alertmanager + Loki retention done. Verified findings
+      2026-11-10: `trustedInterfaces` (podman0, **wt0 = Netbird peers!**) accept ALL host ports at
+      the top of the nft input chain ⇒ firewall rules can't fix; bind-level only. Ready-to-apply
+      snippets (binary-verified): [[docs/erebos/monitoring]] "Loopback binds" — loki
+      `http/grpc_listen_address = 127.0.0.1`; bridge via overrideAttrs APP_ADDRESS patch
+      (`node --check`-verified artifact). Jellyfin `:8096` → [[queries/security-audit]].
 - [ ] **Grafana UI cleanup** — 14055 (if it applied before removal) and orphaned authentik 14837
       (terranix resource was renamed to traefik in `11a4979`; the dashboard itself is now unmanaged)
       → delete in UI or re-add a managed entry deliberately.

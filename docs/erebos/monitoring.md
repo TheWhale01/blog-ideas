@@ -457,6 +457,44 @@ Verify after apply: `curl -s 127.0.0.1:3100/metrics | grep -m1 loki_build_info` 
 deleted lazily at the next compaction cycle once they age past 720 h — retention starts eating the
 backlog only once logs actually flow, which needs the collector fix above first.
 
+## Loopback binds (2026-11-10, findings + snippets)
+
+`networking.firewall.trustedInterfaces = [ "podman0" "wt0" ]` **accepts ALL ports from those
+interfaces at the top of nft's `input` chain** (module verified: the trusted accept precedes any
+per-port logic; `extraInputRules` lands later in `input-allow` and cannot fix this). So anything
+on the podman network AND every Netbird peer could reach Loki `:3100` (auth off ⇒ delete API)
+and the alert bridge `:3004`. The fix must be at the bind level:
+
+**Loki** — config supports it; `--verify-config`-validated against the flake's 3.7.9:
+```nix
+      server = {
+        http_listen_port = 3100;
+        http_listen_address = "127.0.0.1";
+        grpc_listen_address = "127.0.0.1";
+      };
+```
+Safe: all clients (Alloy push, Grafana DS, Prometheus scrape, alertmanager→bridge) already
+use 127.0.0.1. If the fleet ever ships logs from strategos, revisit (dedicated bind or tunnel).
+
+**matrix-alertmanager** — upstream Node app had no host knob (`src/app.js`:
+`app.listen(process.env.APP_PORT, () => {})`; nixpkgs module exposes only `port`), so bind
+via a small package patch + env var (built + `node --check` verified 2026-11-10; behavior
+identical upstream when `APP_ADDRESS` is unset):
+```nix
+  services.matrix-alertmanager.package = pkgs.matrix-alertmanager.overrideAttrs (final: prev: {
+    postPatch = (prev.postPatch or "") + ''
+      substituteInPlace src/app.js --replace-fail "app.listen(process.env.APP_PORT" "app.listen(process.env.APP_PORT, process.env.APP_ADDRESS"
+    '';
+  });
+  systemd.services.matrix-alertmanager.environment.APP_ADDRESS = "127.0.0.1";
+```
+(`pkgs` arrives automatically in modules; upstream PR + module `listenAddress` option is the
+clean long-term path. `grafana.nix` note: adding a serviceConfig.Environment would also work —
+the `environment.APP_ADDRESS` form merges per-key into the module's env attrset.)
+
+Post-rebuild check: `ss -tln | grep -E ':(3100|3004|9095)\b'` ⇒ all 127.0.0.1; ops-room alerts
+still flowing (they ride loopback anyway).
+
 ## Integration
 
 The monitoring stack is wired into the NixOS config through:
