@@ -9,6 +9,7 @@ sources: []
 
 # Drive Health Monthly Newsletter
 
+**Status**: 📬 NEWSLETTER LIVE (cron + issue 1) on top of the tripwire.
 **Status**: 🔴 TRIPWIRE PROVED ITSELF — first smartd boot (2026-11-10 22:12) wall-alerted `sdb`:
 207 pending + 190 uncorrectable sectors (drive ~2009). Pool still reads clean (no kernel I/O errors
 3h window; exporter not yet up — smart.nix unpushed/partial apply). Playbook below.
@@ -129,7 +130,13 @@ Erebos (bare metal) ── smartctl_exporter (:9633, new) + node_exporter (:9100
 - [ ] Check `sdb1/sdb2` — the 640 GB has two partitions before `sdb3`; identify leftovers, don't confuse the disk map
 - [ ] Dashboard: terranix wiring delivered (data.http 22381 + `replace(... DS_VICTORIAMETRICS → vars.prometheus.uid)`);
       owner applies + sanity-check the Kingston SSD wear panel (vendor-attr naming).
-- [ ] Hermes monthly cron digest: Prometheus queries → green/yellow/red rubric → Resend email + vault archive
+- [x] ~~Hermes monthly cron digest~~ — LIVE 2026-11-10: cron job `drive-health-monthly-newsletter`
+      (id 21ce6f527471, `0 9 1 * *` Europe/Paris, workdir = vault, delivers to the owner DM).
+      Prompt embeds: rubric incl. WD-health-byte lie guard, Kingston vendor-attr fallback, RFC3339
+      Loki windows, read-only loopback rule, prepend-issue-and-push archive flow.
+      Issue 1 (baseline) hand-generated first: [[queries/drive-health]] (sdb RED — first-ever
+      self-test failed same night, self-test errors 0→3). Email delivery via Resend NOT wired
+      (Matrix delivery chosen; email optional add-on later).
 - [x] ~~Immediate Alertmanager rules~~ — delivered as `drive_health` group (promtool-validated):
       DiskSmartFailing (`smartctl_device_smart_status == 0`, critical), DiskReallocatedSectors /
       DiskPendingSectors (`> 0` raw, 30m warning), DiskUncorrectableSectors (`Offline_Uncorrectable > 0`
