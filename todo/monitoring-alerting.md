@@ -70,6 +70,8 @@ terranix's 14055 entry removed.
       rules (cheap insurance that silent log-pipeline death pages you).
 - [ ] Post-apply render check on the geoip fork's duplicate gridPos/`id=7` (API persistence VERIFIED
       verbatim on throwaway 13.0.12; display-layer reflow unresolved) → [[docs/erebos/monitoring]] pitfall.
+- [ ] drive_health alert group + smartd/exporter snippets delivered (2026-11-10, see
+      [[ideas/drive-health-monthly-newsletter]]) — owner applies; +5 rules → 17 total after deploy.
 - [ ] fail2ban decisions → [[todo/fail2ban-tuning]]: aggressive-mode upgrade (needs home-IPv6/wt0
       ignoreIP FIRST — today's ignoreIP does NOT cover the login prefix `2a02:842a:3540:4201::…`),
       first web jail over traefik JSON lines.

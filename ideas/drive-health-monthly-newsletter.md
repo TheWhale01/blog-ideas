@@ -9,7 +9,15 @@ sources: []
 
 # Drive Health Monthly Newsletter
 
-**Status**: feasible — unblocked (prod is bare metal; SMART is local)
+**Status**: tripwire half DELIVERED + VALIDATED 2026-11-10 (snippets in chat, owner applies);
+newsletter half still queued behind it.
+Validation performed: `eval-config` of the exact snippets against pinned nixpkgs (options all exist,
+assertions pass, rendered `smartd.conf` = DEFAULT `-a -o on` + 6 staggered device lines);
+prometheus-community smartctl_exporter 0.14.0 ExecStart binds `127.0.0.1:9633` @ interval 5m;
+`smartctl_device_smart_status` semantics source-confirmed (1=healthy, 0=FAILED) so `== 0` is the
+tripwire; drive_health group (5 rules) merged → `promtool check` 17 SUCCESS + existing regression
+suite still green; dashboard 22381 verified metric-compatible (its `DS_VICTORIAMETRICS` ×30
+placeholders handled by terraform `replace()` exactly like the traefik 17346 wiring).
 
 ## Goal
 
@@ -106,12 +114,23 @@ Erebos (bare metal) ── smartctl_exporter (:9633, new) + node_exporter (:9100
 
 ## Tasks
 
-- [ ] Enable `services.prometheus.exporters.smartctl` (localhost bind) + scrape job + `services.smartd` self-tests in `sys/services/monitoring/`
+- [x] ~~Enable exporters.smartctl + scrape job + smartd self-tests~~ — snippets delivered &
+      eval-validated 2026-11-10: `sys/services/monitoring/smart.nix` (smartd: autodetect=false, 6
+      devices with staggered selftests — daily shorts 00–04h, weekly longs Sat 03–07h, SMR 8 TB long
+      moved to WED so it never overlaps the Sunday borg window; mail stays off (no MTA), wall
+      notification on = free console alert; journal output → Loki automatically as `{unit="smartd.service"}`)
+      + scrape job `smartctl` + `smartd` added to `watchedServices`. Note: `prometheus-smartctl-exporter.service`
+      is ALREADY covered by the existing `prometheus` whitelist entry + the `.*\.service` suffix regex.
 - [ ] Optional: move disko to stable `/dev/disk/by-id/ata-…` paths (root `sdd` + whale-nas member layout now fully mapped via `pvs`)
 - [ ] Check `sdb1/sdb2` — the 640 GB has two partitions before `sdb3`; identify leftovers, don't confuse the disk map
-- [ ] Build the Grafana disk-health dashboard (tiles per `/sys/block` disk, thresholds colored)
+- [ ] Dashboard: terranix wiring delivered (data.http 22381 + `replace(... DS_VICTORIAMETRICS → vars.prometheus.uid)`);
+      owner applies + sanity-check the Kingston SSD wear panel (vendor-attr naming).
 - [ ] Hermes monthly cron digest: Prometheus queries → green/yellow/red rubric → Resend email + vault archive
-- [ ] Immediate Alertmanager rules via [[todo/monitoring-alerting]] (`smartctl_health`, sector growth, temp)
+- [x] ~~Immediate Alertmanager rules~~ — delivered as `drive_health` group (promtool-validated):
+      DiskSmartFailing (`smartctl_device_smart_status == 0`, critical), DiskReallocatedSectors /
+      DiskPendingSectors (`> 0` raw, 30m warning), DiskUncorrectableSectors (`Offline_Uncorrectable > 0`
+      critical), DiskTooHot (>55°C). Power-on-hours intentionally NOT an alert (static gauge =
+      permanent fire) — that verdict belongs in the newsletter rubric.
 - [ ] Define replace-verdict thresholds (new reallocated/pending > 0 sustained; wear > 80 %; SMART self-test errors; power-on > ~40k h on greens)
 - [ ] First digest = manual dry-run, cross-checked against `sudo smartctl -a /dev/sdX` on each disk
 
