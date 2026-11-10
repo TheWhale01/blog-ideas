@@ -56,10 +56,14 @@ terranix's 14055 entry removed.
 - [ ] **Noise guard soak** — after ~1 week, confirm daily `update-containers` restarts stay absorbed
       by `for: 5m` (no storm in the room); keep Grafana unified alerting OFF: single alert brain.
 - [ ] **Issues room read-only** (bot-only writes) → [[todo/issues-room-readonly]]
-- [ ] **Drop `request_path` from traefik `stage.labels`** — STILL OPEN and now the biggest stream
-      multiplier on the host (every URL path of every visitor = a distinct stream). Everything the
-      dashboards need is covered by `unit`/`status`/`method`/country; path filtering works via
-      `| json` / line filters at query time instead.
+- [x] ~~Drop `request_path` from traefik `stage.labels`~~ — DONE `98a56d4` (label never functioned:
+      camelCase key mismatch — see [[docs/erebos/monitoring]] pitfall; query paths via `| json` instead).
+- [x] ~~Pipeline-health alerts~~ — LIVE `98a56d4`: AlloyConfigNotLoaded, LokiDroppingEntries,
+      LogsPipelineStalled (12 rules total, all healthy on live Prometheus).
+- [x] ~~Whitelist additions~~ — LIVE `98a56d4` — but owner replaced the explicit podman names with
+      `podman-.*`: watched units ≈30 → **46** (21 podman units now included, lidarr via `podman-lidarr`).
+      **Soak must now watch daily `update-containers` against ALL podman units** — one >5 min container
+      restart = a warning in the room.
 - [x] ~~host label parity~~ — resolved by owner hardcoding `host = "erebos"` in the journal source;
       all journal streams share it (equivalent in effect).
 - [ ] Pipeline-health alerts: `alloy_config_last_load_successful`, `loki_write_dropped_entries_total`
@@ -75,14 +79,16 @@ terranix's 14055 entry removed.
 
 ## Editing the rules — workflow
 
-Source of truth: attached **`todo/alert-rules.yml`** (embeds verbatim into
-`services.prometheus.rules = [ ''…'' ];` in `prometheus.nix`). Tests: attached
-**`todo/alert-rules.test.yml`** (6 promtool scenarios — currently all green).
+Source of truth: **`erebos:sys/services/monitoring/prometheus/config.nix`** (Nix attrsets, `watchedServices`
+list drives the ServiceOffline regex; rendered by `pkgs.formats.yaml` into `ruleFiles` —
+**promtool check now runs at nixos-rebuild time**). The attached `alert-rules.yml` is a generated
+snapshot for reference. Tests: **`todo/alert-rules.test.yml`** (6 scenarios — re-verified SUCCESS
+against the rendered 12-rule output 2026-11-10).
 
 ```bash
 PT=$(ls /nix/store/*-prometheus-*-cli/bin/promtool | head -1)
 $PT check rules todo/alert-rules.yml && $PT test rules todo/alert-rules.test.yml   # BEFORE deploy
-curl -s 127.0.0.1:9090/api/v1/rules | grep -o '"health":"[^"]*"'                   # AFTER apply
+curl -s 127.0.0.1:9090/api/v1/rules | grep -o '"health":"[^"]*"' | sort | uniq -c   # AFTER apply (expect 12x ok)
 ```
 
 Guard logic — do not regress:

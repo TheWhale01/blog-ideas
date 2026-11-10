@@ -307,6 +307,26 @@ committed; the terraform CLI is just the executor of the generated config. Conte
   only the `erebos-journal-logs` uid.
 - Same module also defines the Authentik OAuth2 app/groups for Grafana (pre-existing).
 
+## Prometheus alert rules as Nix attrsets (LIVE since 2026-11-10, `98a56d4`)
+
+Refactor of the owner on the delivered conversion — now the canonical pattern:
+
+- `sys/services/monitoring/prometheus/{default.nix,config.nix}` (service directory, like matrix/mas):
+  `config.nix` holds `rules = { groups = [ … ]; }` as pure Nix attrsets + a `watchedServices` list
+  whose `concatStringsSep "|"` builds the ServiceOffline regex — adding a watched service = one list item.
+- `default.nix` wires `ruleFiles = [ (pkgs.formats.yaml {}).generate "prometheus-rules.yaml" prom_config.rules ];`
+  (replacing the old raw-YAML-in-indented-string `rules = [''…'']`).
+- **Key win:** the nixpkgs module pipes `ruleFiles` through `promtool check rules` **at build time** —
+  a malformed rule now fails `nixos-rebuild switch` instead of Prometheus at runtime.
+- Escaping rule (verified end-to-end, incl. the owner's 6-scenario `promtool test rules` suite green
+  against the rendered store file): `expr = ''…name=~".+\\.service"…'';` — the two backslashes in the
+  Nix indented string become `\.` in the YAML string value → YAML→PromQL source→regex = escaped dot.
+  Do not "simplify" to one backslash: PromQL string literals reject `\.` as an invalid escape (API 400).
+- `rules` (the option) is `listOf str` only — attrset rules MUST go through `ruleFiles`.
+- 12 rules live: 2 systemd_services / 6 host_resources / 4 monitoring_self. ServiceOffline now covers
+  46 units incl. all `podman-.*` — daily `update-containers` restarts must stay under the `for: 5m`
+  threshold or the widened watch turns maintenance into alert storms (soak item tracks this).
+
 ## Visualising Alloy in Grafana (setup guide, verified 2026-11-09)
 
 Three layers, no Cloud required:
