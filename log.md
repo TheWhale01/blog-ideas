@@ -686,3 +686,7 @@ tags: [meta, log]
 ## 2026-11-09 — journal-logs dashboard built & query-verified (dropdown per application)
 
 - Owner asked for a simple dashboard: application dropdown, empty/All = every app. Built journal-logs.json (uid erebos-journal-logs): Loki var "unit" label_values({job="systemd-journal"}, unit), includeAll+multi, allValue ".*"; stacked timeseries sum by (unit) count_over_time [1m] + logs panel, both honoring a "search" textbox regex var (default .*). Every query executed against a live grafana-loki 3.6.7 (scratch): label API returns unit values; All selector includes unit-less streams (unit=~".*" matches absent label); filtered selector returns only chosen unit. Datasource bound by literal names Prometheus/Loki (same proven mechanism). Terranix: resource.grafana_dashboard.journal_logs.config_json = builtins.readFile ./journal-logs.json.
+
+## 2026-11-09 — journal-logs v2: removed search filter (highlight pitfall)
+
+- Owner reported full log lines sur-highlighted orange/yellow. Cause: Grafana logs panel highlights the matched substring of filter queries; the bonus regex textbox defaulted to ".*", matching every line end-to-end. Fix v2: dropped the search variable and "|~ \"$search\"" from both panel exprs (selector-only + count_over_time) — selector-only renders unhighlighted, same as Explore browsing. Lesson for any filter-box dashboard: never default a regex filter to .* in a logs panel; use an empty-match trick or omit the feature.
