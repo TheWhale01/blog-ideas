@@ -24,12 +24,15 @@ The monitoring stack lives in `sys/services/monitoring/` and is composed by `sys
 
 The `services.alloy` module (checked through nixpkgs master) has **no `settings` attrset** —
 River is a DSL with no generator, unlike the attrset-driven `matrix-synapse`/`mas` configs.
-The supported Nix-declarative pattern is **`environment.etc."alloy/config.alloy".text`**.
-`services.alloy.configPath` exists but should stay at its default `/etc/alloy` (directory
-mode): the module adds every `environment.etc."alloy/*.alloy"` file to
-`systemd.services.alloy.reloadTriggers`, so `nixos-rebuild switch` **hot-reloads** Alloy.
-Pointing `configPath` at a store path (e.g. `"${pkgs.writeText ...}"`) works but loses reload
-(the module docs call this trade-off out explicitly). The module also grants the service the
+**Owner decision 2026-11-09: plain-text config written to a store file via `configPath`** —
+`pkgs.writeText` + `services.alloy.configPath = alloyConf` (type-coercion verified: `types.path`
+accepts the derivation directly, `.outPath`, or interpolation). Consequence, accepted knowingly:
+config changes **restart** Alloy instead of hot-reloading (the module's `reloadTriggers` only
+follow `environment.etc."alloy/*.alloy"` files, and every edit changes the store hash embedded in
+ExecStart). Journal collection is not harmed by restarts: reader positions live in the state dir
+(`%S/alloy`), so the service resumes where it stopped. The `/etc` variant below stays documented
+as the reload-capable alternative; pick one, don't mix (component names must be unique across
+whatever `/etc/alloy/*.alloy` files still exist). The module also grants the service the
 `systemd-journal` supplementary group automatically, and **fails the whole initial load** if a
 referenced file (e.g. the geoip mmdb) is missing — hence the crash-loop warnings below.
 
@@ -155,6 +158,10 @@ Notes:
   `{unit="traefik.service", status=~"5.."}` (edge errors), `{host="erebos"} |~ "error"`.
 
 ## Attrset-driven River generation (custom `pkgs.formats`-style generator)
+
+> **Status: explored, NOT adopted** (owner chose plain text + store path 2026-11-09).
+> Kept as reference — the caveats and proof record remain valid for any future `pkgs.formats.river`.
+
 
 Since nixpkgs has no River generator (verified against the pinned rev **and** master as of
 2026-11-09), the Alloy body above can instead be written as pure Nix data and compiled to
