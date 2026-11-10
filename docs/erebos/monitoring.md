@@ -248,11 +248,18 @@ and, after B lands, a twin query on `{unit="sshd.service", geoip_country_name=~"
 attacker world-map needs firewall LOG rules feeding journald (see intrusion-detection idea) —
 different source, same pipeline shape.
 
-**Pitfall (owner hit 2026-11-10):** UI panel *duplicate* keeps the source panel's `gridPos` AND `id`
-— `9b24091` shipped the fork with all three panels at `x=2 y=0 w=20 h=27 id=7` (stacked-on-top
-overlap + duplicate ids). Fix without re-exporting (repo file only, then terraform apply):
-`jq '.panels |= (to_entries | map(.key as $i | .value.gridPos.y = ($i * 27) | .value.id = ($i + 1) | .value))' geoip.json`
-(validated: unique ids 1..3, vertical layout, `__inputs` untouched).
+**Pitfall (verified experimentally 2026-11-10):** UI panel *duplicate* keeps the source panel's `gridPos` AND `id`
+— `9b24091` shipped the fork with all three panels at `x=2 y=0 w=20 h=27 id=7`.
+**Test performed:** ran a throwaway Grafana 13.0.12 (same store binary, sqlite, anon-admin, port 13210)
+and POSTed the exact repo file through the same legacy `/api/dashboards/db` path the terraform provider
+uses. Result: **save succeeds (`status: success, uid: pV2rGDZ4z`) and the read-back is verbatim — Grafana
+13 does NOT normalize duplicate ids or overlapping gridPos on the API path.** The live dashboard looks
+fine because the UI's own save path normalizes what *the UI* saved; the repo file is what apply pushes.
+Whether the v13 render-layer then reflows the overlapping stored model at display time is UNRESOLVED
+(headless browser unavailable in agent container). Owner's position (keep file as-is) stands only if an
+apply proves the render survives; decisive test: terraform apply → reload the dashboard (or Import the
+file as a throwaway copy with a temp uid). If panels overlap after apply, fix the file:
+`jq '.panels |= (to_entries | map(.key as $i | .value.gridPos.y = ($i * 27) | .value.id = ($i + 1) | .value))'`.
 
 **Landed state (commit 1966884 `added GeoIP on traefik and sshd` + 9b24091).** The sshd branch merged exactly
 as delivered. Owner followed the advice above: the vendored fork `sys/terraform/dashboards/geoip.json`
