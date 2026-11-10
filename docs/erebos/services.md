@@ -323,3 +323,9 @@ PostgreSQL with:
 ### `sys/services/health.nix` (or equivalent)
 
 Some services may include health-checks; the core health endpoint is Traefik's `health` check for `websecure` entrypoint.
+
+### `sys/services/fail2ban.nix` (LIVE 2026-11-10)
+
+sshd jail on journald/systemd backend, banaction auto-aligned with the NixOS firewall, escalating
+bantimes (1h→48h). Filter semantics (what normal mode counts and doesn't — including why anonymous
+preauth fuzzers are currently ignored) and tuning preconditions: [[docs/erebos/services/fail2ban]].

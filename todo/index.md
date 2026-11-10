@@ -26,6 +26,8 @@ sources: []
 - [[todo/authentik-policy-revalidation]] — Not started · force username/password re-validation at login when policies change (username: fully feasible; password: force-rotation only — hashes can't be re-checked)
 - [[todo/scheduled-security-audit]] — Not started · weekly Hermes cron job that re-inventories versions, cross-checks advisories, and refreshes [[queries/security-audit]]
 
+- [[todo/fail2ban-tuning]] — New (2026-11-10) · aggressive-mode decision + ignoreIP preconditions, first web jail prototype, port-22-removal review
+
 ## Low
 - [[todo/issues-room-readonly]] — Not started · issues room → send-messages level 50, @erebot PL 50; ⚠️ v12 creators can't be demoted — decide (a) creator exception vs (b) bot-created room
 
