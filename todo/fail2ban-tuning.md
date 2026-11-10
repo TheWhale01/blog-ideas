@@ -38,4 +38,4 @@ If [[ideas/cloudflare-tunnel-ssh]] lands, scope the sshd jail to Netbird-only or
 belt-and-suspenders.
 
 ## History
-- 2026-11-10: split out from the folded [[ideas/fail2ban]] idea when the sshd jail went LIVE (`9b24091`).
+- 2026-11-10: split out when the fail2ban idea went LIVE (`9b24091`) and folded into [[docs/erebos/services/fail2ban]].
