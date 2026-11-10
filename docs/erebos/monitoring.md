@@ -443,9 +443,14 @@ the compactor refuses to start in 3.x without `delete_request_store`:
       };
       limits_config = {
         retention_period = "720h";              # 1 month
-        max_look_back_period = "720h";          # queries can't reach past the horizon either
       };
 ```
+
+> **Corrected 2026-11-10**: an earlier revision of this snippet included
+> `limits_config.max_look_back_period` — that field was **removed in Loki 3.x**
+> (`loki --verify-config` on 3.7.9 rejects the key outright: "field max_look_back_period
+> not found in type validation.plain"). The snippet above is re-verified against the live
+> binary version: `msg="config is valid"`.
 
 Verify after apply: `curl -s 127.0.0.1:3100/metrics | grep -m1 loki_build_info` (service alive) and
 `curl -s 127.0.0.1:3100/metrics | grep loki_compactor` (compactor working). Existing chunks are
