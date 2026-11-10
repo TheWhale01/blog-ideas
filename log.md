@@ -678,3 +678,7 @@ tags: [meta, log]
 - Verified via worktree + nix eval: alloy scrape job compiles into scrapeConfigs; vars.alloy.port=12345 present; journal host fixed (hardcoded 'erebos' — noted stage caveat + config.networking.hostName alternative).
 - Flags raised: (1) loki scrape job still missing → 14055's 5 functional panels empty; snippet recorded in wiki. (2) 14055 added anyway; DS binding verified to work by literal-name luck; ~20/22 panels k8s-dead — custom loki-overview.json (10 verified panels) attached for terranix adoption via builtins.readFile. (3) grafana_dashboard.authentik RENAMED to traefik (14837→17346) → old authentik dashboard orphaned/unmanaged in Grafana; owner to confirm intent. (4) UI-edited managed dashboards collide with next tofu apply.
 - monitoring.md Grafana section: dashboard path corrected to terranix-managed (not provision.dashboards as first drafted).
+
+## 2026-11-09 — dashboard question: no journal-native pre-made exists (search closed)
+
+- Owner asked for an off-the-shelf journal-only Loki dashboard. Exhaustive check: grafana.com families 12611/18042/24574/20254/13186 all k8s/docker-shaped (variable/expr JSON evidence, incl. hardcoded DS uid); grafana/alloy-scenarios systemd-journal + linux dirs = config only, no dashboards; Alloy Health = Cloud-only. Conclusion recorded in monitoring.md: custom loki-overview.json stays the route; 18042 identified as the mechanically-forkable base (vars → job/host/unit) if community layout desired. Side note: scenarios' config.alloy independently mirrors Erebos' journal pipeline choices.

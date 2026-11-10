@@ -217,6 +217,16 @@ Status after `11a4979`: `alloy` scrape job
      expr: increase(loki_write_dropped_entries_total[5m]) > 0
    ```
 
+**Journal-native dashboard search (2026-11-09, exhaustive):** grafana.com has **no** pure
+systemd-journal Loki dashboard — every logging-dashboard family is container/k8s-shaped, JSON-verified:
+12611 (hardcoded DS uid 000000042 + `container/pod/stream` vars), 18042 v2 (same vars),
+24574 v3 (`container_name/service_name/instance`), 20254 + 13186 (`label_values(kube_pod_info,
+namespace)` / workload vars). Official grafana/alloy-scenarios `systemd-journal` + `linux` ship
+config only — **no dashboards** (their config.alloy matches Erebos' pipeline, useful as upstream
+cross-check). Alloy Health dashboards = Grafana Cloud only. Hence the custom `loki-overview.json`
+(terranix `builtins.readFile`). If a community layout is ever wanted, closest is 18042 with its
+four variables swapped to `job/host/unit` selectors — a mechanical JSON fork.
+
 **Also rejected: dashboard 14055 "Loki stack monitoring (Promtail, Loki)"** (owner asked 2026-11-09):
 JSON inspection shows ~20 of 22 metric panels target the **Loki-Stack Helm chart on Kubernetes**
 (`container_memory_working_set_bytes`, `kube_pod_container_resource_*`, `pod=~"loki.*"`,
