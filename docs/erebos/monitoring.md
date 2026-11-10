@@ -170,6 +170,12 @@ Notes:
   `A=/nix/store/*-grafana-alloy-*/bin/alloy` (exit 0 + silence = OK).
 - Once this lands, the retention snippet above finally has something to prune; first load backfills
   only the last `max_age` (12 h) of journal — expect a burst on first start, quiet after.
+- **Params pitfall (2026-11-10):** this Loki build rejects `now`/`-10m` for `start`/`end`
+  (`strconv.ParseInt` error) — use RFC3339 or ns-integers:
+  `--data-urlencode "start=$(date -u -d '10 min ago' +%FT%TZ)" --data-urlencode "end=$(date -u +%FT%TZ)"`.
+  Geoip is LIVE since 2026-11-10 16:29 (`stage.geoip` + `stage.structured_metadata` in the running
+  config, geo_country="FR" filter proven against real traffic; metadata is filterable, not echoed
+  in query_range arrays).
 - Queries to smoke-test: `{job="systemd-journal"} |= "Failed password"` (sshd), 
   `{unit="traefik.service", status=~"5.."}` (edge errors), `{host="erebos"} |~ "error"`.
 
