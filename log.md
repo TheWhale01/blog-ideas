@@ -753,3 +753,8 @@ tags: [meta, log]
 
 ## [2026-11-11] rotation | log.md > 500 lines; moved to log-2026-11-11.md
 - See log-2026-11-11.md for full history of prior entries.
+
+## [2026-11-11] update | log consolidated into single log.md; no more per-entry files
+- `log.md` now holds the **full chronological history** (every prior entry preserved, including 2026-10-15 through 2026-11-07 alerting thread close).
+- Removed `log-2026-11-11.md`.
+- No new logfile created per rotation — future rotations just append to this same `log.md`.
