@@ -2,7 +2,7 @@
 title: Services
 type: reference
 created: 2026-10-15
-updated: 2026-11-11
+updated: 2026-11-12
 tags: [nixos, erebos, services]
 sources: []
 ---
@@ -259,6 +259,7 @@ The **Hermes Agent** (this assistant — "Odin") runs as a systemd service via t
 - Alertmanager Matrix room updated to the dedicated ops room in the same commit.
 - **Web dashboard** (since 2026-10-26, commits `27c42d9` + `2de8521`): `systemd.services.hermes-dashboard` on loopback `:9119`, exposed as `hermes-dashboard.thewhale.fr` via Traefik + Authentik edge auth (forward_single outpost, whale-only group; no dashboard-side auth provider after the `2de8521` simplification). The agent unit also exports `WIKI_PATH=/var/lib/hermes/workspace/blog-ideas` in its service environment. Full details: [[docs/erebos/services/hermes-dashboard]].
 - The blog pipeline renders this vault; the agent maintains it (see [[index]]).
+- **Agent runtime tooling** (since `45d3721`, 2026-11-12): the `hermes-agent` systemd unit now declares `path = with pkgs; [ gh ]` and scopes `environment.WIKI_PATH`, so the agent ships with the GitHub CLI available for its GitHub operations (PR authoring/review via the `GH_TOKEN` environment variable).
 
 ## Dashboard
 
@@ -272,11 +273,30 @@ Server dashboard via **homepage-dashboard** (homepage.dev).
 
 Layout groups:
 
-- **Streaming** (4 cols): Jellyfin, Seerr, Immich;
-- **Request Utilities** (4 cols): Radarr, Sonarr, Prowlarr, Transmission, OpenBooks;
-- **Useful** (4 cols): Authentik, Matrix, Vaultwarden, Nextcloud, Blog;
+- **Streaming** (4 cols): Jellyfin, Seerr, Immich, Aurral;
+- **Request Utilities** (4 cols): Radarr, Sonarr, Lidarr, Prowlarr, Transmission, OpenBooks, Slskd;
+- **Useful** (4 cols): Authentik, Matrix, Vaultwarden, Nextcloud, Blog, ActualBudget, OpenGym;
 - **Widgets** (4 cols): Calendar (Sonarr/Radarr) with a monthly view, first day Monday;
-- **Admin Tools** (4 cols): Tailscale, Grafana, Traefik, Maintainerr.
+- **Admin Tools** (4 cols): Netbird, Grafana, Traefik, Maintainerr, n8n, HermesDashboard.
+
+### Internet-facing services on the dashboard (added 2026-11-12, PR #4 → squash `5cd2bf7` on `main`)
+
+The homepage-dashboard services list was brought in line with the internet-facing services
+declared in the erebos configuration (homepage + `sys/containers/`), via branch
+`feat/homepage-dashboard-internet-facing` and PR #4 (owner review → merge → deploy; the agent
+did not merge).
+
+- `HermesDashboard` → **Admin Tools** (https://hermes-dashboard.thewhale.fr; from `sys/services/hermes.nix`).
+- `Slskd` → **Request Utilities** (https://slskd.thewhale.fr; from `sys/containers/slskd.nix`).
+- `ActualBudget` → **Useful** (https://actualbudget.thewhale.fr; from `sys/containers/actualbudget.nix`).
+- `OpenGym` → **Useful** (https://opengym.thewhale.fr; from `sys/containers/opengym.nix`).
+- `Aurral` → **Streaming** (https://aurral.thewhale.fr; from `sys/containers/aurral.nix`).
+
+PR review feedback addressed: moved `Slskd` into **Request Utilities** and `Aurral` into **Streaming**.
+
+Follow-up commit `45d3721` ("fixed syntax errors + added github cli to hermes") removed trailing
+commas after the last entry of each dashboard group and added the `gh` CLI to the `hermes-agent`
+systemd unit.
 
 Custom CSS forces a bold font + dark theme + blur background image (Catppuccin Mocha).
 

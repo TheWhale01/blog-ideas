@@ -2,7 +2,7 @@
 title: Erebos
 type: reference
 created: 2026-10-15
-updated: 2026-11-11
+updated: 2026-11-12
 tags: [nixos, server, homelab, documentation, erebos]
 sources: []
 ---
@@ -213,6 +213,8 @@ All public-facing services are reverse-proxied through **Traefik** under `*.thew
 | Slskd | `sys/containers/slskd.nix` | Music streaming (Podman, own VPN tunnel) | `slskd.thewhale.fr` (Authentik) |
 | nginx (anaisbuche PDF) | `sys/services/nginx.nix` | Static PDF host | `anaisbuche.thewhale.fr` |
 | Homepage-dashboard | `sys/services/homepage.nix` | Server dashboard (homepage.dev) | `thewhale.fr` (root) |
+| ActualBudget | `sys/containers/actualbudget.nix` | Personal finance / budgeting | `actualbudget.thewhale.fr` (Authentik) |
+| Aurral | `sys/containers/aurral.nix` | Self-hosted personal dashboard (OIDC via Authentik) | `aurral.thewhale.fr` (Authentik) |
 | n8n | `sys/services/n8n.nix` | Workflow automation | `n8n.thewhale.fr` |
 | openGym | `sys/containers/opengym.nix` | Gym & workout tracker (Podman, passkey auth) | `opengym.thewhale.fr` |
 | Seerr | `sys/services/seerr.nix` | Media request manager | `seerr.thewhale.fr` |

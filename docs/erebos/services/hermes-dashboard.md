@@ -2,7 +2,7 @@
 title: Hermes Dashboard
 type: reference
 created: 2026-10-26
-updated: 2026-11-07
+updated: 2026-11-12
 tags: [nixos, erebos, services, security, automation]
 sources: [erebos:sys/services/hermes.nix, erebos:sys/terraform/hermes.nix, erebos:sys/vars.nix]
 ---
@@ -106,7 +106,7 @@ vault question was decided the same day: **the source of truth is the `$WIKI_PAT
   connection-lifetime cap would make the chat reconnect (idle keepalives are sent every 20 s).
 - The dashboard is machine-level: it manages all Hermes profiles with a profile switcher.
 - Health: `Restart=always` + `RestartPreventExitStatus = 78` (clean config-error exit, no loop).
-- Consider adding it to the homepage dashboard admin group (`homepage.nix` already lists Tailscale→Netbird-era tools; see [[docs/erebos/services]] Dashboard section).
+- Done (2026-11-12, PR #4 squash commit `5cd2bf7`): the dashboard was added to the homepage dashboard **Admin Tools** group; final placement tracked in [[docs/erebos/services]] Dashboard section.
 
 ## Related
 

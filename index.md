@@ -1,7 +1,7 @@
 ---
 title: Wiki Index
 created: 2026-10-15
-updated: 2026-11-11
+updated: 2026-11-12
 type: index
 tags: [meta, index]
 ---
@@ -10,7 +10,7 @@ tags: [meta, index]
 
 > Content catalog. Every wiki page listed under its type with a one-line summary.
 > Read this first to find relevant pages for any query.
-> Last updated: 2026-11-11 | Total pages: 35
+> Last updated: 2026-11-12 | Total pages: 35
 > Count = content .md pages (incl. nested hub indexes); root `index.md`/`log.md`/`HERMES.md` and
 > `.yml` attachments excluded. Re-verify with a filesystem walk when in doubt — this number has
 > drifted twice (audited 2026-11-10).
