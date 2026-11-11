@@ -52,6 +52,11 @@ tags: [meta, index]
 ### Erebos (NixOS Server)
 - [[docs/erebos/index]] – Overview, repository layout, environments, and core concepts for the Erebos NixOS configuration
 - [[docs/erebos/architecture]] – Big picture, layers, runtime, data flow, and security model
+...
+
+## Hardware & Models
+
+LFM3-1.7B (Q6_K) is **up and running** on an **Intel Arc A380 GPU** in the Erebos homelab. Odin — the Hermes Agent — uses it now as its local LLM fallback.
 - [[docs/erebos/containers]] – Podman container declarations, global settings, and per-container details
 - [[docs/erebos/services]] – Systemd services: Traefik, blog, Nextcloud, Matrix, Authentik, Vaultwarden, Immich, and more
 - [[docs/erebos/monitoring]] – Prometheus, Grafana, Loki, and Promtail stack with Traefik integration
