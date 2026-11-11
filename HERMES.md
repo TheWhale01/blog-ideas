@@ -1,7 +1,7 @@
 ---
 title: Wiki Schema
-created: 2026-10-15
-updated: 2026-11-09
+created: 2026-11-11
+updated: 2026-11-11
 type: schema
 tags: [meta, schema]
 ---
