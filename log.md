@@ -758,3 +758,7 @@ tags: [meta, log]
 - `log.md` now holds the **full chronological history** (every prior entry preserved, including 2026-10-15 through 2026-11-07 alerting thread close).
 - Removed `log-2026-11-11.md`.
 - No new logfile created per rotation — future rotations just append to this same `log.md`.
+
+## [2026-11-11] drive-health: issue 2 | refresh post-SMART-tripwire sdb
+- Re-validated live from Prometheus+Loki; verdicts unchanged except sdb counter counts confirmed stable.
+- No new disks added since 2026-11-07 reframe; sdf (Seagate 8TB SMR) VG-mapper whale--nas-data needs monthly load-cycle watch.
