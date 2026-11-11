@@ -7,3 +7,5 @@
 ## [2026-11-11] delete | todo/log-rotation — removed: single `log.md` now holds all historical entries; no rotation needed
 
 ## [2026-11-11] delete | ideas/cloudflare-tunnel-ssh — removed: owner dropped the Cloudflare tunnel remote-access idea
+
+## [2026-11-11] delete | ideas/cleanyourtv — removed: owner dropped the CleanYourTV debloat idea
