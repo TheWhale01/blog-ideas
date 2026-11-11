@@ -98,5 +98,4 @@ to a label to enable that is the cardinality anti-pattern we avoided. Alert seed
 ## Related
 - [[docs/erebos/monitoring]] — journal→Loki pipeline (fail2ban logs ride it)
 - [[todo/fail2ban-tuning]] — open decisions (aggressive mode + ignoreIP, web jails)
-- [[ideas/cloudflare-tunnel-ssh]] — when port 22 disappears, revisit this jail
 - [[ideas/intrusion-detection]] — detection layers this pairs with

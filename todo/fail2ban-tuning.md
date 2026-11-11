@@ -30,11 +30,10 @@ are direct, not behind Cloudflare). A jail would use `backend=systemd` +
 fields, e.g. for auth-endpoint floods: failregex capturing `"ClientHost":"<HOST>"` combined with
 `"DownstreamStatus":(401|403)` and login paths (authentik `/api/v3/…/login`, vaultwarden
 `/accounts/…`, nextcloud `/login/v2`-style — pick ONE target first; probe real paths in Loki before
-writing the filter). Watch Cloudflare caveat if [[ideas/cloudflare-tunnel-ssh]]-style proxying ever
-fronts the services.
+writing the filter). Watch the Cloudflare IP-range caveat if any proxying ever fronts the services.
 
 ## 3. Re-evaluate after port-22 removal
-If [[ideas/cloudflare-tunnel-ssh]] lands, scope the sshd jail to Netbird-only or keep as
+If the tunnel-based access path ever lands, scope the sshd jail to Netbird-only or keep as
 belt-and-suspenders.
 
 ## History

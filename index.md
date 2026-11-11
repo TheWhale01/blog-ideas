@@ -10,7 +10,7 @@ tags: [meta, index]
 
 > Content catalog. Every wiki page listed under its type with a one-line summary.
 > Read this first to find relevant pages for any query.
-> Last updated: 2026-11-11 | Total pages: 40
+> Last updated: 2026-11-11 | Total pages: 36
 > Count = content .md pages (incl. nested hub indexes); root `index.md`/`log.md`/`HERMES.md` and
 > `.yml` attachments excluded. Re-verify with a filesystem walk when in doubt — this number has
 > drifted twice (audited 2026-11-10).
@@ -23,7 +23,6 @@ tags: [meta, index]
 - [[ideas/deezify]] – Spotify/Deezer Jam-like feature for cross-platform music sharing
 - [[ideas/remote-gaming-server]] – Self-hosted cloud gaming with Sunshine/Apollo on Linux
 - [[ideas/translaitor]] – AI-powered book translator using Gemini API or local LLM (TranslateGemma)
-- [[ideas/cloudflare-tunnel-ssh]] – Secure SSH access via Cloudflare Tunnel without opening port 22
 - [[ideas/intrusion-detection]] – See attempts + know if they succeeded: journal→Loki pipeline (currently dark!), ruler alerts, authentik ground truth, auditd, NixOS drift trio, tamper-resistant evidence
 - [[ideas/cleanyourtv]] – Wireless-ADB debloat for Android/Google TVs (reversible disable + clean launcher) → ideal Jellyfin thin client; typosquat warnings
 - [[ideas/chezmoi-pontos]] – Declarative dotfiles for the pontos laptop (Fedora) with chezmoi + age, wipe-and-recover story

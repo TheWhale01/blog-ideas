@@ -13,4 +13,3 @@ I've tried Moonlight but it needs a display connected, it can be a virtual displ
 ## Related
 
 - [[docs/erebos/index]] – Erebos is the intended host once the GPU lands
-- [[ideas/cloudflare-tunnel-ssh]] – complementary remote-access strategy for headless maintenance
