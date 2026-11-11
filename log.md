@@ -749,3 +749,7 @@ tags: [meta, log]
 
 ## [2026-11-11] update | Add "Hardware & Models" section to index.md (LFM3-1.7B on Intel Arc A380 GPU; Odin uses it)
 - Commit d11c9a1, push bfc9855..d11c9a1
+
+
+## [2026-11-11] rotation | log.md > 500 lines; moved to log-2026-11-11.md
+- See log-2026-11-11.md for full history of prior entries.

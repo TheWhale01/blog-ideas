@@ -10,7 +10,7 @@ tags: [meta, index]
 
 > Content catalog. Every wiki page listed under its type with a one-line summary.
 > Read this first to find relevant pages for any query.
-> Last updated: 2026-11-11 | Total pages: 37
+> Last updated: 2026-11-11 | Total pages: 40
 > Count = content .md pages (incl. nested hub indexes); root `index.md`/`log.md`/`HERMES.md` and
 > `.yml` attachments excluded. Re-verify with a filesystem walk when in doubt — this number has
 > drifted twice (audited 2026-11-10).
