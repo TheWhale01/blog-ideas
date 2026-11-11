@@ -1,7 +1,7 @@
 ---
 title: Implement Proper Monitoring & Alerting
 created: 2026-10-15
-updated: 2026-11-10
+updated: 2026-11-11
 type: todo
 tags: [nixos, erebos, todo, improvement, infrastructure]
 sources: ["live inspection + end-to-end owner confirmation 2026-11-07 (erebos 790c16a, 85c5ebe); log-pipeline go-live verified on-host 2026-11-09/10 (erebos abc3f49..e0f8d57)"]
@@ -17,9 +17,10 @@ sources: ["live inspection + end-to-end owner confirmation 2026-11-07 (erebos 79
 ## Current state (live)
 
 Prometheus rules → Alertmanager 0.31.1 (**loopback-bound since `11a4979`** ✅) → matrix-alertmanager
-0.9.0 bridge → ops room as **@erebot** (appservice bot). **9 rules / 3 groups**: `systemd_services`
+0.9.0 bridge → ops room as **@erebot** (appservice bot). **12 rules / 3 groups**: `systemd_services`
 (crash catch-all + 25-unit ServiceOffline whitelist — includes `alloy`), `host_resources`
-(disk 10 %/5 %, read-only-fs canary, memory, CPU, reboot), `monitoring_self` (ScrapeTargetDown).
+(disk 10 %/5 %, read-only-fs canary, memory, CPU, reboot), `monitoring_self`
+(ScrapeTargetDown, AlloyConfigNotLoaded, LokiDroppingEntries, LogsPipelineStalled).
 Promtool unit-tested before deploy, firing correctly, `send_resolved` on. Webhook secret is
 **agenix-only** (envsubst placeholder, rotated in `85c5ebe`). Delivery verified twice.
 
@@ -66,8 +67,6 @@ terranix's 14055 entry removed.
       restart = a warning in the room.
 - [x] ~~host label parity~~ — resolved by owner hardcoding `host = "erebos"` in the journal source;
       all journal streams share it (equivalent in effect).
-- [ ] Pipeline-health alerts: `alloy_config_last_load_successful`, `loki_write_dropped_entries_total`
-      rules (cheap insurance that silent log-pipeline death pages you).
 - [ ] Post-apply render check on the geoip fork's duplicate gridPos/`id=7` (API persistence VERIFIED
       verbatim on throwaway 13.0.12; display-layer reflow unresolved) → [[docs/erebos/monitoring]] pitfall.
 - [x] ~~drive_health group~~ LIVE 2026-11-10 ~22:21 (17 rules ok, smartctl scrape up=1).
@@ -92,7 +91,7 @@ against the rendered 12-rule output 2026-11-10).
 ```bash
 PT=$(ls /nix/store/*-prometheus-*-cli/bin/promtool | head -1)
 $PT check rules todo/alert-rules.yml && $PT test rules todo/alert-rules.test.yml   # BEFORE deploy
-curl -s 127.0.0.1:9090/api/v1/rules | grep -o '"health":"[^"]*"' | sort | uniq -c   # AFTER apply (expect 17x ok)
+curl -s 127.0.0.1:9090/api/v1/rules | grep -o '"health":"[^"]*"' | sort | uniq -c   # AFTER apply (expect 12x ok)
 ```
 
 Guard logic — do not regress:

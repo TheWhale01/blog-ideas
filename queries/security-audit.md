@@ -1,7 +1,7 @@
 ---
 title: Erebos Security Audit
 created: 2026-10-26
-updated: 2026-11-07
+updated: 2026-11-11
 type: query
 tags: [erebos, nixos, security, analysis]
 sources: [live service inventory (2026-10-26), vendor advisories — see References]
@@ -14,7 +14,9 @@ confidence: high
 > **Scope: open findings only** — remediated/retracted findings are removed from this page; their
 > history lives in the Audit log at the bottom and in git.
 > Last re-check: **2026-11-07** (contents API + live units + `ss -ltn`) — base inventory 2026-10-26.
-> **Open: P1 Immich; P2 Jellyfin / KEV verify / binds; P3 llama.cpp config drift; n8n owner MFA.**
+> Config-state reconciled with pushed erebos changes (wiki sync, 2026-11-11, repo HEAD `98a56d4`):
+> Alertmanager + Loki now loopback-bound (see P2).
+> **Open: P1 Immich; P2 Jellyfin / KEV verify / binds (bridge :3004 + Jellyfin :8096); P3 llama.cpp drift; n8n owner MFA.**
 
 Point-in-time security audit of Erebos: live version inventory (systemd units, Nix store paths, running service APIs) cross-checked against published advisories as of **2026-10-26**.
 
@@ -68,6 +70,13 @@ Alertmanager** (blinding alerting) and **read all logs via Loki**.
 **Fix**: bind Alertmanager + Loki (+bridge) to `127.0.0.1` in `sys/services/monitoring/*`, Jellyfin
 `network.bindAddrs = [ "::1" ]`.
 
+**2026-11-11 (wiki sync w/ pushed changes; repo HEAD `98a56d4`):** Alertmanager (`:9093`) now
+loopback-bound (`listenAddress = "127.0.0.1"` in `sys/services/monitoring/prometheus/default.nix`) and
+Loki (`:3100`) now loopback-bound (`http`/`grpc listen_address = "127.0.0.1"` in
+`sys/services/monitoring/loki.nix`, commit `f13b255`) — the P2 bind remediation landed with the pushed
+monitoring hardening series. **Still open:** matrix-alertmanager bridge (`:3004`) — owner declined the
+bind (2026-11-10) — and Jellyfin (`:8096`) `network.bindAddrs = [ "::1" ]`.
+
 ### P3 — Clean/fresh at audit time
 - **Traefik 3.7.13**: ahead of all known 2026 advisories (3.7.3 batch etc.); no mTLS/HTTP3 in use.
 - **Synapse 1.163.2**: ahead of fixes for PYSEC-2026 CPU-starvation (1.152.1), federation depth (1.127.1), thumbnails/Ghostscript (1.120.1).
@@ -89,7 +98,8 @@ Alertmanager** (blinding alerting) and **read all logs via Loki**.
 - [ ] n8n: enable MFA on the owner account; keep n8n updates urgent (auth→RCE advisories all year); LAN/VPN boundary is the wall
 - [ ] P2: verify `richdocumentscode` app absent in Nextcloud (KEV-listed, actively exploited)
 - [ ] P2: track Jellyfin fix (>12.4) via `nix flake update`
-- [ ] P2: bind Alertmanager 9093, Loki 3100, matrix-alertmanager 3004, Jellyfin 8096 to loopback
+- [ ] P2: bind matrix-alertmanager 3004 + Jellyfin 8096 to loopback (Alertmanager 9093 + Loki 3100
+      now bound per repo HEAD `98a56d4` / `f13b255`).
 - [ ] P3: llama.cpp — align Hermes fallback `model.default` to preset alias `LFM3-1.7B` + smoke-test load; migrate off removed `modelsPreset` option at next flake update
 - [ ] Systemic: keep a manual patch cadence — `nix flake update` + `nix run .#apply` on a schedule (weekly?); [[todo/scheduled-security-audit]] is the reminder mechanism
 - [ ] Optional: run `nix-audit-info`/`vulnix` against the system to catch store-level flagged packages automatically
@@ -121,3 +131,4 @@ Alertmanager** (blinding alerting) and **read all logs via Loki**.
 - **2026-11-04 (live re-check run)** — Full-ish re-inventory as requested. **Key finding: the two P1s are NOT fixed** — repo HEAD still `authentikVersion = "2026.8.1"` and running Immich still `2.7.5` (+ `permittedInsecurePackages`): image/Nix pins don't move on `nix flake update`, likely the misunderstanding; runbook in [[docs/erebos/tutorials]] §7. **Fixed:** Prometheus+Immich binds now loopback (live `ss` ✓, commit `b1b690e`), llama-cpp active on loopback, kernel 7.3.0→7.3.1, system rebuild `26.05.20261104.994bb33`. **New:** llama-cpp fallback id mismatch — router up but no model loaded, Hermes targets cache id not preset alias (offline safety-net likely broken). **Still open:** Alertmanager 9093 / Loki 3100 / Jellyfin 8096 binds; Jellyfin >12.4; `richdocumentscode` verify; n8n owner MFA.
 - **2026-11-07 (correction + follow-up run)** — Owner challenged the Authentik verdict; they were right for *today*: `8d47326 "upgrading authentik"` (Nov 6) moved main → **2026.8.5** and the live unit pulls that image. The Nov 4 "NOT remediated" call was true at the time (commit didn't exist yet), but a follow-up check was then mis-confirmed by a **stale `raw.githubusercontent.com` CDN blob** — corrected methodology: contents/commits API + live unit ExecStart are the sources of truth. P1 Authentik **CLOSED**; Immich re-probed via contents API + live store path: still 2.7.5 + `permittedInsecurePackages` — **sole open P1**.
 - **2026-11-07** — Alerting day. **Remediated:** matrix-alertmanager webhook plaintext leak (owner commit `85c5ebe`): value rotated, now agenix-only — KEY-VALUE file feeds Alertmanager via module envsubst `environmentFile`, store config verified to hold only `` placeholder (grep count of old value = 0); bridge holds raw twin; old value lingers in git history but is voided. Prometheus+node_exporter binds → loopback ✓ (earlier: `b1b690e`/prometheus.nix). 9-rule alert set deployed & live. Also: initrd systemd stage-1 completed (`5f41664`/`034cd93`, verified live), Authentik 2026.8.5 confirmed earlier today, disko device paths corrected (`6973308` prod=/dev/sdd, stage=/dev/vda). **Still open:** binds AM :9093 / bridge :3004 / Loki :3100 (live ss `*`) + Jellyfin 8096; Immich P1; Jellyfin P2; KEV verify P2.
+- **2026-11-11** — Wiki sync after owner push (erebos repo HEAD `98a56d4` + hardening series `9b24091`…`98a56d4`): log pipeline now LIVE (Alloy `alloy.nix` store-path config, journal→Loki + traefik/sshd/fail2ban geoip; `host="erebos"`), Loki retention 720h + loopback `127.0.0.1:3100` (`f13b255`), alloy+loki scrape jobs landed (`abc3f49`, `7f50ca8`), Prometheus rules refactored to Nix attrsets (`98a56d4`; 12 rules, promtool check at build), pipeline-health alerts landed (AlloyConfigNotLoaded, LokiDroppingEntries, LogsPipelineStalled), fail2ban sshd jail LIVE (`9b24091`). Config deltas vs 2026-11-07 audit: Alertmanager :9093 + Loki :3100 now loopback-bound (repo) — remediated; **still open:** bridge :3004 (owner declined bind), Jellyfin :8096. Immich P1 sole open P1 unchanged.

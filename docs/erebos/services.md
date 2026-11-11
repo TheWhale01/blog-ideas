@@ -2,7 +2,7 @@
 title: Services
 type: reference
 created: 2026-10-15
-updated: 2026-11-07
+updated: 2026-11-11
 tags: [nixos, erebos, services]
 sources: []
 ---
@@ -163,11 +163,11 @@ Each is enabled in Nix and reverse-proxied through Traefik on its own subdomain.
 | Service | Role |
 |---|---|
 | n8n | Workflow automation UI (`n8n.thewhale.fr`) — pinned to `pkgs-unstable` since commit `6ef7e41` (fresher release channel than the stable pin) |
-| monitoring/ | Prometheus + Alertmanager + Grafana + Loki + Promtail + matrix-alertmanager bridge |
+| monitoring/ | Prometheus + Alertmanager + Grafana + Loki + Alloy + matrix-alertmanager bridge |
 
 #### Alerting pipeline — LIVE ✅ (server-verified 2026-11-07 via event IDs in bridge journal)
 
-Prometheus rules → Alertmanager (`:9093`) → **matrix-alertmanager 0.9.0** (`:3004`, webhook with
+Prometheus rules → Alertmanager (`:9093`, now loopback-bound `127.0.0.1`) → **matrix-alertmanager 0.9.0** (`:3004`, webhook with
 `?secret=` query auth) → Matrix room `!C-EIAS89vRQV7k6yUk34TTqXDro5S3Xwx_sJidUW3Lk` (ops room) as
 **@erebot** — an **appservice** user (`matrix-appservice.age` registration; NOT a MAS user, MAS can
 never claim it). No alert rules currently exist (deleted in `790c16a` for a from-scratch rebuild).
@@ -188,7 +188,7 @@ Config shape worth remembering:
   `systemd.services.matrix-alertmanager.environment.ALERT_LINKS = "Alerts:{annotations.matrixNoLink}";` (attrset form — proven on the live flake 2026-11-10 via `extendModules` eval: merges cleanly beside the module's own env keys)
   — set-but-empty-resolving env var makes the fallback unreachable and the fake entry silently skips
   (single-annotation rule, utils.js:101). Real use: `Name:url|Name2:{generatorURL}` with
-  `{labels.x}`/`{annotations.x}` interpolation. `services.matrix-alertmanager.mention = true`
+  `{labels.x}`/`{annotations.x}` interpolation. `services.matrix-alertmanager.mention = false`
   prefixes '@room' pings (module-supported option, default off).
 
 #### Maintenance recipes & Matrix gotchas (learned the hard way, 2026-11-07)

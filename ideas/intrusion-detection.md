@@ -1,7 +1,7 @@
 ---
 title: Intrusion Detection on Erebos
 created: 2026-11-07
-updated: 2026-11-07
+updated: 2026-11-11
 type: idea
 tags: [erebos, security, loki, alloy, auditd, detection]
 sources: ["owner question 2026-11-07", "live stack assessment 2026-11-07"]
@@ -15,28 +15,27 @@ sources: ["owner question 2026-11-07", "live stack assessment 2026-11-07"]
 
 ## Assessment of the current stack (verified 2026-11-07)
 
-The pieces exist — Prometheus (4 scrape jobs incl. `authentik` + `traefik` metrics, `tcpstat`
-collector on), Loki, Grafana, Alertmanager→Matrix. But the **log pipeline is a facade today**:
+The pieces exist — Prometheus (scrapes incl. `authentik` + `traefik`, `tcpstat` collector on), Loki, Grafana, Alertmanager→Matrix. But the **log pipeline is now LIVE** (Alloy store-path config since `abc3f49`; the earlier promtail draft was superseded — was a facade before).
 
-- `promtail.nix`: whole config commented out; replaced by `services.alloy.enable = true` **with no
-  `settings`** → Alloy runs an empty graph and collects nothing
+- `services.alloy.enable = true` with full store-path config (`configPath = pkgs.writeText`, landed
+  `abc3f49`) → the earlier `promtail.nix` commented-out draft and the empty-graph interim state are
+  superseded; Alloy now runs the validated journal + traefik + geoip pipeline and collects.
 - Loki `/loki/api/v1/label` returns **zero labels** — nothing has ever been ingested
 - Loki **ruler not configured** → logs can't alert anyway
-- ⚠️ Preconditions, both already tracked: `auth_enabled = false` on a Loki listening on `*:3100`
-  means an attacker (or any container on trusted `podman0`) can **read and DELETE logs via the API**
-  — plus the P2 loopback binds from [[queries/security-audit]]
+- ⚠️ Preconditions: `auth_enabled = false` on Loki — plus the P2 loopback binds from
+  [[queries/security-audit]] (Loki now loopback-bound `127.0.0.1:3100` since `f13b255`; the auth-off
+  posture therefore no longer exposes logs to the podman/Netbird networks).
 
-Answer to "is it possible?": **yes, ~80% of the machinery is installed; what's missing is feeding
-it and pointing its alerts at Alertmanager.**
+Answer to "is it possible?": **yes — ~80% of the machinery was missing; the rest is now live**
+(journal→Loki landed, geoip landed, alerting wired).
 
 ## Signal layers (in build order)
 
 1. **Journal → Loki** (one config, instant coverage of sshd, sudo, kernel, every unit):
    Alloy [`loki.source.journal`](https://grafana.com/docs/alloy/latest/reference/components/loki/loki.source.journal/)
    + [`loki.write`](https://grafana.com/docs/alloy/latest/reference/components/loki/loki.write/) →
-   localhost Loki. (Or simply un-comment promtail — it had journal + traefik geoip enrichment drafted.)
-   Alloy needs the service user in the `systemd-journal` group (the commented `extraGroups` line
-   was the same idea for promtail).
+   localhost Loki (push via `loki.write` → `http://127.0.0.1:3100/loki/api/v1/push`; journal + traefik geoip enrichment landed in the Alloy config).
+   Alloy needs the service user in the `systemd-journal` group.
 2. **Traefik access log** (edge attempts: 404-hunting, auth floods, odd user-agents, geoip
    anomalies via the drafted MaxMind pipeline) — journal source covers `traefik.service` already.
 3. **Authentik = auth ground truth** (the "did they succeed?" oracle): its Prometheus events are
@@ -94,7 +93,7 @@ That collapses "file integrity monitoring" to a tiny, loud watch-set:
 
 1. P2 **loopback binds + Loki auth** ([[queries/security-audit]]) — non-negotiable first step;
    today's Loki is a self-serve delete button for any container
-2. Layer 1 journal→Loki (Alloy settings OR revive promtail draft incl. geoip) + pipe-failure alert
+2. Layer 1 journal→Loki (Alloy store-path config incl. geoip) + pipe-failure alert
 3. Ruler + 4 starter LogQL rules → AM (same receiver) — ops room starts showing session cards
 4. authentik login-failure metric rules (zero new infra)
 5. auditd surgical rule set + `nix store verify` weekly + unit-count drift alert

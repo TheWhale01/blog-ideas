@@ -2,7 +2,7 @@
 title: Terraform
 type: reference
 created: 2026-10-15
-updated: 2026-10-26
+updated: 2026-11-11
 tags: [nixos, erebos, terraform, terranix, opentofu, IaC]
 sources: []
 ---
@@ -38,7 +38,7 @@ nix run .#apply-stage    # stage
 |---|---|
 | `sys/terraform/default.nix` | Provider requirements + imports |
 | `sys/terraform/authentik.nix` | Authentik identity provider, applications, users, groups, policies, outpost attachments |
-| `sys/terraform/grafana.nix` | Grafana provisioning (admin groups, datasources, etc.) |
+| `sys/terraform/grafana.nix` | Grafana provisioning (admin groups, datasources, dashboards via `grafana_dashboard` resources) |
 | `sys/terraform/nextcloud.nix` | Nextcloud resources |
 | `sys/terraform/matrix.nix` | Matrix-related resources |
 | `sys/terraform/actualbudget.nix` | Actual budget — Authentik app + group + policy |
@@ -60,7 +60,7 @@ nix run .#apply-stage    # stage
 ## Notable Resources
 
 - **Authentik** (largest module): configure the identity provider, its applications, users, groups, policies, and outpost attachments. The authentik module in particular is the mechanism by which services are wired into the identity system declaratively.
-- **Grafana**: Grafana admin users and provisioning.
+- **Grafana**: Grafana admin users and provisioning; dashboards-as-code via `grafana_dashboard` resources (node_exporter 1860, traefik 17346, geoip fork, systemd-journal fork — applied `3c69878`).
 - Every service module creates resources that make Authentik/Grafana/HTTP providers reconcile the application state.
 
 ## Relationship with NixOS

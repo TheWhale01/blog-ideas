@@ -1,7 +1,7 @@
 ---
 title: Erebos Server TODO — Index
 created: 2026-10-22
-updated: 2026-11-09
+updated: 2026-11-11
 type: todo
 tags: [erebos, todo, improvement, meta]
 sources: []
@@ -15,7 +15,7 @@ sources: []
 > One file per item, ordered by impact. Statuses are mirrored here; details live in each file.
 
 ## Critical
-- [[todo/monitoring-alerting]] — Core DONE (9 rules live, delivery confirmed, secret rotated); log pipeline **LIVE** (Alloy→Loki 217k+ lines, alloy+loki scrapes verified); open: Loki retention not applied, loopback binds for Loki/bridge, Grafana cleanup (14055/orphan authentik), ALERT_LINKS, soak
+- [[todo/monitoring-alerting]] — Core DONE ✅ (12 rules live, delivery confirmed, secret rotated); log pipeline **LIVE** (Alloy→Loki 217k+ lines, alloy+loki scrapes verified); Alertmanager + Loki now loopback-bound (AM `11a4979`, Loki `f13b255`; bridge :3004 owner-declined); open: noise soak, issues room read-only, fail2ban decisions, SMART/later rules.
 - [[todo/backups]] — In progress · **Borg decided**; declarative job config ready to paste (2 PG dumps + Nextcloud-SQLite quiet hook) → strategos; git-for-archives answered NO
 
 ## High

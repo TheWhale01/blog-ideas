@@ -1,7 +1,7 @@
 ---
 title: Wiki Index
 created: 2026-10-15
-updated: 2026-10-15
+updated: 2026-11-11
 type: index
 tags: [meta, index]
 ---
@@ -35,7 +35,7 @@ tags: [meta, index]
 ## Todo
 > Changes to existing config/code on Erebos (build-from-scratch items — incl. new workflows/pipelines — go in Ideas).
 - [[todo/index]] – Hub: all backlog items by priority
-- [[todo/monitoring-alerting]] – Alerting LIVE ✅ · 9 rules ok, alert-links suppressed (`dc499f2`), GeoIP live, journal dashboard terraform'd; open: request_path label drop, pipeline-health rules, noise soak (~Nov 14), ban-map smoke
+- [[todo/monitoring-alerting]] – Alerting LIVE ✅ · 12 rules ok (incl. pipeline-health landed), alert-links suppressed (`dc499f2`), GeoIP live, journal dashboard terraform'd, request_path drop DONE (`98a56d4`); open: noise soak (~Nov 14), ban-map smoke, issues room read-only, fail2ban decisions, SMART/later, render check.
 - [[todo/issues-room-readonly]] – Not started · bot-only writes in the issues room; v12 creator-PL caveat decides approach
 - [[todo/backups]] – In progress · Borg chosen; full NixOS job snippet + strategos repo config + sqlite/pg_dump hooks written; weekly Sun 03:30, prune 7d/5w/12m
 - [[todo/age-keys-to-strategos]] – High · agenix identity keys have no offline copy; passphrase-archive onto strategos + round-trip decrypt drill
@@ -63,7 +63,7 @@ LFM3-1.7B (Q6_K) is **up and running** on an **Intel Arc A380 GPU** in the Erebo
 
 - [[docs/erebos/containers]] – Podman container declarations, global settings, and per-container details
 - [[docs/erebos/services]] – Systemd services: Traefik, blog, Nextcloud, Matrix, Authentik, Vaultwarden, Immich, and more
-- [[docs/erebos/monitoring]] – Prometheus, Grafana, Loki, and Promtail stack with Traefik integration
+- [[docs/erebos/monitoring]] – Prometheus, Grafana, Loki, and Alloy stack with Traefik integration
 - [[docs/erebos/reference]] – Flake outputs, inputs, key files, Traefik routing, and NixOS options
 - [[docs/erebos/secrets]] – age-encrypted secrets layout, mapping, and usage patterns
 - [[docs/erebos/terraform]] – Terranix/OpenTofu workflow, providers, modules, and relationship with NixOS

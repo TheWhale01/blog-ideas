@@ -2,7 +2,7 @@
 title: Erebos
 type: reference
 created: 2026-10-15
-updated: 2026-11-04
+updated: 2026-11-11
 tags: [nixos, server, homelab, documentation, erebos]
 sources: []
 ---
@@ -61,7 +61,7 @@ Key design choices:
 - **Podman** for containers (OCI, not Docker), with the `podman` overlay backend.
 - **Traefik 3.7.13** as the single reverse proxy / entry point, with automatic Let's Encrypt certificates via Cloudflare DNS challenge.
 - **Authentik** as the central OIDC/SAML identity provider, protecting most ingress services.
-- **Monitoring**: Prometheus + Grafana + Loki + Promtail.
+- **Monitoring**: Prometheus + Grafana + Loki + Alloy.
 
 ---
 
@@ -203,7 +203,7 @@ All public-facing services are reverse-proxied through **Traefik** under `*.thew
 | Nextcloud | `sys/containers/nextcloud.nix` | File sync / collab | `nextcloud.thewhale.fr` (port 8881) + Collabora office (`9980`) |
 | Matrix (Synapse, MAS, Livekit) | `sys/services/matrix/` | Decentralized chat | `matrix.thewhale.fr` + `matrix-auth` + `livekit` + `lk-jwt` |
 | Authentik | `sys/containers/authentik.nix` | Identity provider | `authentik.thewhale.fr` (+ LDAP on `3389`) |
-| Grafana / Prometheus / Loki / Promtail | `sys/services/monitoring/` | Observability | GUI + metrics |
+| Grafana / Prometheus / Loki / Alloy | `sys/services/monitoring/` | Observability | GUI + metrics |
 | Jellyfin | `sys/services/jellyfin/jellyfin.nix` | Media server | `jellyfin.thewhale.fr` |
 | Vaultwarden | `sys/services/vaultwarden.nix` | Bitwarden-compatible vault | `vaultwarden.thewhale.fr` (PostgreSQL backend, Authentik SSO) |
 | llama.cpp | `sys/services/llamacpp.nix` | Local LLM runtime (LFM3-1.7B Q6_K) | `127.0.0.1:8080` (loopback only) — [[docs/erebos/services]] |
@@ -246,14 +246,15 @@ Note: there is no standalone `gluetun.nix` anymore — each VPN-dependent stack 
 
 ## Monitoring Stack
 
-`sys/services/monitoring/` contains four modules:
+`sys/services/monitoring/` contains the monitoring modules aggregated in `default.nix`: Prometheus (+ Alertmanager), Grafana, Loki, Alloy (log shipping — Promtail was removed from nixpkgs as EOL), and the GeoIP updater.
 
-| File | Tool | Role |
+|| File | Tool | Role |
 |---|---|---|
-| `prometheus.nix` | Prometheus | Time-series metrics |
+| `prometheus/` | Prometheus + Alertmanager | Time-series metrics + alerting rules (`prometheus/config.nix`) |
 | `grafana.nix` | Grafana | Dashboards & alerting UI |
 | `loki.nix` | Loki | Log aggregation |
-| `promtail.nix` | Promtail | Log shipping |
+| `alloy.nix` | Alloy | Log shipping (journal + traefik + sshd + fail2ban geoip pipelines) |
+| `geoip.nix` | geoipupdate | MaxMind GeoIP database refresh |
 
 These are aggregated in `sys/services/monitoring/default.nix` and wired into the Traefik dynamic config. For current status and tasks, see [[todo/monitoring-alerting]].
 
@@ -384,12 +385,14 @@ sys/
 │   ├── matrix/
 │   │   ├── default.nix
 │   │   └── mas.nix
-│   ├── monitoring/
-│   │   ├── default.nix
-│   │   ├── prometheus.nix
-│   │   ├── grafana.nix
-│   │   ├── loki.nix
-│   │   └── promtail.nix
+│   │   ├── monitoring/
+│   │   │   ├── default.nix
+│   │   │   ├── prometheus.nix
+│   │   │   ├── prometheus.config.nix
+│   │   │   ├── grafana.nix
+│   │   │   ├── loki.nix
+│   │   │   ├── alloy.nix
+│   │   │   └── geoip.nix
 │   ├── jellyfin/
 │   │   ├── default.nix
 │   │   └── jellyfin.nix

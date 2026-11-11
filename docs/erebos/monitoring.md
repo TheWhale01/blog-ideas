@@ -2,7 +2,7 @@
 title: Monitoring
 type: reference
 created: 2026-10-15
-updated: 2026-11-09
+updated: 2026-11-11
 tags: [nixos, erebos, monitoring, observability]
 sources: []
 ---
@@ -32,7 +32,7 @@ That's the shape for the Drive-Health (smartctl on bare metal) and multi-host lo
 | `prometheus.nix` | Prometheus | Time-series metrics and alerting rules |
 | `grafana.nix` | Grafana | Dashboards, visualization, alerting UI |
 | `loki.nix` | Loki 3.7.9 | Log aggregation + storage (filesystem chunks; **collector-independent**) |
-| `alloy.nix` (landed `abc3f49`; store-path mode `configPath = pkgs.writeText`) | **Alloy** (promtail removed from nixpkgs — EOL, module assertion) | Log shipping. Repo file is still `promtail.nix`, `enable`d with **no config** → Loki zero series until the patch is applied. Final collector config: next section (validated with `nix eval` + `alloy validate`/`fmt`). |
+| `alloy.nix` (landed `abc3f49`; store-path mode `configPath = pkgs.writeText`) | **Alloy** (promtail removed from nixpkgs — EOL, module assertion) | Log shipping. Final collector config: next section (validated with `nix eval` + `alloy validate`/`fmt`). The earlier "repo file is still `promtail.nix` with no config → Loki zero series" interim state is resolved: the landed `alloy.nix` ships the full pipeline (journal + traefik + sshd + fail2ban geoip). |
 
 ## Log collection — Alloy Nix module (validated 2026-11-09; owner applies)
 
@@ -52,8 +52,9 @@ referenced file (e.g. the geoip mmdb) is missing — hence the crash-loop warnin
 
 The validated module below landed as `sys/services/monitoring/alloy.nix` in `abc3f49`.
 Application remains **owner-driven** — the agent delivers snippets, not changes.
-**Review note 2026-11-09**: the pushed copy has `host = "127.0.0.1"` in the journal labels
-(transcription slip — should be `host = "${config.networking.hostName}"` → `erebos`); everything
+**Review note 2026-11-10 → RESOLVED**: the pushed copy had `host = "127.0.0.1"` in the journal labels
+(transcription slip — should be `host = "${config.networking.hostName}"` → `erebos`); the owner
+applied the fix by hardcoding `host = "erebos"` in the journal source; everything
 else is byte-equivalent to the validated config (`alloy validate` OK on the built store file). It renders Alloy's River config from Nix the way `mas.nix`
 renders YAML — values interpolated from module options rather than hardcoded:
 
@@ -345,7 +346,7 @@ Three layers, no Cloud required:
    from grafana.com or `builtins.readFile` of a repo JSON.
 Status after `11a4979`: `alloy` scrape job
    + `vars.alloy.port` ✅ landed (verified `nix eval`: jobs = prometheus, node_exporter, authentik,
-   traefik, alloy); journal `host` label fixed to `erebos` (hardcoded — on erebos-stage the same
+   traefik, alloy, loki; loki job landed `7f50ca8`); journal `host` label fixed to `erebos` (hardcoded — on erebos-stage the same
    config would tag stage logs `host=erebos`; `config.networking.hostName` avoids that); dashboard
    **14055 added despite k8s-specific verdict** — DS binding works by luck (literal names
    "Prometheus"/"Loki" == provisioned DS names), but ~20/22 panels stay No-data; the 5 real
@@ -379,10 +380,10 @@ Status after `11a4979`: `alloy` scrape job
    ```
 3. **Optional pipeline alerts** (append to the `monitoring_self` rules group):
    ```yaml
-   - alert: AlloyConfigLoadFailed
-     expr: alloy_config_last_load_successful == 0
-   - alert: AlloyLogWriteDropping
-     expr: increase(loki_write_dropped_entries_total[5m]) > 0
+   - alert: AlloyConfigNotLoaded
+     expr: alloy_config_last_load_successful != 1
+   - alert: LokiDroppingEntries
+     expr: increase(loki_write_dropped_entries_total[15m]) > 0
    ```
 
 **Journal-native dashboard search (2026-11-09, exhaustive):** grafana.com has **no** pure
@@ -399,8 +400,7 @@ four variables swapped to `job/host/unit` selectors — a mechanical JSON fork.
 JSON inspection shows ~20 of 22 metric panels target the **Loki-Stack Helm chart on Kubernetes**
 (`container_memory_working_set_bytes`, `kube_pod_container_resource_*`, `pod=~"loki.*"`,
 `app_kubernetes_io_name`) plus a dead **promtail** row — they'd all render "No data" on Erebos.
-Usable instead: a `loki` scrape job (currently absent! Loki's self-metrics on `127.0.0.1:3100/metrics`
-are invisible to Prometheus):
+Usable instead: a `loki` scrape job — landed via `7f50ca8` (`loki` scrape job added to `prometheus/default.nix`: `127.0.0.1:${toString config.services.loki.configuration.server.http_listen_port}`; Loki's self-metrics on `127.0.0.1:3100/metrics` are now visible to Prometheus via that job):
 ```nix
 { job_name = "loki";
   static_configs = [{ targets = [ "127.0.0.1:3100" ]; }]; }
