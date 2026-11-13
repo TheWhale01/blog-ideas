@@ -16,3 +16,9 @@
 - Synced `docs/erebos/services/hermes-dashboard.md`: HermesDashboard → homepage Admin Tools (PR #4).
 - Synced `docs/erebos/index.md` Services Overview: added ActualBudget + Aurral rows.
 - Bumped `updated` dates on touched pages to 2026-11-12.
+
+## [2026-11-12] create | Automatically re-create movie libraries like Disney+ ones in Jellyfin
+
+- Researched auto movie-library / Disney+-style collection automation in Jellyfin (TMDB Box Sets plugin, Jellyfin-Auto-Collections, SmartLists plugin, manual "Automatically add to collection" + jellyfin#16926).
+- Filed new idea page `ideas/jellyfin-auto-movie-libraries.md` (proposed, not implemented).
+- Added entry to index.md Ideas; bumped total pages to 36.

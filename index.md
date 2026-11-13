@@ -10,7 +10,7 @@ tags: [meta, index]
 
 > Content catalog. Every wiki page listed under its type with a one-line summary.
 > Read this first to find relevant pages for any query.
-> Last updated: 2026-11-12 | Total pages: 35
+> Last updated: 2026-11-12 | Total pages: 36
 > Count = content .md pages (incl. nested hub indexes); root `index.md`/`log.md`/`HERMES.md` and
 > `.yml` attachments excluded. Re-verify with a filesystem walk when in doubt — this number has
 > drifted twice (audited 2026-11-10).
@@ -20,6 +20,7 @@ tags: [meta, index]
 ## Comparisons
 
 ## Ideas
+- [[ideas/jellyfin-auto-movie-libraries]] – Auto re-create Disney+-style movie libraries/collections in Jellyfin from an existing library (TMDB Box Sets / Auto Collections / SmartLists research, proposed)
 - [[ideas/deezify]] – Spotify/Deezer Jam-like feature for cross-platform music sharing
 - [[ideas/remote-gaming-server]] – Self-hosted cloud gaming with Sunshine/Apollo on Linux
 - [[ideas/translaitor]] – AI-powered book translator using Gemini API or local LLM (TranslateGemma)
