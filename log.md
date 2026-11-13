@@ -22,3 +22,5 @@
 - Researched auto movie-library / Disney+-style collection automation in Jellyfin (TMDB Box Sets plugin, Jellyfin-Auto-Collections, SmartLists plugin, manual "Automatically add to collection" + jellyfin#16926).
 - Filed new idea page `ideas/jellyfin-auto-movie-libraries.md` (proposed, not implemented).
 - Added entry to index.md Ideas; bumped total pages to 36.
+
+## [2026-11-12] update | jellyfin auto movie-library idea — added seasonal / "Watch before <movie>" collection research
