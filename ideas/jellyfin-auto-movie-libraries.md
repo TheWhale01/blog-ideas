@@ -63,14 +63,15 @@ Proposed — researched 2026-11-12; not yet implemented.
 
 ## Proposed solution
 
-1. Enable TMDB Box Sets (or Auto Collections / SmartLists / Seasonal Visibility) on the existing movie library.
+1. Enable TMDB Box Sets (or Kometa) on the existing movie library for studio/franchise groupings.
 2. Define the Disney+-style grouping rules (studio/franchise → collection).
 3. Add seasonal / event-driven collections (e.g. "Halloween", "Christmas") via
    tag-based smart collections + Seasonal Visibility, and "Watch before <movie>"
    curated collections (e.g. "Watch before Avengers: Doomsday").
-4. Add a Hermes cron/scheduled task to re-run the collection sync when the
-   library changes (or on a schedule), so collections are re-created/refreshed
-   automatically.
+4. Use existing automation engines rather than a custom Hermes cron: TMDB Box Sets
+   (native plugin), Kometa (YAML-driven, scheduled, Jellyfin-supported), SmartLists
+   or Auto Collections — per grouping type. Hermes cron only if no existing engine
+   fits.
 
 ## Caveats & open questions
 
