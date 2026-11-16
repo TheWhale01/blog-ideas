@@ -28,3 +28,10 @@
 ## [2026-11-12] update | jellyfin auto movie-library idea — replaced Hermes-cron proposal with existing engines (TMDB Box Sets / Kometa / SmartLists / Auto Collections / Seasonal Visibility)
 
 ## [2026-11-12] delete | ideas/jellyfin-auto-movie-libraries — removed: owner decided not to pursue the auto movie-library / Disney+-style collection idea in the end
+
+## [2026-11-12] update | remote gaming server idea — full rewrite for wiki consistency + research + implementation snippets
+
+- Rewrote `ideas/remote-gaming-server.md` to wiki schema: frontmatter `updated` → 2026-11-12, valid taxonomy tags (`idea, active, infrastructure, homelab`), sections Status / Problem statement / Context and research findings / Proposed solution / External references / Related ideas and dependencies.
+- Preserved owner prompt content (Steam Remote Play → not really feasible headless; Apollo → built on Linux, README Windows-only for now; Moonlight display need).
+- Added research findings (Sunshine ports/Web UI/config, Apollo Docker, headless stack, Web UI audio/video, Moonlight LAN-only).
+- Added configuration snippets (podman run + Sunshine config keys) and acceptance criteria; no deployment changes made.
