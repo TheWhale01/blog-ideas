@@ -26,3 +26,5 @@
 ## [2026-11-12] update | jellyfin auto movie-library idea — added seasonal / "Watch before <movie>" collection research
 
 ## [2026-11-12] update | jellyfin auto movie-library idea — replaced Hermes-cron proposal with existing engines (TMDB Box Sets / Kometa / SmartLists / Auto Collections / Seasonal Visibility)
+
+## [2026-11-12] delete | ideas/jellyfin-auto-movie-libraries — removed: owner decided not to pursue the auto movie-library / Disney+-style collection idea in the end
