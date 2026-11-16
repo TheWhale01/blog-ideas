@@ -35,3 +35,10 @@
 - Preserved owner prompt content (Steam Remote Play → not really feasible headless; Apollo → built on Linux, README Windows-only for now; Moonlight display need).
 - Added research findings (Sunshine ports/Web UI/config, Apollo Docker, headless stack, Web UI audio/video, Moonlight LAN-only).
 - Added configuration snippets (podman run + Sunshine config keys) and acceptance criteria; no deployment changes made.
+
+## [2026-11-12] update | remote gaming server idea — owner feedback updates (Intel Arc A380, dummy HDMI, Moonlight, native NixOS)
+
+- Corrected host GPU: Intel Arc A380 iGPU (was AMD RX 7600XT).
+- Added dummy HDMI plug context: physical display via iGPU → Apollo virtual display no longer needed; prefer vanilla Sunshine + Moonlight.
+- Replaced podman snippet with native NixOS systemd unit snippet.
+- Updated encoder/acceptance to Intel (VAAPI).

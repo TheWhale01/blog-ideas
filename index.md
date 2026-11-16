@@ -21,7 +21,7 @@ tags: [meta, index]
 
 ## Ideas
 - [[ideas/deezify]] – Spotify/Deezer Jam-like feature for cross-platform music sharing
-- [[ideas/remote-gaming-server]] – Self-hosted cloud gaming with Sunshine/Apollo on Linux
+- [[ideas/remote-gaming-server]] – Self-hosted cloud gaming with Sunshine + Moonlight on Linux (Intel Arc A380 iGPU, dummy HDMI; native NixOS)
 - [[ideas/translaitor]] – AI-powered book translator using Gemini API or local LLM (TranslateGemma)
 - [[ideas/intrusion-detection]] – See attempts + know if they succeeded: journal→Loki pipeline (currently dark!), ruler alerts, authentik ground truth, auditd, NixOS drift trio, tamper-resistant evidence
 - [[ideas/chezmoi-pontos]] – Declarative dotfiles for the pontos laptop (Fedora) with chezmoi + age, wipe-and-recover story
