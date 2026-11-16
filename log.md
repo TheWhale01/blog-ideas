@@ -49,3 +49,4 @@
 - Removed Apollo-related context/snippets; physical dummy HDMI plug now covers the display need.
 - Research findings retained (Sunshine ports/Web UI, headless stack, Moonlight LAN-only).
 - Added IPv6-only binding via Sunshine `address_family = "ipv6";` in module settings.
+- Confirmed headless operation: dummy HDMI plug + Intel iGPU → DRM/KMS capture; no X server / GUI required.

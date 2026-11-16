@@ -76,7 +76,8 @@ services.sunshine = {
 - Notes: the NixOS module renders `settings` into the Sunshine configuration file (web UI is
   disabled when `settings` is set) and manages firewall ports via `openFirewall`; `capSysAdmin`
   is required for DRM/KMS screen capture. Set `address_family = "ipv6";` in `settings` for
-  IPv6-only binding.
+  IPv6-only binding. With the dummy HDMI plug providing a physical display, DRM/KMS capture
+  works headless — no X server / graphical interface required.
 
 - Acceptance: Moonlight discovers the server on LAN, pairs via Web UI PIN, streams a game
   with Intel Arc A380 (VAAPI) encoding.
