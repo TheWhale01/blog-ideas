@@ -42,3 +42,9 @@
 - Added dummy HDMI plug context: physical display via iGPU → Apollo virtual display no longer needed; prefer vanilla Sunshine + Moonlight.
 - Replaced podman snippet with native NixOS systemd unit snippet.
 - Updated encoder/acceptance to Intel (VAAPI).
+
+## [2026-11-12] update | remote gaming server idea — switched to NixOS native module, removed Apollo/docker leftovers
+
+- Switched proposed solution to NixOS native module `services.sunshine` (enable, openFirewall, capSysAdmin, settings rendered into Sunshine config).
+- Removed Apollo-related context/snippets; physical dummy HDMI plug now covers the display need.
+- Research findings retained (Sunshine ports/Web UI, headless stack, Moonlight LAN-only).
