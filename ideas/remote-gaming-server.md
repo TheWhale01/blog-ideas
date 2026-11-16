@@ -63,6 +63,7 @@ services.sunshine = {
   settings = {
     sunshine_name = "erebos";
     port = 47989;
+    address_family = "ipv6";
     max_bitrate = 0;
     stream_audio = true;
     upnp = false;
@@ -74,7 +75,8 @@ services.sunshine = {
 
 - Notes: the NixOS module renders `settings` into the Sunshine configuration file (web UI is
   disabled when `settings` is set) and manages firewall ports via `openFirewall`; `capSysAdmin`
-  is required for DRM/KMS screen capture.
+  is required for DRM/KMS screen capture. Set `address_family = "ipv6";` in `settings` for
+  IPv6-only binding.
 
 - Acceptance: Moonlight discovers the server on LAN, pairs via Web UI PIN, streams a game
   with Intel Arc A380 (VAAPI) encoding.
