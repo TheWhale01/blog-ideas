@@ -22,6 +22,7 @@ sometimes drops the connection to the Wi-Fi network it is currently connected to
 
 - Pontos is the owner's personal daily-driver laptop, not a server host.
 - Symptom: intermittent loss of the active Wi-Fi link (adapter / driver / supplicant level).
+- Wi-Fi adapter (from `lspci` on pontos): MEDIATEK Corp. MT7925 (RZ717) Wi-Fi 7 160MHz, kernel driver in use: mt7925e.
 
 ## Task checklist
 
@@ -39,3 +40,4 @@ sometimes drops the connection to the Wi-Fi network it is currently connected to
 ## History
 
 - 2026-11-16: added per owner request (Wi-Fi card sometimes drops the Wi-Fi connection).
+- 2026-11-16: added Wi-Fi card model from `lspci` output (MT7925 / RZ717, Wi-Fi 7 160MHz, driver mt7925e).
