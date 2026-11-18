@@ -52,3 +52,5 @@
 - Confirmed headless operation: dummy HDMI plug + Intel iGPU → DRM/KMS capture; no X server / GUI required.
 
 ## [2026-11-16] create | todo/pontos-wifi-drop — added: pontos Wi-Fi dropout todo (daily-driver Framework 13 / Ryzen AI 9 HX 370 / Fedora 45)
+
+## [2026-11-16] update | todo/pontos-wifi-drop — added web research findings (MT7925 / RZ717: kernel 7.1.x mt76 regression, rfkill, firmware pin)

@@ -24,6 +24,17 @@ sometimes drops the connection to the Wi-Fi network it is currently connected to
 - Symptom: intermittent loss of the active Wi-Fi link (adapter / driver / supplicant level).
 - Wi-Fi adapter (from `lspci` on pontos): MEDIATEK Corp. MT7925 (RZ717) Wi-Fi 7 160MHz, kernel driver in use: mt7925e.
 
+## Research — known issues (MT7925 / RZ717, from web 2026-11-16)
+
+- Kernel 7.1.x mt76 driver regression: MT7925 Wi-Fi 7 MLO / 5 GHz association breakage (CachyOS
+  report; upstream fix `b2f5def2f133` merged for 7.2, not backported to 7.1.y). Workaround: linux-lts
+  kernel or full `mt7925e` module reload.
+- Fedora: newer kernels (Fedora 43 / updated 42) hard-block WLAN via rfkill — fix `sudo rfkill unblock wlan`.
+- Firmware regression: mt7925 blob `20260813113118` causes severe low-RSSI 5 GHz loss; pin to `20260605184805`
+  (linux-firmware commit `bd1c66cf…`) and reload.
+- Reports of drops / latency spikes / signal fluctuation (Fedora 44 + MT7925/RZ717): latency spikes
+  4ms→160ms, signal loss; possibly driver/firmware-related.
+
 ## Task checklist
 
 - [ ] Capture diagnostics: `journalctl -u NetworkManager` (link-loss / supplicant events),
@@ -41,3 +52,4 @@ sometimes drops the connection to the Wi-Fi network it is currently connected to
 
 - 2026-11-16: added per owner request (Wi-Fi card sometimes drops the Wi-Fi connection).
 - 2026-11-16: added Wi-Fi card model from `lspci` output (MT7925 / RZ717, Wi-Fi 7 160MHz, driver mt7925e).
+- 2026-11-16: added web research findings for MT7925 / RZ717 (kernel 7.1.x mt76 regression, rfkill, firmware pin).
