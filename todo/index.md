@@ -1,7 +1,7 @@
 ---
 title: Erebos Server TODO — Index
 created: 2026-10-22
-updated: 2026-11-11
+updated: 2026-11-16
 type: todo
 tags: [erebos, todo, improvement, meta]
 sources: []
@@ -27,6 +27,7 @@ sources: []
 - [[todo/scheduled-security-audit]] — Not started · weekly Hermes cron job that re-inventories versions, cross-checks advisories, and refreshes [[queries/security-audit]]
 
 - [[todo/fail2ban-tuning]] — New (2026-11-10) · aggressive-mode decision + ignoreIP preconditions, first web jail prototype, port-22-removal review
+- [[todo/pontos-wifi-drop]] — Not started · Wi-Fi card on pontos (Framework 13 / AMD Ryzen AI 9 HX 370 / Fedora 45) occasionally drops the current Wi-Fi connection
 
 ## Low
 - [[todo/issues-room-readonly]] — Not started · issues room → send-messages level 50, @erebot PL 50; ⚠️ v12 creators can't be demoted — decide (a) creator exception vs (b) bot-created room

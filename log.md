@@ -50,3 +50,5 @@
 - Research findings retained (Sunshine ports/Web UI, headless stack, Moonlight LAN-only).
 - Added IPv6-only binding via Sunshine `address_family = "ipv6";` in module settings.
 - Confirmed headless operation: dummy HDMI plug + Intel iGPU → DRM/KMS capture; no X server / GUI required.
+
+## [2026-11-16] create | todo/pontos-wifi-drop — added: pontos Wi-Fi dropout todo (daily-driver Framework 13 / Ryzen AI 9 HX 370 / Fedora 45)
