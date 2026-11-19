@@ -90,4 +90,4 @@ services.sunshine = {
 
 ## Related ideas and dependencies
 
-- [[docs/erebos/index]] · [[docs/erebos/containers]] · [[docs/erebos/services]] · [[ideas/github-pr-governance]]
+- [[docs/erebos/index]] · [[docs/erebos/containers]] · [[docs/erebos/services]]

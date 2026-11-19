@@ -64,3 +64,5 @@
 
 - Renamed wiki schema file `HERMES.md` → `AGENTS.md`; updated index references and governance reference accordingly.
 - Bumped index `updated` date to 2026-11-19.
+
+## [2026-11-19] delete | ideas/github-pr-governance — removed: governance now lives in erebos repo AGENTS.md (PR #9 merged; wiki idea superseded)

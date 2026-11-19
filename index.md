@@ -27,7 +27,6 @@ tags: [meta, index]
 - [[ideas/chezmoi-pontos]] – Declarative dotfiles for the pontos laptop (Fedora) with chezmoi + age, wipe-and-recover story
 - [[ideas/quickshell-notification-client]] – Catppuccin notification daemon as a quickconf module, built on quickshell's Quickshell.Services.Notifications
 - [[ideas/cve-now-mcp]] – Give Odin structured CVE lookups via cve.now's free hosted MCP server (no auth; `get_vulnerability`/`list_feed`/`check_stack` incl. flake.lock) feeding [[todo/scheduled-security-audit]]
-- [[ideas/github-pr-governance]] – Protect `main` on erebos (PR-required, 0 approvals — agent PRs carry the owner's identity) + agent authors PRs & addresses reviews; owner sole merger/deployer. Filed 2026-11-09, deliberately NOT implemented
 - [[ideas/drive-health-monthly-newsletter]] – Unblocked: prod is bare metal (6 ATA disks, Ryzen 5 5600) → smartctl_exporter + smartd locally → Prometheus/Grafana live view + Hermes monthly cron digest via Resend
 
 ## Todo
