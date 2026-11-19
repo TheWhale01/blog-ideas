@@ -59,3 +59,8 @@
 
 - Renamed governance file reference in `HERMES.md` from `github-pr-governance.md` to `AGENTS.md` (governance now lives in the erebos repo `AGENTS.md`; wiki idea superseded/deferred, PR #9 merged).
 - Bumped `updated` date on `HERMES.md` to 2026-11-19.
+
+## [2026-11-19] rename | HERMES.md → AGENTS.md
+
+- Renamed wiki schema file `HERMES.md` → `AGENTS.md`; updated index references and governance reference accordingly.
+- Bumped index `updated` date to 2026-11-19.

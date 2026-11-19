@@ -1,7 +1,7 @@
 ---
 title: Wiki Index
 created: 2026-10-15
-updated: 2026-11-12
+updated: 2026-11-19
 type: index
 tags: [meta, index]
 ---
@@ -10,8 +10,8 @@ tags: [meta, index]
 
 > Content catalog. Every wiki page listed under its type with a one-line summary.
 > Read this first to find relevant pages for any query.
-> Last updated: 2026-11-12 | Total pages: 35
-> Count = content .md pages (incl. nested hub indexes); root `index.md`/`log.md`/`HERMES.md` and
+|> Last updated: 2026-11-19 | Total pages: 35
+|> Count = content .md pages (incl. nested hub indexes); root `index.md`/`log.md`/`AGENTS.md` and
 > `.yml` attachments excluded. Re-verify with a filesystem walk when in doubt — this number has
 > drifted twice (audited 2026-11-10).
 
@@ -57,7 +57,7 @@ tags: [meta, index]
 ## Hardware & Models
 
 LFM3-1.7B (Q6_K) is **up and running** on an **Intel Arc A380 GPU** in the Erebos homelab. Odin — the Hermes Agent — uses it now as its local LLM fallback.
-^[log.md:575] [architecture.md:73] [HERMES.md:210]
+^[log.md:575] [architecture.md:73] [AGENTS.md:210]
 
 - [[docs/erebos/containers]] – Podman container declarations, global settings, and per-container details
 - [[docs/erebos/services]] – Systemd services: Traefik, blog, Nextcloud, Matrix, Authentik, Vaultwarden, Immich, and more
