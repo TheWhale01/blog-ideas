@@ -1,7 +1,7 @@
 ---
 title: Wiki Schema
 created: 2026-11-11
-updated: 2026-11-11
+updated: 2026-11-19
 type: schema
 tags: [meta, schema]
 ---
@@ -18,7 +18,7 @@ GitHub remote. Obsidian should point at the `$WIKI_PATH` checkout.
 
 ## Conventions
 - File names: lowercase + hyphens (kebab-case) in **every** folder including `ideas/`
-  (e.g., `nixos-configuration.md`, `github-pr-governance.md`). The Title-Case exception for
+  (e.g., `nixos-configuration.md`, `AGENTS.md`). The Title-Case exception for
   `ideas/` (amended 2026-10-26, blog permalinks) was **retired by owner decision 2026-11-09**:
   the blog builder publishes each filename lowercased, so renaming MUST be the exact lowercase
   transform of the current name (e.g., `CleanYourTV.md → cleanyourtv.md`, not `clean-your-tv.md`)

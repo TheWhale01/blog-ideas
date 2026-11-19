@@ -54,3 +54,8 @@
 ## [2026-11-16] create | todo/pontos-wifi-drop — added: pontos Wi-Fi dropout todo (daily-driver Framework 13 / Ryzen AI 9 HX 370 / Fedora 45)
 
 ## [2026-11-16] update | todo/pontos-wifi-drop — added web research findings (MT7925 / RZ717: kernel 7.1.x mt76 regression, rfkill, firmware pin)
+
+## [2026-11-19] rename | HERMES.md — github-pr-governance.md → AGENTS.md
+
+- Renamed governance file reference in `HERMES.md` from `github-pr-governance.md` to `AGENTS.md` (governance now lives in the erebos repo `AGENTS.md`; wiki idea superseded/deferred, PR #9 merged).
+- Bumped `updated` date on `HERMES.md` to 2026-11-19.
